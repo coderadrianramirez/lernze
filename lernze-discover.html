@@ -1,0 +1,174 @@
+<title>Lernze Discover</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: sticky top bar, hero trailer, interest chips, horizontal rails of 16:9 trailer cards, detail modal. Single dark look by choice (streaming). */
+:root{
+  --bg:#0d0e14; --surface:#161823; --surface-2:#1f2230; --line:#2a2e3f;
+  --fg:#f2f1ee; --muted:#9a9db0; --accent:#ffb547; --accent-ink:#1a1204; --ai:#7fd6c8;
+  --display:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;
+  --body:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1280px;margin:0 auto}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.bar{display:flex;align-items:center;gap:20px;padding-block:12px}
+.logo{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:-.03em}
+.logo i{font-style:normal;color:var(--accent)}
+nav{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto}
+nav button{background:none;border:0;padding:8px 12px;border-radius:8px;color:var(--muted);white-space:nowrap}
+nav button.on{color:var(--fg);background:var(--surface-2)}
+.me{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+.av{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#e0646e);display:grid;place-items:center;color:var(--accent-ink);font-weight:700;font-size:12px}
+.hero{position:relative;margin-top:20px;border-radius:16px;overflow:hidden;min-height:340px;display:flex;align-items:flex-end;background:linear-gradient(120deg,#12304a 0%,#2b1b4a 55%,#5a2340 100%)}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 78% 30%,rgba(255,181,71,.35),transparent 45%),linear-gradient(0deg,rgba(13,14,20,.92) 0%,rgba(13,14,20,.2) 65%)}
+.hero .big{position:absolute;right:5%;top:8%;font-family:var(--display);font-weight:800;font-size:clamp(120px,22vw,260px);line-height:.8;color:rgba(255,255,255,.07);letter-spacing:-.06em;user-select:none}
+.hero-in{position:relative;padding:28px;max-width:640px;display:grid;gap:12px}
+.tags{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{font-size:12px;padding:3px 9px;border-radius:99px;background:rgba(255,255,255,.12);font-weight:500}
+.pill.ai{background:rgba(127,214,200,.16);color:var(--ai)}
+.pill.cr{background:rgba(255,181,71,.16);color:var(--accent)}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance}
+h1{font-size:clamp(30px,5vw,48px);line-height:1.05}
+.hero p{margin:0;color:#d4d5de}
+.row-btn{display:flex;gap:10px;flex-wrap:wrap}
+.btn{border:0;border-radius:10px;padding:11px 18px;font-weight:700;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:rgba(255,255,255,.14);color:var(--fg)}
+.scrub{height:3px;background:rgba(255,255,255,.15);border-radius:3px;overflow:hidden;margin-top:6px}
+.scrub b{display:block;height:100%;width:0;background:var(--accent);animation:run 9s linear infinite}
+@keyframes run{to{width:100%}}
+.chips{display:flex;gap:8px;overflow-x:auto;padding-block:18px 4px;scrollbar-width:none}
+.chips .lbl{color:var(--muted);font-size:13px;align-self:center;white-space:nowrap;margin-right:4px}
+.chip{background:var(--surface);border:1px solid var(--line);padding:7px 14px;border-radius:99px;white-space:nowrap;color:var(--muted)}
+.chip[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+section.rail{margin-top:26px}
+.rh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:10px}
+.rh h2{font-size:21px}
+.rh span{color:var(--muted);font-size:13px}
+.track{display:flex;gap:14px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x proximity;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.card{flex:0 0 min(300px,78vw);scroll-snap-align:start;text-align:left;background:none;border:0;padding:0;min-width:0}
+.thumb{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;display:flex;align-items:flex-end;padding:10px;transition:transform .2s,box-shadow .2s}
+.card:hover .thumb,.card:focus-visible .thumb{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.5)}
+.thumb .g{position:absolute;right:-4px;bottom:-22px;font-family:var(--display);font-weight:800;font-size:110px;line-height:1;color:rgba(255,255,255,.16);letter-spacing:-.05em}
+.thumb .badge{position:absolute;top:8px;left:8px}
+.thumb .dur{position:absolute;top:8px;right:8px;font-size:11px;background:rgba(0,0,0,.55);padding:2px 7px;border-radius:6px}
+.thumb .play{position:absolute;inset:0;display:grid;place-items:center;opacity:0;transition:opacity .2s;background:rgba(0,0,0,.28)}
+.thumb .play::after{content:"";border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:5px}
+.card:hover .play,.card:focus-visible .play{opacity:1}
+.thumb .pg{position:absolute;left:0;bottom:0;height:3px;width:0;background:var(--accent)}
+.card:hover .pg{width:100%;transition:width 6s linear}
+.thumb .ttl{position:relative;font-family:var(--display);font-weight:700;font-size:17px;line-height:1.1;text-shadow:0 1px 8px rgba(0,0,0,.5);max-width:75%}
+.meta{display:flex;justify-content:space-between;gap:8px;padding-top:8px;font-size:13px}
+.meta .by{color:var(--muted);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meta .pr{font-weight:700;white-space:nowrap}
+.why{color:var(--ai);font-size:12px;margin-top:2px}
+.note{margin-top:34px;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.note div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+.note h3{font-size:16px;margin-bottom:6px}
+.note p{margin:0;color:var(--muted);font-size:13.5px}
+footer{padding-block:30px 40px;color:var(--muted);font-size:12.5px}
+dialog{border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:16px;padding:0;width:min(820px,calc(100vw - 24px));max-height:calc(100vh - 24px);overflow:auto}
+dialog::backdrop{background:rgba(5,6,10,.7)}
+.mv{aspect-ratio:16/9;position:relative;display:flex;align-items:flex-end;padding:20px}
+.mv .big{position:absolute;right:16px;bottom:-30px;font-family:var(--display);font-weight:800;font-size:200px;line-height:1;color:rgba(255,255,255,.14)}
+.mv h2{position:relative;font-size:clamp(24px,4vw,36px);max-width:70%}
+.x{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.55);z-index:2}
+.md{padding:20px;display:grid;grid-template-columns:1fr 250px;gap:22px}
+.md p{margin:0 0 10px;color:#cfd0da}
+.stats{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin-bottom:12px}
+.stats b{color:var(--fg)}
+.buy{background:var(--surface-2);border-radius:12px;padding:16px;display:grid;gap:10px;align-content:start}
+.buy .p{font-family:var(--display);font-size:32px;font-weight:800}
+.buy small{color:var(--muted)}
+.buy .btn{width:100%}
+@media(max-width:640px){.md{grid-template-columns:1fr}.me span{display:none}.hero{min-height:300px}.hero-in{padding:20px}}
+@media(prefers-reduced-motion:reduce){.scrub b{animation:none;width:40%}.card:hover .pg{transition:none}}
+</style>
+
+<header><div class="wrap bar">
+  <div class="logo">lernze<i>.</i></div>
+  <nav aria-label="Principal"><button class="on">Descubrir</button><button>Mis cursos</button><button>Comunidades</button><button>Guardados</button></nav>
+  <div class="me"><span>Ejemplo de perfil: Daniela</span><div class="av">D</div></div>
+</div></header>
+
+<main class="wrap">
+  <div class="hero" id="hero">
+    <div class="big" id="hbig">$</div>
+    <div class="hero-in">
+      <div class="tags"><span class="pill ai" id="hbadge">Trailer generado con IA</span><span class="pill">Negocios</span><span class="pill">En vivo esta semana</span></div>
+      <h1 id="htitle">Abre tu LLC en Florida sin abogado</h1>
+      <p id="hdesc">Paso a paso, con los formularios reales de Sunbiz, para freelancers y dueños de negocio. 6 módulos, 3 plantillas y comunidad con soporte semanal.</p>
+      <div class="row-btn"><button class="btn" id="hplay">Ver curso · $149</button><button class="btn ghost">Guardar</button></div>
+      <div class="scrub" aria-hidden="true"><b></b></div>
+    </div>
+  </div>
+
+  <div class="chips" id="chips" role="group" aria-label="Tus intereses"><span class="lbl">Tus intereses</span></div>
+
+  <div id="rails"></div>
+
+  <div class="note">
+    <div><h3>Cómo se arma tu feed</h3><p>Intereses que eliges, lo que ves completo, lo que guardas y tu ciudad. Cada tarjeta explica por qué aparece.</p></div>
+    <div><h3>Trailer del creador o de IA</h3><p>Si el creador no sube trailer, Lernze lo genera con el temario y los testimonios. Etiqueta visible en cada tarjeta.</p></div>
+    <div><h3>Reproducción al pasar el cursor</h3><p>Vista previa muda de 6 segundos. Al tocar, se abre el trailer completo y la oferta de entrada.</p></div>
+  </div>
+</main>
+<footer class="wrap">Boceto de Lernze.com. Cursos, creadores y precios son ejemplos inventados.</footer>
+
+<dialog id="dlg" aria-label="Detalle del curso"></dialog>
+
+<script>
+var COURSES=[
+ {id:1,t:"Abre tu LLC en Florida sin abogado",g:"$",by:"Marisol Vega",tag:"Negocios",price:149,ai:true,dur:"1:42",mem:2140,rate:4.9,c:["#12304a","#5a2340"],d:"Paso a paso con los formularios reales de Sunbiz, para freelancers y dueños de negocio."},
+ {id:2,t:"Inglés para cerrar ventas",g:"En",by:"Coach Andrés R.",tag:"Idiomas",price:79,ai:false,dur:"2:05",mem:5320,rate:4.8,c:["#0f3d3e","#1b2a5a"],d:"Frases, guiones y roleplays para vender en inglés sin perder tu acento ni tu confianza."},
+ {id:3,t:"Barbería profesional desde cero",g:"✂",by:"Luis 'El Fino'",tag:"Oficios",price:199,ai:false,dur:"1:58",mem:980,rate:4.9,c:["#3a1c1c","#1c1c3a"],d:"Degradados, barba y atención al cliente. Incluye cómo cobrar y llenar tu agenda."},
+ {id:4,t:"Ventas en TikTok Shop con IA",g:"TT",by:"Camila Duarte",tag:"Marketing",price:97,ai:true,dur:"1:30",mem:3810,rate:4.7,c:["#3b1450","#0f3a50"],d:"Productos ganadores, videos con IA y embudos para vender sin inventario."},
+ {id:5,t:"Real estate: tu primera propiedad de inversión",g:"RE",by:"Jorge Alcántara",tag:"Inversión",price:249,ai:false,dur:"2:20",mem:1560,rate:4.8,c:["#173a2d","#0d2a45"],d:"Financiamiento con ITIN, análisis de zonas y cómo evitar los errores caros."},
+ {id:6,t:"Uñas de salón: de cero a $3K al mes",g:"✿",by:"Yaneisy Lora",tag:"Oficios",price:129,ai:true,dur:"1:36",mem:2470,rate:4.9,c:["#4a1b3c","#2b1b5a"],d:"Técnica, precios, redes y primeros clientes. Todo desde tu casa o cabina."},
+ {id:7,t:"Finanzas personales para inmigrantes",g:"%",by:"Dr. Esteban Mora",tag:"Inversión",price:59,ai:false,dur:"1:48",mem:6120,rate:4.8,c:["#1b2f4a","#2f4a1b"],d:"Crédito en EE.UU., remesas, ahorro y primera inversión sin tecnicismos."},
+ {id:8,t:"Repostería que se vende sola",g:"🍰",by:"Paola Quintero",tag:"Oficios",price:89,ai:true,dur:"1:25",mem:1890,rate:4.7,c:["#4a2a1b","#4a1b2f"],d:"Recetas, costos, licencias de Florida y cómo vender por encargo."},
+ {id:9,t:"Contenido con IA para tu negocio local",g:"IA",by:"Rafa Núñez",tag:"Marketing",price:69,ai:true,dur:"1:40",mem:4210,rate:4.6,c:["#1b4a46","#3a1b4a"],d:"Un mes de contenido en una tarde: guiones, video y calendario con herramientas de IA."},
+ {id:10,t:"Inglés para la entrevista de trabajo",g:"Hi",by:"Prof. Valeria Cruz",tag:"Idiomas",price:49,ai:false,dur:"1:15",mem:7340,rate:4.8,c:["#2a3a4a","#4a3a2a"],d:"Preguntas reales, respuestas modelo y práctica con feedback."}
+];
+var TAGS=["Negocios","Idiomas","Oficios","Marketing","Inversión"];
+var sel={Negocios:true,Marketing:true};
+var chips=document.getElementById('chips');
+TAGS.forEach(function(t){var b=document.createElement('button');b.className='chip';b.textContent=t;b.id='chip-'+t;b.setAttribute('aria-pressed',!!sel[t]);b.onclick=function(){sel[t]=!sel[t];b.setAttribute('aria-pressed',!!sel[t]);render()};chips.appendChild(b)});
+function grad(c){return 'linear-gradient(135deg,'+c[0]+','+c[1]+')'}
+function card(x,why){
+  var b=document.createElement('button');b.className='card';b.setAttribute('aria-label',x.t);
+  b.innerHTML='<div class="thumb" style="background:'+grad(x.c)+'"><span class="g">'+x.g+'</span><span class="badge pill '+(x.ai?'ai':'cr')+'">'+(x.ai?'Trailer IA':'Trailer del creador')+'</span><span class="dur">'+x.dur+'</span><span class="ttl">'+x.t+'</span><span class="play"></span><span class="pg"></span></div>'+
+  '<div class="meta"><span class="by">'+x.by+' · '+x.mem.toLocaleString('es')+' miembros</span><span class="pr">$'+x.price+'</span></div>'+(why?'<div class="why">'+why+'</div>':'');
+  b.onclick=function(){open(x)};return b}
+function rail(title,sub,items,whyFn){
+  var s=document.createElement('section');s.className='rail';
+  s.innerHTML='<div class="rh"><h2>'+title+'</h2><span>'+sub+'</span></div>';
+  var t=document.createElement('div');t.className='track';items.forEach(function(x){t.appendChild(card(x,whyFn&&whyFn(x)))});
+  s.appendChild(t);return s}
+function render(){
+  var r=document.getElementById('rails');r.innerHTML='';
+  var on=TAGS.filter(function(t){return sel[t]});
+  var mine=COURSES.filter(function(x){return sel[x.tag]}).sort(function(a,b){return b.rate-a.rate});
+  if(mine.length)r.appendChild(rail('Para ti','Según '+on.join(' y ').toLowerCase(),mine,function(x){return 'Porque te interesa '+x.tag.toLowerCase()}));
+  else{var e=document.createElement('p');e.style.color='var(--muted)';e.textContent='Elige al menos un interés para armar tu feed.';r.appendChild(e)}
+  r.appendChild(rail('Tendencia esta semana','Lo que más se inscribe ahora en tu región e idioma',COURSES.slice().sort(function(a,b){return b.mem-a.mem}).slice(0,6),function(x){return x.mem.toLocaleString('es')+' personas ya están dentro'}));
+  r.appendChild(rail('Trailers cortos, menos de 1:45','Para decidir en un minuto',COURSES.filter(function(x){return x.dur<'1:46'}),null));
+  r.appendChild(rail('Por menos de $100','Entra hoy y empieza esta noche',COURSES.filter(function(x){return x.price<100}).sort(function(a,b){return a.price-b.price}),null));
+}
+var dlg=document.getElementById('dlg');
+function open(x){
+  dlg.innerHTML='<div class="mv" style="background:'+grad(x.c)+'"><button class="x" id="close" aria-label="Cerrar">✕</button><span class="big">'+x.g+'</span><h2>'+x.t+'</h2></div>'+
+  '<div class="md"><div><div class="tags" style="margin-bottom:10px"><span class="pill '+(x.ai?'ai':'cr')+'">'+(x.ai?'Trailer generado con IA':'Trailer del creador')+'</span><span class="pill">'+x.tag+'</span></div>'+
+  '<div class="stats"><span><b>'+x.rate+'</b> de 5</span><span><b>'+x.mem.toLocaleString('es')+'</b> miembros</span><span>por <b>'+x.by+'</b></span></div>'+
+  '<p>'+x.d+'</p><p>Incluye clases, comunidad con foro, calendario de sesiones en vivo y tabla de posiciones.</p></div>'+
+  '<div class="buy"><div class="p">$'+x.price+'</div><small>Pago único · tarjeta, Apple Pay o transferencia internacional</small><button class="btn">Entrar a la comunidad</button><small>Ejemplo: Lernze retiene 8% por venta.</small></div></div>';
+  dlg.showModal();document.getElementById('close').onclick=function(){dlg.close()}}
+dlg.addEventListener('click',function(e){if(e.target===dlg)dlg.close()});
+document.getElementById('hplay').onclick=function(){open(COURSES[0])};
+render();
+</script>

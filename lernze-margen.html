@@ -1,0 +1,177 @@
+<title>Lernze Calculadora de Margen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: inputs column on the left (sliders grouped by Creador, Agentes, Modelo), results on the right (verdict, creator ROI, cost bar, margin-vs-B-roll chart). Same dark look as the other Lernze sketches. */
+:root{
+  --bg:#0d0e14; --surface:#161823; --surface-2:#1f2230; --line:#2a2e3f;
+  --fg:#f2f1ee; --muted:#9a9db0; --accent:#ffb547; --accent-ink:#1a1204; --ai:#7fd6c8; --own:#a99bf0; --good:#6fd38b; --warn:#f0b34a; --bad:#ef7b7b;
+  --display:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;
+  --body:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1120px;margin:0 auto}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+main{padding-block:24px 40px}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance}
+h1{font-size:clamp(26px,4vw,36px);line-height:1.1}
+h2{font-size:19px}
+.logo{font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.03em;margin-bottom:14px}
+.logo i{font-style:normal;color:var(--accent)}
+.sub{color:var(--muted);margin:6px 0 20px;max-width:62ch}
+.lay{display:grid;grid-template-columns:340px minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:900px){.lay{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.stack{display:grid;gap:14px}
+.grp{display:grid;gap:14px}
+.grp h2{margin-bottom:2px}
+.f label{display:flex;justify-content:space-between;gap:8px;font-size:14px;margin-bottom:6px}
+.f label output{font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent)}
+.f small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.verdict{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.k .l{color:var(--muted);font-size:13px}
+.k .v{font-family:var(--display);font-weight:800;font-size:30px;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.k .d{font-size:13px;color:var(--muted)}
+.good{color:var(--good)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+.pill{display:inline-block;font-size:12px;padding:3px 10px;border-radius:99px;background:var(--surface-2);font-weight:700}
+.pill.good{background:rgba(111,211,139,.14)} .pill.warn{background:rgba(240,179,74,.15)} .pill.bad{background:rgba(239,123,123,.15)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
+.tbl td{padding:8px 4px;border-top:1px solid var(--line)}
+.tbl td:last-child{text-align:right}
+.tbl tr:first-child td{border-top:0}
+.tbl tfoot td{font-weight:700}
+.dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:8px}
+.split{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--surface-2);margin:10px 0 6px}
+.split span{display:block}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:11px;font-family:var(--body)}
+.note{font-size:13px;color:var(--muted)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.btn{border:0;border-radius:10px;padding:8px 14px;font-weight:700;background:var(--surface-2);color:var(--fg);cursor:pointer;font-size:13px}
+footer{padding-block:0 40px;color:var(--muted);font-size:12.5px}
+</style>
+
+<main class="wrap">
+  <div class="logo">lernze<i>.</i></div>
+  <h1>Margen por creador</h1>
+  <p class="sub">Mueve los números y mira cuánto deja un creador a Lernze y cuánto le deja Lernze al creador. Parte del modelo que acordamos: 0% por tráfico propio, 5% por Discover, 3% por clips de agentes y $49 de suscripción.</p>
+
+  <div class="lay">
+    <div class="stack">
+      <div class="panel grp">
+        <h2>Modelo de cobro</h2>
+        <div class="f"><label for="sub">Suscripción de agentes <output id="o-sub"></output></label><input type="range" id="sub" min="19" max="129" step="1" value="49"></div>
+        <div class="f"><label for="r-own">Comisión tráfico propio <output id="o-r-own"></output></label><input type="range" id="r-own" min="0" max="10" step="0.5" value="0"></div>
+        <div class="f"><label for="r-dis">Comisión Discover <output id="o-r-dis"></output></label><input type="range" id="r-dis" min="0" max="15" step="0.5" value="5"></div>
+        <div class="f"><label for="r-agt">Comisión clips de agentes <output id="o-r-agt"></output></label><input type="range" id="r-agt" min="0" max="15" step="0.5" value="3"></div>
+        <button class="btn" id="reset">Volver a 0% / 5% / 3% y $49</button>
+      </div>
+      <div class="panel grp">
+        <h2>Un creador típico</h2>
+        <div class="f"><label for="price">Precio del curso <output id="o-price"></output></label><input type="range" id="price" min="29" max="499" step="5" value="149"></div>
+        <div class="f"><label for="s-own">Ventas al mes, tráfico propio <output id="o-s-own"></output></label><input type="range" id="s-own" min="0" max="60" value="10"></div>
+        <div class="f"><label for="s-dis">Ventas al mes, Discover <output id="o-s-dis"></output></label><input type="range" id="s-dis" min="0" max="60" value="8"></div>
+        <div class="f"><label for="s-agt">Ventas al mes, clips de agentes <output id="o-s-agt"></output></label><input type="range" id="s-agt" min="0" max="30" value="3"><small>Supuesto sin datos. Pruébalo con creadores piloto.</small></div>
+      </div>
+      <div class="panel grp">
+        <h2>Costo de los agentes</h2>
+        <div class="f"><label for="clips">Clips al mes <output id="o-clips"></output></label><input type="range" id="clips" min="5" max="60" value="20"></div>
+        <div class="f"><label for="mins">Minutos de clases a procesar <output id="o-mins"></output></label><input type="range" id="mins" min="30" max="900" step="10" value="240"></div>
+        <div class="f"><label for="broll">Segundos de B-roll con IA por clip <output id="o-broll"></output></label><input type="range" id="broll" min="0" max="10" step="1" value="0"><small>En 0 los agentes solo cortan y editan.</small></div>
+        <div class="f"><label for="cps">Costo del video IA por segundo <output id="o-cps"></output></label><input type="range" id="cps" min="0.03" max="0.40" step="0.01" value="0.10"></div>
+        <div class="f"><label for="retry">Intentos hasta un clip usable <output id="o-retry"></output></label><input type="range" id="retry" min="1" max="5" step="0.5" value="2.5"></div>
+        <div class="f"><label for="sup">Soporte por creador al mes <output id="o-sup"></output></label><input type="range" id="sup" min="0" max="12" step="0.5" value="3"></div>
+      </div>
+    </div>
+
+    <div class="stack">
+      <div class="panel">
+        <div class="verdict" id="verdict"></div>
+      </div>
+      <div class="two">
+        <div class="panel">
+          <h2>Lo que gana Lernze por creador</h2>
+          <table class="tbl" id="ltbl"></table>
+          <div class="split" id="lsplit"></div>
+        </div>
+        <div class="panel">
+          <h2>Lo que gana el creador con los agentes</h2>
+          <table class="tbl" id="ctbl"></table>
+          <p class="note" id="cnote" style="margin-top:10px"></p>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Margen de la suscripción según el B-roll con IA</h2>
+        <p class="note" style="margin:4px 0 8px">Margen de la suscripción: lo que queda de la suscripción tras el costo de los agentes, sin contar comisiones. La línea punteada marca el 60%.</p>
+        <svg class="chart" id="chart" viewBox="0 0 640 240" role="img" aria-label="Margen de la suscripción según segundos de B-roll por clip"></svg>
+      </div>
+      <div class="panel">
+        <h2>Cuántos creadores pagan el equipo</h2>
+        <div class="f" style="margin-top:10px"><label for="fixed">Costo mensual del equipo y la plataforma <output id="o-fixed"></output></label><input type="range" id="fixed" min="5000" max="80000" step="1000" value="25000"></div>
+        <p id="be" style="margin:6px 0 0"></p>
+        <p class="note" style="margin-top:6px">Es el supuesto de la plataforma entera, no solo de los agentes. Incluye ingeniería, auditorías, soporte y servidores.</p>
+      </div>
+    </div>
+  </div>
+</main>
+<footer class="wrap">Precios de IA, render y soporte son estimaciones de este boceto. Los de transcripción y video IA salen de blogs comparativos, no de las páginas oficiales.</footer>
+
+<script>
+var $=function(i){return document.getElementById(i)};
+var D={sub:49,'r-own':0,'r-dis':5,'r-agt':3};
+var FMT={sub:'$',price:'$',cps:'$2',sup:'$',fixed:'$','r-own':'%','r-dis':'%','r-agt':'%'};
+function fmtv(id,v){v=+v;if(id==='cps')return '$'+v.toFixed(2)+'/s';if(id==='retry')return v+'x';if(id==='broll')return v+' s';if(id==='mins')return v+' min';
+  if(FMT[id]==='%')return v+'%';if(FMT[id]==='$')return '$'+v.toLocaleString('es');return v}
+var IDS=['sub','r-own','r-dis','r-agt','price','s-own','s-dis','s-agt','clips','mins','broll','cps','retry','sup','fixed'];
+var money=function(n,d){return (n<0?'-':'')+'$'+Math.abs(n).toLocaleString('es',{minimumFractionDigits:d||0,maximumFractionDigits:d||0})};
+function g(id){return +$(id).value}
+function costs(brollSec){
+  var mins=g('mins'),clips=g('clips'),sub=g('sub');
+  var c={trans:mins*0.0045,llm:mins*0.008,render:clips*0.06,store:clips*0.015,pay:sub*0.029+0.30,broll:clips*brollSec*g('cps')*g('retry'),sup:g('sup')};
+  c.total=c.trans+c.llm+c.render+c.store+c.pay+c.broll+c.sup;return c}
+function calc(){
+  IDS.forEach(function(i){$('o-'+i).textContent=fmtv(i,$(i).value)});
+  var price=g('price'),sub=g('sub'),c=costs(g('broll'));
+  var comm=g('s-dis')*price*g('r-dis')/100+g('s-agt')*price*g('r-agt')/100+g('s-own')*price*g('r-own')/100;
+  var rev=sub+comm,profit=rev-c.total,margin=profit/rev*100,subMargin=(sub-c.total)/sub*100;
+  var cls=function(m){return m>=60?'good':m>=30?'warn':'bad'};
+  // creator side
+  var perSaleNet=price-(price*0.029+0.30)-price*g('r-agt')/100;
+  var agentNet=g('s-agt')*perSaleNet,roi=agentNet-sub,be=sub/perSaleNet;
+  $('verdict').innerHTML=
+   k('Ingreso de Lernze por creador',money(rev),'Suscripción '+money(sub)+' + comisiones '+money(comm))+
+   k('Utilidad por creador',money(profit),'<span class="'+cls(margin)+'">Margen '+Math.round(margin)+'%</span>',profit<0?'bad':'')+
+   k('Margen solo de la suscripción',Math.round(subMargin)+'%','<span class="pill '+cls(subMargin)+'">'+(subMargin>=60?'Sano':subMargin>=30?'Ajustado':'En riesgo')+'</span>')+
+   k('El creador recupera la suscripción con',be.toFixed(2).replace('.',',')+' ventas','al mes por clips de agentes');
+  function k(l,v,d,c){return '<div class="k"><div class="l">'+l+'</div><div class="v '+(c||'')+'">'+v+'</div><div class="d">'+d+'</div></div>'}
+  var rows=[['Transcripción',c.trans,'var(--ai)'],['Modelo de lenguaje',c.llm,'var(--own)'],['Render y subtítulos',c.render,'var(--accent)'],['Almacenamiento',c.store,'#7fb4ef'],['Cobro de la suscripción',c.pay,'var(--muted)'],['B-roll con IA',c.broll,'var(--bad)'],['Soporte',c.sup,'var(--warn)']];
+  $('ltbl').innerHTML='<tbody><tr><td>Suscripción</td><td>'+money(sub)+'</td></tr><tr><td>Comisiones</td><td>'+money(comm)+'</td></tr>'+
+    rows.map(function(r){return '<tr><td><i class="dot" style="background:'+r[2]+'"></i>'+r[0]+'</td><td>-'+money(r[1],2)+'</td></tr>'}).join('')+'</tbody><tfoot><tr><td>Utilidad</td><td class="'+(profit<0?'bad':'good')+'">'+money(profit,2)+'</td></tr></tfoot>';
+  var tot=c.total+Math.max(profit,0);
+  $('lsplit').innerHTML=rows.map(function(r){return '<span title="'+r[0]+'" style="width:'+(r[1]/tot*100)+'%;background:'+r[2]+'"></span>'}).join('')+(profit>0?'<span title="Utilidad" style="width:'+(profit/tot*100)+'%;background:var(--good)"></span>':'');
+  $('ctbl').innerHTML='<tbody><tr><td>Ventas por clips de agentes</td><td>'+g('s-agt')+'</td></tr><tr><td>Te queda por venta</td><td>'+money(perSaleNet,2)+'</td></tr><tr><td>Total que te dejan los agentes</td><td>'+money(agentNet)+'</td></tr><tr><td>Menos la suscripción</td><td>-'+money(sub)+'</td></tr></tbody><tfoot><tr><td>Ganancia neta</td><td class="'+(roi<0?'bad':'good')+'">'+money(roi)+'</td></tr></tfoot>';
+  $('cnote').textContent='Por venta se descuentan el procesador de pago (2,9% + $0,30) y la comisión por clips de agentes.';
+  chart(price);
+  var need=profit>0?Math.ceil(g('fixed')/profit):null;
+  $('be').innerHTML=need?'Con esta utilidad de <b>'+money(profit)+'</b> por creador, el equipo se paga con <b>'+need.toLocaleString('es')+' creadores</b> activos.':'<span class="bad">Con estos números cada creador pierde dinero. No hay punto de equilibrio.</span>';
+}
+function chart(){
+  var W=640,H=240,L=40,B=26,T=10,R=12,cw=W-L-R,ch=H-B-T,pts=[],s='';
+  var MN=-20,MX=100;
+  function y(v){v=Math.max(MN,Math.min(MX,v));return T+ch-(v-MN)/(MX-MN)*ch}
+  [0,20,40,60,80,100].forEach(function(v){s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="var(--line)"/><text x="'+(L-6)+'" y="'+(y(v)+4)+'" text-anchor="end">'+v+'%</text>'});
+  s+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y(60)+'" y2="'+y(60)+'" stroke="var(--good)" stroke-dasharray="5 4"/>';
+  for(var i=0;i<=10;i++){var x=L+cw*i/10;var m=(g('sub')-costs(i).total)/g('sub')*100;pts.push([x,y(m),m,i]);s+='<text x="'+x+'" y="'+(H-8)+'" text-anchor="middle">'+i+' s</text>'}
+  s+='<polyline fill="none" stroke="var(--accent)" stroke-width="2.5" points="'+pts.map(function(p){return p[0]+','+p[1]}).join(' ')+'"/>';
+  pts.forEach(function(p){s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="3" fill="var(--accent)"><title>'+p[3]+' s de B-roll: margen '+Math.round(p[2])+'%</title></circle>'});
+  var cur=g('broll'),pc=pts[cur];s+='<circle cx="'+pc[0]+'" cy="'+pc[1]+'" r="7" fill="none" stroke="var(--fg)" stroke-width="2"/><text x="'+Math.min(pc[0]+10,W-90)+'" y="'+(pc[1]-12)+'" style="fill:var(--fg);font-weight:700">'+Math.round(pc[2])+'% hoy</text>';
+  $('chart').innerHTML=s}
+IDS.forEach(function(i){$(i).addEventListener('input',calc)});
+$('reset').onclick=function(){Object.keys(D).forEach(function(k){$(k).value=D[k]});calc()};
+calc();
+</script>

@@ -1,0 +1,296 @@
+<title>Lernze Creator Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: sticky top bar with three tabs (Resumen, Trailer IA, Agentes). Same dark streaming look as Discover. Origin colors: amber = Discover, teal = agentes, lilac = tráfico propio. */
+:root{
+  --bg:#0d0e14; --surface:#161823; --surface-2:#1f2230; --line:#2a2e3f;
+  --fg:#f2f1ee; --muted:#9a9db0; --accent:#ffb547; --accent-ink:#1a1204; --ai:#7fd6c8; --own:#a99bf0;
+  --good:#6fd38b; --warn:#f0b34a; --bad:#ef7b7b;
+  --display:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;
+  --body:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45}
+button,select{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1180px;margin:0 auto}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 90%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:18px;padding-block:12px}
+.logo{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.03em}
+.logo i{font-style:normal;color:var(--accent)}
+.logo small{font-family:var(--body);font-weight:500;font-size:12px;color:var(--muted);margin-left:8px;letter-spacing:0}
+nav{display:flex;gap:4px;flex:1;min-width:0;overflow-x:auto}
+nav button{background:none;border:0;padding:8px 14px;border-radius:8px;color:var(--muted);white-space:nowrap}
+nav button[aria-selected=true]{color:var(--fg);background:var(--surface-2)}
+.who{color:var(--muted);font-size:13px;white-space:nowrap}
+main{padding-block:22px 40px}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance}
+h1{font-size:clamp(26px,4vw,36px);line-height:1.1}
+h2{font-size:20px}
+h3{font-size:16px}
+.sub{color:var(--muted);margin:6px 0 0}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.g2{grid-template-columns:minmax(0,1.6fr) minmax(0,1fr)}
+.g2e{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+@media(max-width:820px){.g2{grid-template-columns:1fr}}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.seg{display:flex;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px}
+.seg button{background:none;border:0;padding:6px 12px;border-radius:7px;color:var(--muted);font-size:13px}
+.seg button[aria-pressed=true]{background:var(--surface-2);color:var(--fg)}
+.kpi .l{color:var(--muted);font-size:13px}
+.kpi .v{font-family:var(--display);font-weight:800;font-size:32px;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin-top:2px}
+.kpi .d{font-size:13px;color:var(--good);margin-top:2px}
+.kpi .d.m{color:var(--muted)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:8px 0 10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
+.chart{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:11px;font-family:var(--body)}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
+.tbl th{font-weight:500;color:var(--muted);text-align:right;padding:6px 6px;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.tbl th:first-child,.tbl td:first-child{text-align:left}
+.tbl td{padding:9px 6px;text-align:right;border-top:1px solid var(--line)}
+.tbl tfoot td{font-weight:700}
+.scroll{overflow-x:auto}
+.dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:8px}
+.bar-split{display:flex;height:12px;border-radius:6px;overflow:hidden;margin:12px 0 8px;background:var(--surface-2)}
+.bar-split span{display:block}
+.note{font-size:13px;color:var(--muted)}
+.pill{font-size:12px;padding:3px 9px;border-radius:99px;background:var(--surface-2);font-weight:500;white-space:nowrap}
+.pill.ai{background:rgba(127,214,200,.16);color:var(--ai)}
+.pill.ok{background:rgba(111,211,139,.14);color:var(--good)}
+.pill.wait{background:rgba(240,179,74,.15);color:var(--warn)}
+.pill.off{color:var(--muted)}
+.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:700;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:var(--surface-2);color:var(--fg)}
+.btn.sm{padding:6px 12px;font-size:13px;border-radius:8px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.sp{justify-content:space-between}
+select{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;max-width:100%}
+.player{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#12304a,#5a2340);display:flex;align-items:flex-end;padding:16px}
+.player .big{position:absolute;right:12px;bottom:-26px;font-family:var(--display);font-weight:800;font-size:180px;line-height:1;color:rgba(255,255,255,.13)}
+.player .cap{position:relative;font-family:var(--display);font-weight:700;font-size:clamp(18px,3vw,26px);line-height:1.1;max-width:70%;text-shadow:0 1px 10px rgba(0,0,0,.5)}
+.player .tc{position:absolute;top:10px;left:10px}
+.player .time{position:absolute;top:10px;right:10px;font-size:12px;background:rgba(0,0,0,.55);padding:2px 8px;border-radius:6px;font-variant-numeric:tabular-nums}
+.scenes{display:grid;gap:8px;margin-top:12px}
+.scene{display:grid;grid-template-columns:54px 1fr auto;gap:10px;align-items:center;text-align:left;background:var(--surface-2);border:1px solid transparent;border-radius:10px;padding:9px 12px;width:100%}
+.scene[aria-pressed=true]{border-color:var(--accent)}
+.scene .t{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px}
+.scene .x{font-size:14px;min-width:0}
+.opts{display:grid;gap:14px}
+.opt label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.chipset{display:flex;gap:8px;flex-wrap:wrap}
+.chipset button{background:var(--surface-2);border:1px solid var(--line);border-radius:99px;padding:6px 13px;color:var(--muted);font-size:13px}
+.chipset button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:700}
+.sw{position:relative;width:42px;height:24px;border-radius:99px;border:0;background:var(--line);flex:none;padding:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--fg);transition:transform .15s}
+.sw[aria-checked=true]{background:var(--accent)}
+.sw[aria-checked=true]::after{transform:translateX(18px);background:var(--accent-ink)}
+.net{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.net:first-child{border-top:0}
+.net .n{flex:1;min-width:0}
+.net .n b{display:block}
+.net .n span{font-size:13px;color:var(--muted)}
+.plan{background:linear-gradient(135deg,rgba(127,214,200,.12),rgba(255,181,71,.1));border-color:rgba(127,214,200,.3)}
+.plan .p{font-family:var(--display);font-size:34px;font-weight:800}
+.plan .p small{font-family:var(--body);font-size:14px;font-weight:400;color:var(--muted)}
+.clip{display:grid;grid-template-columns:84px 1fr;gap:14px;padding:14px 0;border-top:1px solid var(--line)}
+.clip:first-child{border-top:0;padding-top:0}
+.vt{aspect-ratio:9/16;border-radius:10px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:6px;font-family:var(--display);font-weight:700;font-size:11px;line-height:1.1}
+.vt .tag{position:absolute;top:5px;left:5px;font-family:var(--body);font-size:9px;font-weight:700;background:rgba(0,0,0,.55);padding:1px 5px;border-radius:4px}
+.clip h3{font-size:15px}
+.clip .m{color:var(--muted);font-size:13px;margin:3px 0 8px}
+.res{display:flex;gap:14px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.res b{color:var(--fg)}
+[role=tabpanel][hidden]{display:none}
+footer{padding-block:0 40px;color:var(--muted);font-size:12.5px}
+</style>
+
+<header><div class="wrap bar">
+  <div class="logo">lernze<i>.</i><small>Estudio</small></div>
+  <nav role="tablist" aria-label="Secciones">
+    <button role="tab" id="tab-resumen" aria-selected="true" aria-controls="p-resumen">Resumen</button>
+    <button role="tab" id="tab-trailer" aria-selected="false" aria-controls="p-trailer">Trailer IA</button>
+    <button role="tab" id="tab-agentes" aria-selected="false" aria-controls="p-agentes">Agentes de redes</button>
+  </nav>
+  <div class="who">Marisol Vega</div>
+</div></header>
+
+<main class="wrap">
+
+<!-- RESUMEN -->
+<div role="tabpanel" id="p-resumen" aria-labelledby="tab-resumen">
+  <div class="top">
+    <div><h1>Tus ventas</h1><p class="sub">Curso principal: Abre tu LLC en Florida sin abogado</p></div>
+    <div class="seg" role="group" aria-label="Periodo"><button id="r7" aria-pressed="false">7 días</button><button id="r30" aria-pressed="true">30 días</button></div>
+  </div>
+  <div class="grid g4" id="kpis"></div>
+  <div class="grid g2" style="margin-top:14px">
+    <div class="panel">
+      <div class="row sp"><h2>Ventas por origen</h2><span class="note" id="chart-note"></span></div>
+      <div class="legend"><span><i style="background:var(--accent)"></i>Lernze Discover</span><span><i style="background:var(--ai)"></i>Agentes de redes</span><span><i style="background:var(--own)"></i>Tu tráfico</span></div>
+      <svg class="chart" id="chart" viewBox="0 0 640 260" role="img" aria-label="Ventas diarias apiladas por origen"></svg>
+    </div>
+    <div class="panel">
+      <h2>A dónde va cada dólar</h2>
+      <div class="bar-split" id="split"></div>
+      <div id="splitlegend"></div>
+      <p class="note" style="margin-top:12px">Ejemplo de modelo: 5% si la venta viene de Discover, 3% si viene de un clip de tus agentes y 0% si traes tú el cliente. El procesador de pago cobra 2,9% + $0,30 en todos los casos.</p>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <h2>Desglose por origen</h2>
+    <div class="scroll"><table class="tbl" id="tbl"></table></div>
+    <p class="note" style="margin-top:10px">Las cifras son un ejemplo con precio de $149 por curso. El pago al creador sería cada 7 días.</p>
+  </div>
+</div>
+
+<!-- TRAILER -->
+<div role="tabpanel" id="p-trailer" aria-labelledby="tab-trailer" hidden>
+  <div class="top">
+    <div><h1>Trailer de tu curso</h1><p class="sub">Aparece en el Discover feed. Si no subes uno, Lernze genera el trailer con tu temario.</p></div>
+    <select id="course" aria-label="Curso"><option>Abre tu LLC en Florida sin abogado</option><option>Plantillas de contratos para freelancers</option></select>
+  </div>
+  <div class="grid g2">
+    <div class="panel">
+      <div class="player"><span class="big">$</span><span class="pill ai tc">Generado con IA</span><span class="time" id="ptime">0:00 / 1:42</span><span class="cap" id="pcap">Abre tu LLC en Florida sin abogado</span></div>
+      <div class="scenes" id="scenes"></div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="approve">Aprobar y publicar en Discover</button>
+        <button class="btn ghost" id="regen">Generar otra versión</button>
+        <span class="pill wait" id="tstate">Borrador sin publicar</span>
+      </div>
+    </div>
+    <div class="panel opts">
+      <h2>Opciones</h2>
+      <div class="opt"><label>Fuente del trailer</label><div class="chipset" id="src"><button aria-pressed="true">Generar con IA</button><button aria-pressed="false">Subir el mío</button></div></div>
+      <div class="opt"><label>Tono</label><div class="chipset" id="tone"><button aria-pressed="true">Directo</button><button aria-pressed="false">Inspirador</button><button aria-pressed="false">Humor</button></div></div>
+      <div class="opt"><label>Voz</label><div class="chipset" id="voice"><button aria-pressed="true">Voz de IA, español</button><button aria-pressed="false">Mi voz clonada</button></div></div>
+      <div class="opt"><label>Incluir</label>
+        <div class="row sp" style="padding:4px 0"><span>Testimonios de alumnos</span><button class="sw" role="switch" aria-checked="true" aria-label="Testimonios"></button></div>
+        <div class="row sp" style="padding:4px 0"><span>Precio y garantía</span><button class="sw" role="switch" aria-checked="false" aria-label="Precio"></button></div>
+        <div class="row sp" style="padding:4px 0"><span>Subtítulos en inglés</span><button class="sw" role="switch" aria-checked="true" aria-label="Subtítulos"></button></div>
+      </div>
+      <p class="note">Si eliges tu voz o tu imagen, Lernze pedirá tu verificación antes de usarlas.</p>
+    </div>
+  </div>
+</div>
+
+<!-- AGENTES -->
+<div role="tabpanel" id="p-agentes" aria-labelledby="tab-agentes" hidden>
+  <div class="top">
+    <div><h1>Agentes de redes</h1><p class="sub">Convierten tus clases en clips verticales y los publican en tus cuentas.</p></div>
+  </div>
+  <div class="grid g2e">
+    <div class="panel plan">
+      <span class="pill ai">Suscripción adicional</span>
+      <div class="p" style="margin-top:8px">$49 <small>al mes · ejemplo</small></div>
+      <p class="note" style="margin:6px 0 12px">Hasta 20 clips al mes, publicación en 3 redes y reporte de inscripciones por clip.</p>
+      <div class="row sp"><span>Agente activo</span><button class="sw" id="agentOn" role="switch" aria-checked="true" aria-label="Agente activo"></button></div>
+      <div class="row sp" style="margin-top:10px"><span>Aprobar cada clip antes de publicar</span><button class="sw" id="needOk" role="switch" aria-checked="true" aria-label="Aprobación manual"></button></div>
+    </div>
+    <div class="panel">
+      <h2 style="margin-bottom:6px">Cuentas conectadas</h2>
+      <div class="net"><div class="n"><b>Instagram Reels</b><span>@marisol.negocios · 3 publicaciones por semana</span></div><span class="pill ok">Conectada</span></div>
+      <div class="net"><div class="n"><b>TikTok</b><span>@marisolvega · 4 por semana</span></div><span class="pill ok">Conectada</span></div>
+      <div class="net"><div class="n"><b>YouTube Shorts</b><span>Sin conectar</span></div><button class="btn ghost sm">Conectar</button></div>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <div class="row sp" style="margin-bottom:14px"><h2>Cola de clips</h2><span class="note" id="qcount"></span></div>
+    <div id="queue"></div>
+  </div>
+</div>
+
+</main>
+<footer class="wrap">Boceto de Lernze.com. Cifras, cuentas y comisiones son ejemplos inventados.</footer>
+
+<script>
+// ---------- tabs
+var tabs=['resumen','trailer','agentes'];
+tabs.forEach(function(k){document.getElementById('tab-'+k).onclick=function(){
+  tabs.forEach(function(j){document.getElementById('tab-'+j).setAttribute('aria-selected',j===k);document.getElementById('p-'+j).hidden=j!==k});
+  try{history.replaceState(null,'','#'+k)}catch(e){}}});
+var h=(location.hash||'').slice(1);if(tabs.indexOf(h)>-1)document.getElementById('tab-'+h).click();
+
+// ---------- sales model (example numbers)
+var ORIGINS=[
+ {k:'discover',name:'Lernze Discover',col:'var(--accent)',rate:.05},
+ {k:'agentes',name:'Agentes de redes',col:'var(--ai)',rate:.03},
+ {k:'propio',name:'Tu tráfico',col:'var(--own)',rate:0}
+];
+var PRICE=149,PROC_PCT=.029,PROC_FIX=.30;
+// deterministic sales per day (30 days)
+var DAYS=[];(function(){var s=7;function r(){s=(s*9301+49297)%233280;return s/233280}
+  for(var i=0;i<30;i++){var g=1+i/30*.9;DAYS.push({discover:Math.round((1+r()*3)*g),agentes:Math.round(r()*2.4*g*(i>8?1:.3)),propio:Math.round(r()*2)})}})();
+var range=30;
+var money=function(n){return '$'+Math.round(n).toLocaleString('es')};
+function totals(n){var d=DAYS.slice(-n),o={};ORIGINS.forEach(function(x){
+  var c=d.reduce(function(a,b){return a+b[x.k]},0),gross=c*PRICE,proc=c*(PRICE*PROC_PCT+PROC_FIX),fee=gross*x.rate;
+  o[x.k]={c:c,gross:gross,proc:proc,fee:fee,net:gross-proc-fee}});return o}
+function renderSales(){
+  var t=totals(range),sum=function(f){return ORIGINS.reduce(function(a,x){return a+t[x.k][f]},0)};
+  var cnt=sum('c'),gross=sum('gross'),net=sum('net'),fee=sum('fee'),proc=sum('proc');
+  var fromLernze=t.discover.c+t.agentes.c;
+  document.getElementById('kpis').innerHTML=
+   k('Ventas brutas',money(gross),cnt+' inscripciones','m')+
+   k('Te queda a ti',money(net),Math.round(net/gross*100)+'% de lo cobrado','m')+
+   k('Clientes que trajo Lernze',fromLernze,Math.round(fromLernze/cnt*100)+'% sin que pusieras tráfico','')+
+   k('Comisión de Lernze',money(fee),'Procesador aparte: '+money(proc),'m');
+  function k(l,v,d,c){return '<div class="panel kpi"><div class="l">'+l+'</div><div class="v">'+v+'</div><div class="d '+c+'">'+d+'</div></div>'}
+  // chart
+  var d=DAYS.slice(-range),W=640,H=260,L=34,B=24,T=8,mx=0;
+  d.forEach(function(x){mx=Math.max(mx,x.discover+x.agentes+x.propio)});
+  var top=Math.ceil(mx/2)*2,ch=H-B-T,bw=(W-L)/d.length,svg='';
+  for(var g=0;g<=4;g++){var v=top/4*g,y=T+ch-ch*v/top;svg+='<line x1="'+L+'" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="var(--line)" stroke-width="1"/><text x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end">'+(Number.isInteger(v)?v:v.toFixed(1))+'</text>'}
+  d.forEach(function(x,i){var y=T+ch,bx=L+i*bw+bw*.18,w=bw*.64;
+    ['propio','agentes','discover'].forEach(function(key){var hh=ch*x[key]/top;if(!hh)return;y-=hh;
+      var o=ORIGINS.filter(function(q){return q.k===key})[0];svg+='<rect x="'+bx.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+hh.toFixed(1)+'" fill="'+o.col+'"><title>'+o.name+': '+x[key]+'</title></rect>'})});
+  var first=30-range;[0,Math.floor((range-1)/2),range-1].forEach(function(i){var dn=first+i+1;svg+='<text x="'+(L+i*bw+bw/2)+'" y="'+(H-6)+'" text-anchor="middle">Día '+dn+'</text>'});
+  document.getElementById('chart').innerHTML=svg;
+  document.getElementById('chart-note').textContent='Ventas por día';
+  // split
+  var parts=[['Te queda a ti',net,'var(--good)'],['Comisión de Lernze',fee,'var(--accent)'],['Procesador de pago',proc,'var(--muted)']];
+  document.getElementById('split').innerHTML=parts.map(function(p){return '<span style="width:'+(p[1]/gross*100)+'%;background:'+p[2]+'"></span>'}).join('');
+  document.getElementById('splitlegend').innerHTML=parts.map(function(p){return '<div class="row sp" style="padding:4px 0"><span><i class="dot" style="background:'+p[2]+'"></i>'+p[0]+'</span><b>'+money(p[1])+'</b></div>'}).join('');
+  // table
+  var rows=ORIGINS.map(function(x){var o=t[x.k];return '<tr><td><i class="dot" style="background:'+x.col+'"></i>'+x.name+'</td><td>'+o.c+'</td><td>'+money(o.gross)+'</td><td>'+Math.round(x.rate*100)+'%</td><td>'+money(o.fee)+'</td><td>'+money(o.net)+'</td></tr>'}).join('');
+  document.getElementById('tbl').innerHTML='<thead><tr><th>Origen</th><th>Ventas</th><th>Bruto</th><th>Comisión</th><th>Lernze</th><th>Te queda</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td>Total</td><td>'+cnt+'</td><td>'+money(gross)+'</td><td></td><td>'+money(fee)+'</td><td>'+money(net)+'</td></tr></tfoot>';
+}
+[['r7',7],['r30',30]].forEach(function(p){document.getElementById(p[0]).onclick=function(){range=p[1];document.getElementById('r7').setAttribute('aria-pressed',range===7);document.getElementById('r30').setAttribute('aria-pressed',range===30);renderSales()}});
+renderSales();
+
+// ---------- trailer
+var SC=[['0:00','Gancho','¿Cuánto te cuesta no tener tu empresa en regla?'],['0:12','Problema','Pagar $800 a un abogado por un formulario de 10 minutos.'],['0:30','Solución','Seis módulos con los pasos reales de Sunbiz.'],['0:52','Prueba','"Abrí mi LLC un martes y facturé el jueves." Ana, Hialeah'],['1:20','Qué incluye','Plantillas, comunidad y sesión en vivo cada semana.'],['1:35','Llamado','Entra hoy y abre tu LLC esta semana.']];
+var sc=document.getElementById('scenes'),pick=0;
+function drawScenes(){sc.innerHTML='';SC.forEach(function(s,i){var b=document.createElement('button');b.className='scene';b.setAttribute('aria-pressed',i===pick);
+  b.innerHTML='<span class="t">'+s[0]+'</span><span class="x"><b>'+s[1]+'</b><br><span style="color:var(--muted)">'+s[2]+'</span></span><span class="pill">Editar</span>';
+  b.onclick=function(){pick=i;drawScenes();document.getElementById('pcap').textContent=s[2];document.getElementById('ptime').textContent=s[0]+' / 1:42'};sc.appendChild(b)})}
+drawScenes();
+function seg(id){var c=document.getElementById(id);c.querySelectorAll('button').forEach(function(b){b.onclick=function(){c.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b)})}})}
+['src','tone','voice'].forEach(seg);
+document.querySelectorAll('.sw').forEach(function(s){s.onclick=function(){s.setAttribute('aria-checked',s.getAttribute('aria-checked')!=='true')}});
+var ts=document.getElementById('tstate');
+document.getElementById('approve').onclick=function(){ts.className='pill ok';ts.textContent='Publicado en Discover'};
+document.getElementById('regen').onclick=function(){ts.className='pill wait';ts.textContent='Nueva versión en borrador'};
+
+// ---------- agents queue
+var Q=[
+ {t:'Los 3 errores al abrir una LLC',m:'Instagram Reels y TikTok · 0:38 · Módulo 2',c:['#12304a','#5a2340'],s:'wait'},
+ {t:'Cuánto cuesta realmente el Annual Report',m:'TikTok · 0:29 · Módulo 5',c:['#2b1b4a','#0f3a50'],s:'wait'},
+ {t:'Sunbiz en 45 segundos',m:'Instagram Reels · 0:45 · Módulo 3',c:['#173a2d','#0d2a45'],s:'ok',r:[4210,18,6]},
+ {t:'EIN gratis: así se pide',m:'TikTok · 0:33 · Módulo 4',c:['#4a2a1b','#4a1b2f'],s:'ok',r:[12840,41,15]}
+];
+var qEl=document.getElementById('queue');
+function drawQ(){var pend=Q.filter(function(x){return x.s==='wait'}).length;document.getElementById('qcount').textContent=pend+' por revisar · 12 de 20 clips usados este mes (ejemplo)';
+  qEl.innerHTML=Q.map(function(x,i){var st={wait:'<span class="pill wait">Por revisar</span>',ok:'<span class="pill ok">Publicado</span>',no:'<span class="pill off">Descartado</span>'}[x.s];
+   var act=x.s==='wait'?'<div class="row"><button class="btn sm" data-a="ok" data-i="'+i+'">Aprobar y publicar</button><button class="btn ghost sm" data-a="no" data-i="'+i+'">Descartar</button></div>':(x.r?'<div class="res"><span><b>'+x.r[0].toLocaleString('es')+'</b> vistas</span><span><b>'+x.r[1]+'</b> clics al curso</span><span><b>'+x.r[2]+'</b> ventas</span></div>':'');
+   return '<div class="clip"><div class="vt" style="background:linear-gradient(160deg,'+x.c[0]+','+x.c[1]+')"><span class="tag">9:16</span>'+x.t.split(' ').slice(0,4).join(' ')+'</div><div><div class="row sp"><h3>'+x.t+'</h3>'+st+'</div><div class="m">'+x.m+'</div>'+act+'</div></div>'}).join('');
+  qEl.querySelectorAll('button[data-a]').forEach(function(b){b.onclick=function(){Q[+b.dataset.i].s=b.dataset.a;if(b.dataset.a==='ok')Q[+b.dataset.i].r=[0,0,0];drawQ()}})}
+drawQ();
+['agentOn','needOk'].forEach(function(id){document.getElementById(id).onclick=function(){var s=this;s.setAttribute('aria-checked',s.getAttribute('aria-checked')!=='true')}});
+</script>

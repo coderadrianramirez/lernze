@@ -1,0 +1,192 @@
+<title>Lernze Paleta de Marca</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: intro, four palette candidates as selectable chips, a live preview that is re-themed through CSS variables (--p-*), swatch table with computed WCAG contrast, competitor landscape table, recommendation, sources. The page chrome itself stays on the neutral ink palette so the preview is the only thing that changes. */
+:root{
+  --bg:#0d0e14; --surface:#161823; --surface-2:#1f2230; --line:#2a2e3f;
+  --fg:#f2f1ee; --muted:#9a9db0; --good:#6fd38b; --warn:#f0b34a; --bad:#ef7b7b; --link:#9bb8ff;
+  --display:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;
+  --body:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --p-bg:#0d0e14; --p-surface:#161823; --p-fg:#f2f1ee; --p-muted:#9a9db0; --p-acc:#ffb547; --p-on:#1a1204; --p-sec:#7fd6c8;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:var(--link)}
+:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1080px;margin:0 auto}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+main{padding-block:28px 48px}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance}
+h1{font-size:clamp(28px,4.5vw,44px);line-height:1.05}
+h2{font-size:22px}
+.lead{color:var(--muted);max-width:64ch;margin:10px 0 0}
+section{margin-top:44px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+.chip{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-align:left}
+.chip[aria-pressed=true]{border-color:var(--fg);background:var(--surface-2)}
+.chip .sw{display:flex}
+.chip .sw i{width:14px;height:28px;display:block}
+.chip .sw i:first-child{border-radius:6px 0 0 6px}.chip .sw i:last-child{border-radius:0 6px 6px 0}
+.chip b{display:block;font-size:14px;line-height:1.2}
+.chip small{color:var(--muted);font-size:12px}
+.lay{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;align-items:start}
+@media(max-width:860px){.lay{grid-template-columns:1fr}}
+/* preview (themed by --p-*) */
+.pv{background:var(--p-bg);color:var(--p-fg);border-radius:14px;padding:18px;border:1px solid var(--line);display:grid;gap:16px}
+.pv-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.pv-logo{font-family:var(--display);font-weight:800;font-size:24px;letter-spacing:-.04em}
+.pv-logo i{font-style:normal;color:var(--p-acc)}
+.pv-btn{border:0;border-radius:10px;padding:10px 16px;font-weight:700;background:var(--p-acc);color:var(--p-on)}
+.pv h3{font-size:clamp(22px,3vw,30px);line-height:1.05;color:var(--p-fg)}
+.pv p{margin:6px 0 0;color:var(--p-muted)}
+.pv-card{background:var(--p-surface);border-radius:12px;padding:12px;display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center}
+@media(max-width:480px){.pv-card{grid-template-columns:1fr}}
+.pv-th{aspect-ratio:16/9;border-radius:8px;background:linear-gradient(135deg,color-mix(in srgb,var(--p-acc) 35%,var(--p-bg)),var(--p-surface));position:relative;display:grid;place-items:center}
+.pv-th::after{content:"";border-left:14px solid var(--p-fg);border-top:9px solid transparent;border-bottom:9px solid transparent;margin-left:4px}
+.pv-badge{position:absolute;top:6px;left:6px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;background:color-mix(in srgb,var(--p-sec) 20%,var(--p-bg));color:var(--p-sec)}
+.pv-row{display:flex;gap:8px;flex-wrap:wrap}
+.pv-chip{padding:6px 12px;border-radius:99px;font-size:13px;background:var(--p-surface);color:var(--p-muted)}
+.pv-chip.on{background:var(--p-acc);color:var(--p-on);font-weight:700}
+.pv-prog{height:4px;border-radius:4px;background:var(--p-surface);overflow:hidden}
+.pv-prog span{display:block;height:100%;width:62%;background:var(--p-acc)}
+.pv-link{color:var(--p-acc);font-weight:700}
+.pv-price{font-family:var(--display);font-weight:800;font-size:22px}
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:14px}
+.tbl th{font-weight:500;color:var(--muted);text-align:left;font-size:12px;letter-spacing:.04em;text-transform:uppercase;padding:6px 8px}
+.tbl td{padding:9px 8px;border-top:1px solid var(--line);vertical-align:middle}
+.tbl td.num{text-align:right;white-space:nowrap}
+.sq{display:inline-block;width:16px;height:16px;border-radius:5px;vertical-align:-3px;margin-right:8px;border:1px solid rgba(255,255,255,.15)}
+.ok{color:var(--good);font-weight:700}.mid{color:var(--warn);font-weight:700}.no{color:var(--bad);font-weight:700}
+.scroll{overflow-x:auto}
+.scroll table{min-width:560px}
+.pros{display:grid;gap:6px;margin:12px 0 0;padding:0;list-style:none;font-size:14px}
+.pros li{display:flex;gap:10px}
+.pros li::before{content:"";flex:none;width:7px;height:7px;border-radius:2px;margin-top:8px;background:var(--p-acc)}
+.pros li.c::before{background:var(--bad)}
+.note{font-size:13px;color:var(--muted)}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:99px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.tag.v{color:var(--good)}.tag.u{color:var(--warn)}
+.reco{border-color:rgba(255,181,71,.45);background:linear-gradient(135deg,rgba(255,181,71,.08),transparent 60%),var(--surface)}
+.reco ul{margin:12px 0 0;padding-left:20px;display:grid;gap:6px}
+.src{display:grid;gap:6px;font-size:14px;margin:12px 0 0;padding-left:18px}
+</style>
+
+<main class="wrap">
+  <h1>Paleta de marca de Lernze</h1>
+  <p class="lead">Compara cuatro direcciones de color sobre las mismas pantallas, con el contraste calculado en vivo. Al final está lo que encontramos de la competencia y mi recomendación.</p>
+
+  <section id="probar">
+    <h2>Pruébalas en pantalla</h2>
+    <div class="chips" id="chips" role="group" aria-label="Paletas"></div>
+    <div class="lay">
+      <div class="pv" id="pv">
+        <div class="pv-top"><div class="pv-logo">lernze<i>.</i></div><div class="pv-row"><span class="pv-chip on">Negocios</span><span class="pv-chip">Idiomas</span><span class="pv-chip">Oficios</span></div></div>
+        <div><h3>Tu curso, con público incluido.</h3><p>Vende cursos y deja que Lernze te muestre a compradores nuevos.</p></div>
+        <div class="pv-row"><button class="pv-btn" tabindex="-1">Ver curso · $149</button><span class="pv-link">Guardar para después</span></div>
+        <div class="pv-card">
+          <div class="pv-th"><span class="pv-badge">Trailer IA</span></div>
+          <div style="display:grid;gap:6px"><b>Abre tu negocio online</b><span style="color:var(--p-muted);font-size:13px">Marisol Vega · 2.140 miembros</span><div class="pv-prog"><span></span></div><span class="pv-price">$149</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3 id="pname" style="margin-bottom:4px"></h3>
+        <p class="note" id="pidea" style="margin:0 0 10px"></p>
+        <table class="tbl" id="swt"></table>
+        <ul class="pros" id="pros"></ul>
+      </div>
+    </div>
+    <p class="note" style="margin-top:10px">El contraste es el cálculo WCAG de luminancia relativa. Para texto normal se pide 4,5 a 1 y para texto grande 3 a 1.</p>
+  </section>
+
+  <section id="competencia">
+    <h2>Colores de la competencia</h2>
+    <p class="lead">Cuatro de las siete marcas que busqué no tenían datos fiables en lo que encontré. Los marco como no verificados.</p>
+    <div class="panel scroll" style="margin-top:14px"><table class="tbl">
+      <thead><tr><th>Marca</th><th>Color principal</th><th>Dato</th></tr></thead>
+      <tbody>
+        <tr><td>Udemy</td><td><i class="sq" style="background:#A435F0"></i>Violeta #A435F0</td><td><span class="tag v">Varias fuentes coinciden</span></td></tr>
+        <tr><td>Kajabi</td><td><i class="sq" style="background:#EA9FA3"></i>Rosa #EA9FA3 <i class="sq" style="background:#0F6671;margin-left:8px"></i>Verde azulado #0F6671</td><td><span class="tag u">Una sola fuente</span></td></tr>
+        <tr><td>Netflix</td><td><i class="sq" style="background:#e50914"></i>Rojo #e50914</td><td><span class="tag u">Visto en un proyecto de diseño inspirado en Netflix, no en su guía</span></td></tr>
+        <tr><td>Hulu</td><td><i class="sq" style="background:#1CE783"></i>Verde #1CE783 sobre casi negro</td><td><span class="tag u">Sitio de paletas, no oficial</span></td></tr>
+        <tr><td>Skool, Whop, Hotmart, Teachable</td><td>Sin datos fiables en mi búsqueda</td><td><span class="tag">No verificado</span></td></tr>
+      </tbody></table></div>
+    <p class="note" style="margin-top:10px">Lectura: el violeta ya lo ocupa Udemy en cursos, el rojo lo ocupa el streaming y el azul genérico es lo más común en educación. Antes de cerrar la paleta conviene revisar las páginas oficiales de Skool, Whop y Hotmart.</p>
+  </section>
+
+  <section id="psicologia">
+    <h2>Qué dice la investigación</h2>
+    <div class="panel" style="margin-top:14px">
+      <ul class="pros" style="margin:0">
+        <li><span><b>Azul y confianza.</b> Varias guías de diseño educativo asocian el azul con confianza y calma. Son artículos de profesionales, no estudios revisados por pares.</span></li>
+        <li><span><b>Violeta.</b> Se lee como creatividad y sabiduría, y según una fuente puede parecer poco práctico.</span></li>
+        <li><span><b>Evidencia débil.</b> El único trabajo académico que encontré sobre colores de interfaz, confianza y memoria en e-learning solo lo vi en resumen. Trátalo como orientación, no como prueba.</span></li>
+        <li><span><b>Cultura.</b> Una guía dice que el amarillo se lee como luto en parte de Latinoamérica. La fuente es débil y como Lernze apunta al mundo, conviene probar el color con público de distintos países.</span></li>
+        <li><span><b>Modo oscuro.</b> Las guías recomiendan evitar el negro puro, usar blancos suaves y que un acento vivo y saturado funcione mejor que uno apagado sobre fondo oscuro.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="reco">
+    <div class="panel reco">
+      <h2>Mi recomendación</h2>
+      <p class="lead" style="color:var(--fg);margin-top:8px">Quedarse con el fondo tinta azulado y el ámbar como color de marca, con el turquesa solo para la etiqueta de IA.</p>
+      <ul>
+        <li>El ámbar se aleja del violeta de Udemy, del rojo del streaming y del azul genérico. Es lo más cercano a un color propio entre las cuatro opciones.</li>
+        <li>Sobre el fondo oscuro da un contraste muy alto, así que los botones y precios se leen bien.</li>
+        <li>El fondo azulado aporta el guiño de confianza sin pintar toda la marca de azul.</li>
+        <li>Riesgo: el amarillo cálido puede leerse distinto según el país. Úsalo como acento y no como color de fondo.</li>
+        <li>Siguiente paso real: una prueba de 5 segundos con unos 20 creadores y espectadores de países distintos, comparando la opción 1 con una alternativa.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="fuentes">
+    <h2>Fuentes y límites</h2>
+    <ul class="src">
+      <li><a href="https://mobbin.com/colors/brand/udemy" target="_blank" rel="noopener">Udemy: paleta de marca</a></li>
+      <li><a href="https://brandfetch.com/fatifit.net" target="_blank" rel="noopener">Kajabi: Brandfetch</a></li>
+      <li><a href="https://www.progress.com/blogs/using-color-psychology-education-web-design" target="_blank" rel="noopener">Psicología del color en diseño educativo</a></li>
+      <li><a href="https://community.articulate.com/articles/color-psychology-for-e-learning" target="_blank" rel="noopener">Psicología del color en e-learning</a></li>
+      <li><a href="https://www.eggradients.com/palette/hulu-colors" target="_blank" rel="noopener">Colores de Hulu</a></li>
+      <li><a href="https://blog.acolad.com/global-branding-the-meaning-of-colors-around-the-world" target="_blank" rel="noopener">Significado de los colores en el mundo</a></li>
+      <li><a href="https://www.bergerpaints.com/blogs/colours-and-their-different-meanings-around-the-world" target="_blank" rel="noopener">Colores y culturas</a></li>
+    </ul>
+    <p class="note" style="margin-top:10px">Casi todas son guías de profesionales o sitios de paletas, no estudios científicos ni guías oficiales de marca.</p>
+  </section>
+</main>
+
+<script>
+var P=[
+ {n:'1. Ámbar sobre tinta',d:'La actual: fondo azulado, ámbar de marca, turquesa para la IA.',bg:'#0d0e14',su:'#161823',fg:'#f2f1ee',mu:'#9a9db0',acc:'#ffb547',sec:'#7fd6c8',
+  pro:['Distinta de Udemy (violeta) y del rojo de streaming','Contraste muy alto en botones y precios','Cálido y cercano para una comunidad'],con:['El amarillo puede leerse distinto según el país']},
+ {n:'2. Turquesa eléctrico',d:'Acento verde azulado con coral para destacar ofertas.',bg:'#0b1114',su:'#131d22',fg:'#eef4f3',mu:'#8fa4a8',acc:'#3ee0c1',sec:'#ff8a6b',
+  pro:['Fresco y moderno, asociado a crecimiento','Buen contraste sobre fondo oscuro','Cercano al verde azulado de Kajabi, aunque más vivo'],con:['Se parece al verde de Hulu sobre fondo casi negro','Menos cálido para una comunidad']},
+ {n:'3. Cobalto',d:'El azul de confianza clásico, con ámbar para el llamado a la acción.',bg:'#0b0e1a',su:'#141a2e',fg:'#eef1fb',mu:'#97a2c4',acc:'#5b8cff',sec:'#ffb547',
+  pro:['Azul y confianza: la asociación más repetida en educación','Seguro en casi cualquier cultura'],con:['Es lo más común en plataformas educativas, así que se diferencia poco','El texto blanco sobre este azul no llega a 4,5 a 1']},
+ {n:'4. Rosa fucsia',d:'Acento vivo, muy distinto a todo lo que se vio en la competencia.',bg:'#120d14',su:'#1d1621',fg:'#f6eff5',mu:'#a995a8',acc:'#ff4d8d',sec:'#7fd6c8',
+  pro:['Muy poco usada en cursos, así que se recuerda','Energía de creador y de redes sociales'],con:['Menos asociada a confianza y seriedad','Puede alejar a un público más formal o de negocios']}
+];
+var cur=0;
+function lum(h){var c=[1,3,5].map(function(i){var v=parseInt(h.substr(i,2),16)/255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)});return .2126*c[0]+.7152*c[1]+.0722*c[2]}
+function cr(a,b){var x=lum(a),y=lum(b),hi=Math.max(x,y),lo=Math.min(x,y);return (hi+.05)/(lo+.05)}
+function rate(r){return r>=7?['AAA','ok']:r>=4.5?['AA','ok']:r>=3?['Solo texto grande','mid']:['No pasa','no']}
+function row(label,hex,against,againstLabel){var r=cr(hex,against),t=rate(r);
+  return '<tr><td><i class="sq" style="background:'+hex+'"></i>'+label+'<br><span class="note">'+hex+' sobre '+againstLabel+'</span></td><td class="num"><b>'+r.toFixed(1).replace('.',',')+' a 1</b><br><span class="'+t[1]+'">'+t[0]+'</span></td></tr>'}
+var chips=document.getElementById('chips');
+P.forEach(function(p,i){var b=document.createElement('button');b.className='chip';b.id='pal'+i;b.innerHTML='<span class="sw"><i style="background:'+p.bg+'"></i><i style="background:'+p.acc+'"></i><i style="background:'+p.sec+'"></i></span><span><b>'+p.n+'</b></span>';b.onclick=function(){cur=i;draw()};chips.appendChild(b)});
+function draw(){
+  var p=P[cur],s=document.getElementById('pv').style,on=cr(p.acc,p.bg)>=cr(p.acc,'#ffffff')?p.bg:'#ffffff';
+  s.setProperty('--p-bg',p.bg);s.setProperty('--p-surface',p.su);s.setProperty('--p-fg',p.fg);s.setProperty('--p-muted',p.mu);s.setProperty('--p-acc',p.acc);s.setProperty('--p-on',on);s.setProperty('--p-sec',p.sec);
+  Array.prototype.forEach.call(chips.children,function(b,i){b.setAttribute('aria-pressed',i===cur)});
+  document.getElementById('pname').textContent=p.n.replace(/^\d\. /,'');document.getElementById('pidea').textContent=p.d;
+  document.getElementById('swt').innerHTML='<thead><tr><th>Uso</th><th style="text-align:right">Contraste</th></tr></thead><tbody>'+
+   row('Texto principal',p.fg,p.bg,'fondo')+row('Texto secundario',p.mu,p.bg,'fondo')+row('Acento: enlaces y precios',p.acc,p.bg,'fondo')+row('Texto del botón',on,p.acc,'acento')+row('Etiqueta secundaria',p.sec,p.bg,'fondo')+'</tbody>';
+  document.getElementById('pros').innerHTML=p.pro.map(function(t){return '<li>'+t+'</li>'}).join('')+p.con.map(function(t){return '<li class="c">'+t+'</li>'}).join('');
+}
+draw();
+</script>

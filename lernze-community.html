@@ -1,0 +1,289 @@
+<title>Lernze Comunidad</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: sticky header with community name and 4 tabs. Comunidad = feed + side column; Classroom = module list + lesson player; Calendario = event list; Miembros = ranking. Same dark streaming look as Discover and Estudio. */
+:root{
+  --bg:#0d0e14; --surface:#161823; --surface-2:#1f2230; --line:#2a2e3f;
+  --fg:#f2f1ee; --muted:#9a9db0; --accent:#ffb547; --accent-ink:#1a1204; --ai:#7fd6c8; --good:#6fd38b;
+  --display:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;
+  --body:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1120px;margin:0 auto}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:16px;padding-block:10px}
+.logo{font-family:var(--display);font-weight:800;font-size:20px;letter-spacing:-.03em}
+.logo i{font-style:normal;color:var(--accent)}
+.comm{display:flex;align-items:center;gap:10px;min-width:0}
+.cmark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#12304a,#5a2340);display:grid;place-items:center;font-family:var(--display);font-weight:800;flex:none}
+.comm b{display:block;font-family:var(--display);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.comm span{font-size:12px;color:var(--muted)}
+nav{display:flex;gap:2px;flex:1;min-width:0;overflow-x:auto;justify-content:center}
+nav button{background:none;border:0;padding:9px 14px;border-radius:8px;color:var(--muted);white-space:nowrap}
+nav button[aria-selected=true]{color:var(--fg);background:var(--surface-2)}
+.me{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:12px;color:#10121a;flex:none;position:relative}
+.lv{position:absolute;right:-4px;bottom:-4px;background:var(--accent);color:var(--accent-ink);font-size:9px;font-weight:800;border-radius:99px;padding:0 4px;border:2px solid var(--surface)}
+main{padding-block:20px 40px}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance}
+h2{font-size:19px}
+h3{font-size:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;min-width:0}
+.lay{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+@media(max-width:860px){.lay{grid-template-columns:1fr}}
+.stack{display:grid;gap:14px}
+.compose{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px;color:var(--muted)}
+.cats{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+.cat{background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:6px 14px;color:var(--muted);white-space:nowrap;font-size:14px}
+.cat[aria-pressed=true]{background:var(--fg);border-color:var(--fg);color:var(--bg);font-weight:700}
+.post{display:grid;gap:10px}
+.ph{display:flex;gap:10px;align-items:center}
+.ph b{display:block;line-height:1.2}
+.ph span{font-size:12.5px;color:var(--muted)}
+.pinned{font-size:12px;color:var(--accent);font-weight:700}
+.post h3{font-size:18px}
+.post p{margin:0;color:#d4d5de;white-space:pre-line}
+.clipbox{display:flex;gap:12px;align-items:center;background:var(--surface-2);border-radius:10px;padding:10px}
+.clipbox .v{width:60px;aspect-ratio:9/16;border-radius:8px;background:linear-gradient(160deg,#12304a,#5a2340);flex:none;display:grid;place-items:center}
+.clipbox .v::after{content:"";border-left:10px solid #fff;border-top:6px solid transparent;border-bottom:6px solid transparent;margin-left:3px}
+.clipbox small{color:var(--muted)}
+.acts{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.act{background:none;border:0;color:var(--muted);padding:6px 10px;border-radius:8px;display:flex;gap:6px;align-items:center;font-size:14px;font-variant-numeric:tabular-nums}
+.act:hover{background:var(--surface-2)}
+.act[aria-pressed=true]{color:var(--accent)}
+.cmts{display:grid;gap:8px;border-top:1px solid var(--line);padding-top:10px}
+.cm{display:flex;gap:8px;font-size:14px}
+.cm div{background:var(--surface-2);border-radius:10px;padding:7px 11px;min-width:0}
+.cm b{font-size:13px}
+.cin{display:flex;gap:8px}
+.cin input,.new textarea,.new input{flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.btn{border:0;border-radius:10px;padding:10px 16px;font-weight:700;background:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:var(--surface-2);color:var(--fg)}
+.btn.sm{padding:6px 12px;font-size:13px;border-radius:8px}
+.btn:disabled{opacity:.45;cursor:default}
+.new{display:grid;gap:8px}
+.new textarea{min-height:84px;resize:vertical}
+.lead{display:grid;gap:10px;margin-top:10px}
+.lr{display:flex;gap:10px;align-items:center}
+.lr .rk{width:16px;color:var(--muted);font-variant-numeric:tabular-nums;font-size:13px}
+.lr .n{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lr .pt{color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums;font-size:14px}
+.about p{margin:8px 0 12px;color:#cfd0da;font-size:14px}
+.counts{display:flex;gap:18px;margin-bottom:12px}
+.counts b{display:block;font-family:var(--display);font-size:20px}
+.counts span{font-size:12px;color:var(--muted)}
+.lvl{margin-top:10px}
+.lvl .bar2{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin:6px 0}
+.lvl .bar2 span{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+.lvl small{color:var(--muted)}
+/* classroom */
+.cl{display:grid;grid-template-columns:320px minmax(0,1fr);gap:16px;align-items:start}
+@media(max-width:860px){.cl{grid-template-columns:1fr}}
+.mod{border-top:1px solid var(--line);padding-top:12px;margin-top:12px}
+.mod:first-of-type{border-top:0;margin-top:8px;padding-top:0}
+.mod h3{display:flex;justify-content:space-between;gap:8px;font-size:15px}
+.mod h3 small{font-family:var(--body);font-weight:400;color:var(--muted);font-size:12.5px}
+.les{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;color:var(--fg);padding:8px;border-radius:8px;margin-top:2px}
+.les:hover:not(:disabled){background:var(--surface-2)}
+.les[aria-current=true]{background:var(--surface-2)}
+.les:disabled{color:var(--muted);cursor:not-allowed}
+.les .st{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none;display:grid;place-items:center;font-size:11px;font-weight:800}
+.les .st.done{background:var(--good);border-color:var(--good);color:#0d1a12}
+.les .tt{flex:1;min-width:0;font-size:14px}
+.les .dur{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.lock{font-size:11px;background:var(--surface-2);border-radius:6px;padding:1px 6px;color:var(--muted)}
+.player{position:relative;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#12304a,#5a2340);display:flex;align-items:flex-end;padding:16px}
+.player .big{position:absolute;right:12px;bottom:-26px;font-family:var(--display);font-weight:800;font-size:180px;line-height:1;color:rgba(255,255,255,.13)}
+.player h2{position:relative;font-size:clamp(20px,3vw,30px);max-width:70%}
+.player .pl{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;background:rgba(0,0,0,.5);border:0;display:grid;place-items:center}
+.player .pl::after{content:"";border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:5px}
+.lessonbar{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+.prog{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden;margin-top:6px}
+.prog span{display:block;height:100%;background:var(--good);transition:width .3s}
+.res{margin-top:14px;display:grid;gap:8px}
+.file{display:flex;gap:10px;align-items:center;background:var(--surface-2);border-radius:10px;padding:10px 12px;font-size:14px}
+.file small{color:var(--muted);margin-left:auto}
+/* calendar */
+.ev{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
+.ev:first-of-type{border-top:0}
+.date{background:var(--surface-2);border-radius:10px;text-align:center;padding:6px 0}
+.date b{display:block;font-family:var(--display);font-size:22px;line-height:1}
+.date span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.ev h3{font-size:16px}
+.ev p{margin:2px 0 0;color:var(--muted);font-size:13.5px}
+.pill{font-size:12px;padding:3px 9px;border-radius:99px;background:var(--surface-2);white-space:nowrap}
+.pill.ai{background:rgba(127,214,200,.16);color:var(--ai)}
+.pill.ok{background:rgba(111,211,139,.14);color:var(--good)}
+@media(max-width:560px){.ev{grid-template-columns:54px minmax(0,1fr)}.ev .btn{grid-column:2}.me span{display:none}.comm span{display:none}}
+.mem{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.mem .panel{display:flex;gap:12px;align-items:center}
+.mem small{color:var(--muted);display:block}
+.lvtable{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.lvtable span{background:var(--surface-2);border-radius:8px;padding:5px 10px;font-size:13px;font-variant-numeric:tabular-nums}
+.lvtable b{color:var(--accent)}
+[role=tabpanel][hidden]{display:none}
+footer{padding-block:0 40px;color:var(--muted);font-size:12.5px}
+</style>
+
+<header><div class="wrap bar">
+  <div class="comm"><div class="cmark">LL</div><div style="min-width:0"><b>Dueños de LLC Miami</b><span>Comunidad de Marisol Vega en lernze.</span></div></div>
+  <nav role="tablist" aria-label="Secciones">
+    <button role="tab" id="tab-comunidad" aria-selected="true" aria-controls="p-comunidad">Comunidad</button>
+    <button role="tab" id="tab-classroom" aria-selected="false" aria-controls="p-classroom">Classroom</button>
+    <button role="tab" id="tab-calendario" aria-selected="false" aria-controls="p-calendario">Calendario</button>
+    <button role="tab" id="tab-miembros" aria-selected="false" aria-controls="p-miembros">Miembros</button>
+  </nav>
+  <div class="me"><span id="myline">Daniela · Nivel 2</span><div class="av" id="myav" style="background:linear-gradient(135deg,#ffb547,#e0646e)">D<span class="lv" id="mylv">2</span></div></div>
+</div></header>
+
+<main class="wrap">
+
+<div role="tabpanel" id="p-comunidad" aria-labelledby="tab-comunidad">
+  <div class="lay">
+    <div class="stack">
+      <button class="compose" id="open-new"><div class="av" style="background:linear-gradient(135deg,#ffb547,#e0646e)">D</div>Escribe algo a la comunidad...</button>
+      <div class="panel new" id="newbox" hidden>
+        <input id="n-title" placeholder="Título" aria-label="Título">
+        <textarea id="n-body" placeholder="¿Qué quieres compartir o preguntar?" aria-label="Mensaje"></textarea>
+        <div class="row" style="display:flex;gap:8px;justify-content:flex-end"><button class="btn ghost sm" id="n-cancel">Cancelar</button><button class="btn sm" id="n-send">Publicar</button></div>
+      </div>
+      <div class="cats" id="cats" role="group" aria-label="Categorías"></div>
+      <div class="stack" id="feed"></div>
+    </div>
+    <aside class="stack">
+      <div class="panel about">
+        <h2>Dueños de LLC Miami</h2>
+        <p>Abre, ordena y haz crecer tu negocio en Florida con otros dueños que ya pasaron por lo mismo.</p>
+        <div class="counts"><div><b>2.140</b><span>Miembros</span></div><div><b>312</b><span>En línea</span></div><div><b>14</b><span>Admins</span></div></div>
+        <div class="lvl"><div style="display:flex;justify-content:space-between"><b id="lvname">Nivel 2</b><small id="lvpts">9 puntos</small></div><div class="bar2"><span id="lvbar" style="width:30%"></span></div><small id="lvnext"></small><button class="btn ghost sm" id="simlike" style="margin-top:10px;width:100%">Simular 11 me gusta recibidos</button></div>
+      </div>
+      <div class="panel"><div style="display:flex;justify-content:space-between"><h3>Ranking del mes</h3><button class="btn ghost sm" id="goMem">Ver todo</button></div><div class="lead" id="lead"></div></div>
+    </aside>
+  </div>
+</div>
+
+<div role="tabpanel" id="p-classroom" aria-labelledby="tab-classroom" hidden>
+  <div class="cl">
+    <div class="panel">
+      <h2>Abre tu LLC en Florida</h2>
+      <div class="prog" aria-hidden="true"><span id="cprog"></span></div>
+      <small style="color:var(--muted)" id="ctext"></small>
+      <div id="mods"></div>
+    </div>
+    <div class="panel">
+      <div class="player"><span class="big" id="pbig">1</span><h2 id="ptitle"></h2><button class="pl" aria-label="Reproducir"></button></div>
+      <div class="lessonbar"><div><h3 id="ltitle"></h3><small style="color:var(--muted)" id="lmeta"></small></div><button class="btn" id="complete">Marcar como vista</button></div>
+      <div class="res" id="files"></div>
+    </div>
+  </div>
+</div>
+
+<div role="tabpanel" id="p-calendario" aria-labelledby="tab-calendario" hidden>
+  <div class="panel"><h2 style="margin-bottom:6px">Próximas sesiones</h2><div id="events"></div></div>
+</div>
+
+<div role="tabpanel" id="p-miembros" aria-labelledby="tab-miembros" hidden>
+  <div class="panel" style="margin-bottom:14px"><h2>Niveles y puntos</h2><p style="color:var(--muted);margin:6px 0 0;font-size:14px">Cada "me gusta" que recibes en un post suma un punto. Al subir de nivel desbloqueas lecciones y beneficios.</p><div class="lvtable" id="lvtable"></div></div>
+  <div class="mem" id="members"></div>
+</div>
+
+</main>
+<footer class="wrap">Boceto de Lernze.com. Personas, publicaciones y fechas son ejemplos inventados.</footer>
+
+<script>
+var COLORS=['#7fd6c8','#ffb547','#a99bf0','#ef8f7b','#7fb4ef','#d68fc8','#a6d66f'];
+var LEVELS=[0,5,20,65,155,515,2015,8015,33015];
+function lvlOf(p){var l=1;LEVELS.forEach(function(t,i){if(p>=t)l=i+1});return l}
+var PEOPLE=[['Marisol Vega',9,33400,'Creadora'],['Ana Pérez',5,520,'Hialeah'],['Jorge Alcántara',4,160,'Doral'],['Luis Fernández',4,155,'Miami Beach'],['Carla Núñez',3,72,'Kendall'],['Yaneisy Lora',3,66,'Homestead'],['Rafa Duarte',2,22,'Miami'],['Paola Quintero',2,20,'Hialeah'],['Daniela (tú)',2,9,'Miami']];
+function avatar(name,size,lv){var c=COLORS[name.charCodeAt(0)%COLORS.length];return '<div class="av" style="background:'+c+(size?';width:'+size+'px;height:'+size+'px':'')+'">'+name[0]+(lv?'<span class="lv">'+lv+'</span>':'')+'</div>'}
+
+// tabs
+var tabs=['comunidad','classroom','calendario','miembros'];
+function go(k){tabs.forEach(function(j){document.getElementById('tab-'+j).setAttribute('aria-selected',j===k);document.getElementById('p-'+j).hidden=j!==k});try{history.replaceState(null,'','#'+k)}catch(e){}}
+tabs.forEach(function(k){document.getElementById('tab-'+k).onclick=function(){go(k)}});
+var h=(location.hash||'').slice(1);if(tabs.indexOf(h)>-1)go(h);
+document.getElementById('goMem').onclick=function(){go('miembros')};
+
+// points
+var myPts=9;
+function renderMe(){var l=lvlOf(myPts),nx=LEVELS[l];
+  document.getElementById('myline').textContent='Daniela · Nivel '+l;document.getElementById('mylv').textContent=l;
+  document.getElementById('lvname').textContent='Nivel '+l;document.getElementById('lvpts').textContent=myPts+' puntos';
+  var prev=LEVELS[l-1];document.getElementById('lvbar').style.width=(nx?Math.min(100,(myPts-prev)/(nx-prev)*100):100)+'%';
+  document.getElementById('lvnext').textContent=nx?'Faltan '+(nx-myPts)+' para el nivel '+(l+1)+(l+1===3?': lección 3.2 desbloqueada':''):'Nivel máximo';
+  PEOPLE[8][1]=l;PEOPLE[8][2]=myPts;renderLead();renderMods()}
+
+// feed
+var CATS=['Todo','Anuncios','Preguntas','Victorias','Recursos'];var cat='Todo';
+var POSTS=[
+ {id:1,cat:'Anuncios',by:'Marisol Vega',role:'Creadora',lv:9,ago:'hace 2 h',pin:true,t:'Sesión en vivo este jueves: Annual Report 2027',b:'Repasamos paso a paso cómo presentarlo antes del 1 de mayo y qué multas evitar.\nLleva tus dudas, resuelvo en directo.',likes:48,cm:[['Ana Pérez','¿Se graba? No llego a las 7 pm.'],['Marisol Vega','Sí, queda en el Classroom esa misma noche.']]},
+ {id:2,cat:'Victorias',by:'Ana Pérez',lv:5,ago:'hace 5 h',t:'Mi LLC quedó aprobada en 3 días',b:'Seguí el módulo 3 al pie de la letra. Ya tengo EIN y estoy abriendo la cuenta bancaria. Gracias a todos por las respuestas.',likes:63,clip:true,cm:[['Jorge Alcántara','Felicidades. Ahora a facturar.']]},
+ {id:3,cat:'Preguntas',by:'Carla Núñez',lv:3,ago:'ayer',t:'¿Single member o multi member para un negocio con mi esposo?',b:'Los dos vamos a trabajar en el negocio pero solo yo pongo el capital. ¿Qué recomiendan?',likes:12,cm:[]},
+ {id:4,cat:'Recursos',by:'Jorge Alcántara',lv:4,ago:'hace 2 días',t:'Plantilla de Operating Agreement en español',b:'La uso con mis clientes. Cámbienle los datos y revísenla con un profesional si tienen socios.',likes:37,cm:[['Rafa Duarte','Justo lo que buscaba.']]}
+];
+var liked={};
+var cats=document.getElementById('cats');
+CATS.forEach(function(c){var b=document.createElement('button');b.className='cat';b.textContent=c;b.setAttribute('aria-pressed',c===cat);b.onclick=function(){cat=c;cats.querySelectorAll('button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});drawFeed()};cats.appendChild(b)});
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function drawFeed(){
+  var f=document.getElementById('feed');
+  var list=POSTS.filter(function(p){return cat==='Todo'||p.cat===cat});
+  f.innerHTML=list.map(function(p){
+    return '<article class="panel post" data-id="'+p.id+'"><div class="ph">'+avatar(p.by,38,p.lv)+'<div><b>'+esc(p.by)+'</b><span>'+p.ago+' · '+p.cat+'</span></div></div>'+
+    (p.pin?'<div class="pinned">Fijado</div>':'')+'<h3>'+esc(p.t)+'</h3><p>'+esc(p.b)+'</p>'+
+    (p.clip?'<div class="clipbox"><div class="v"></div><div><b>Clip de 0:34 creado por tu agente</b><br><small>Ana aceptó compartir su victoria. Publicado en Instagram y TikTok de Marisol.</small></div></div>':'')+
+    '<div class="acts"><button class="act" data-like="'+p.id+'" aria-pressed="'+!!liked[p.id]+'">♥ <span>'+(p.likes+(liked[p.id]?1:0))+'</span></button><button class="act" data-cm="'+p.id+'">Comentar · '+p.cm.length+'</button></div>'+
+    '<div class="cmts" id="c'+p.id+'" '+(p.cm.length?'':'hidden')+'>'+p.cm.map(function(c){return '<div class="cm">'+avatar(c[0],28)+'<div><b>'+esc(c[0])+'</b><br>'+esc(c[1])+'</div></div>'}).join('')+
+    '<form class="cin" data-form="'+p.id+'"><input aria-label="Escribe un comentario" placeholder="Escribe un comentario" id="ci'+p.id+'"><button class="btn sm">Enviar</button></form></div></article>'}).join('')||'<div class="panel" style="color:var(--muted)">Aún no hay publicaciones en esta categoría.</div>';
+  f.querySelectorAll('[data-like]').forEach(function(b){b.onclick=function(){var id=+b.dataset.like;liked[id]=!liked[id];drawFeed()}});
+  f.querySelectorAll('[data-cm]').forEach(function(b){b.onclick=function(){var e=document.getElementById('c'+b.dataset.cm);e.hidden=!e.hidden}});
+  f.querySelectorAll('[data-form]').forEach(function(fm){fm.onsubmit=function(e){e.preventDefault();var id=+fm.dataset.form,i=document.getElementById('ci'+id);if(!i.value.trim())return;POSTS.filter(function(p){return p.id===id})[0].cm.push(['Daniela (tú)',i.value.trim()]);drawFeed();document.getElementById('c'+id).hidden=false}});
+}
+// new post
+var nb=document.getElementById('newbox');
+document.getElementById('open-new').onclick=function(){nb.hidden=false;document.getElementById('n-title').focus()};
+document.getElementById('n-cancel').onclick=function(){nb.hidden=true};
+document.getElementById('n-send').onclick=function(){var t=document.getElementById('n-title').value.trim(),b=document.getElementById('n-body').value.trim();if(!t)return;
+  POSTS.unshift({id:Date.now(),cat:'Preguntas',by:'Daniela (tú)',lv:lvlOf(myPts),ago:'ahora',t:t,b:b,likes:0,cm:[]});document.getElementById('n-title').value='';document.getElementById('n-body').value='';nb.hidden=true;cat='Todo';cats.querySelectorAll('button').forEach(function(x,i){x.setAttribute('aria-pressed',i===0)});drawFeed()};
+function renderLead(){var l=PEOPLE.slice().sort(function(a,b){return b[2]-a[2]}).slice(0,5);
+  document.getElementById('lead').innerHTML=l.map(function(p,i){return '<div class="lr"><span class="rk">'+(i+1)+'</span>'+avatar(p[0],30,p[1])+'<span class="n">'+esc(p[0])+'</span><span class="pt">'+p[2].toLocaleString('es')+'</span></div>'}).join('');
+  document.getElementById('members').innerHTML=PEOPLE.map(function(p){return '<div class="panel">'+avatar(p[0],44,p[1])+'<div><b>'+esc(p[0])+'</b><small>'+esc(p[3])+' · '+p[2].toLocaleString('es')+' puntos</small></div></div>'}).join('');
+  document.getElementById('lvtable').innerHTML=LEVELS.map(function(t,i){return '<span>Nivel <b>'+(i+1)+'</b> · '+t.toLocaleString('es')+'</span>'}).join('')}
+
+// classroom
+var MODS=[
+ {t:'Módulo 1. Antes de empezar',l:[['1.1 Qué es una LLC y cuándo te conviene','6:20',1],['1.2 Elegir nombre y verificar disponibilidad','8:05',1]]},
+ {t:'Módulo 2. Papeles en Sunbiz',l:[['2.1 Articles of Organization, campo por campo','14:30',1],['2.2 Registered Agent: opciones y costos','9:12',1],['2.3 Errores que rechazan tu solicitud','7:48',1]]},
+ {t:'Módulo 3. Después de aprobar',l:[['3.1 Obtén tu EIN gratis','5:40',2],['3.2 Operating Agreement','12:10',3],['3.3 Cuenta bancaria para tu LLC','10:25',3]]}
+];
+var done={'1.1':1,'1.2':1},cur='2.1';
+var LIST=[];MODS.forEach(function(m){m.l.forEach(function(x){LIST.push({k:x[0].split(' ')[0],t:x[0].slice(x[0].indexOf(' ')+1),d:x[1],lv:x[2],m:m.t})})});
+function renderMods(){var my=lvlOf(myPts),n=Object.keys(done).length;
+  document.getElementById('cprog').style.width=(n/LIST.length*100)+'%';document.getElementById('ctext').textContent=n+' de '+LIST.length+' lecciones vistas';
+  document.getElementById('mods').innerHTML=MODS.map(function(m){var cnt=m.l.filter(function(x){return done[x[0].split(' ')[0]]}).length;
+    return '<div class="mod"><h3>'+m.t.replace(/^(Módulo \d)\. /,'$1 · ')+'<small>'+cnt+'/'+m.l.length+'</small></h3>'+m.l.map(function(x){var k=x[0].split(' ')[0],lock=x[2]>my;
+      return '<button class="les" data-k="'+k+'" '+(lock?'disabled':'')+' '+(k===cur?'aria-current="true"':'')+'><span class="st'+(done[k]?' done':'')+'">'+(done[k]?'✓':'')+'</span><span class="tt">'+x[0].slice(x[0].indexOf(' ')+1)+'</span>'+(lock?'<span class="lock">Nivel '+x[2]+'</span>':'<span class="dur">'+x[1]+'</span>')+'</button>'}).join('')+'</div>'}).join('');
+  document.querySelectorAll('.les').forEach(function(b){b.onclick=function(){cur=b.dataset.k;renderMods();renderLesson()}});
+}
+function renderLesson(){var x=LIST.filter(function(q){return q.k===cur})[0];
+  document.getElementById('pbig').textContent=cur;document.getElementById('ptitle').textContent=x.t;document.getElementById('ltitle').textContent=cur+' '+x.t;document.getElementById('lmeta').textContent=x.m+' · '+x.d;
+  var c=document.getElementById('complete');c.textContent=done[cur]?'Vista':'Marcar como vista';c.disabled=!!done[cur];
+  document.getElementById('files').innerHTML='<div class="file">Guía en PDF<small>2 páginas</small></div><div class="file">Checklist de documentos<small>Plantilla</small></div>'}
+document.getElementById('complete').onclick=function(){done[cur]=1;var i=LIST.findIndex(function(q){return q.k===cur});
+  var nx=LIST.slice(i+1).filter(function(q){return q.lv<=lvlOf(myPts)})[0];if(nx)cur=nx.k;renderMods();renderLesson()};
+
+// events
+var EV=[['JUE','23','Sesión en vivo: Annual Report 2027','7:00 pm · Zoom · con Marisol','En vivo',1],['SAB','25','Networking presencial en Wynwood','11:00 am · Cupos limitados','Presencial',0],['MAR','28','Revisión de casos de la comunidad','6:30 pm · Envía tu duda antes','En vivo',0],['JUE','30','Taller: cuenta bancaria y primeras facturas','7:00 pm · Nivel 3 o más','Nivel 3',0]];
+var going={};
+function drawEv(){document.getElementById('events').innerHTML=EV.map(function(e,i){return '<div class="ev"><div class="date"><b>'+e[1]+'</b><span>'+e[0]+'</span></div><div><h3>'+e[2]+'</h3><p>'+e[3]+'</p></div><button class="btn '+(going[i]?'ghost':'')+' sm" data-e="'+i+'">'+(going[i]?'Anotado':'Asistir')+'</button></div>'}).join('');
+  document.querySelectorAll('[data-e]').forEach(function(b){b.onclick=function(){going[b.dataset.e]=!going[b.dataset.e];drawEv()}})}
+document.getElementById('simlike').onclick=function(){myPts+=11;renderMe()};
+drawFeed();renderLead();renderMe();renderLesson();drawEv();
+</script>

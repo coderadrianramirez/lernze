@@ -1,0 +1,266 @@
+<title>Lernze</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: sticky nav, oversized type hero over a sliding strip of trailer cards, bento grid of advantages, 4-step sequence, comparison table, Miami section, waitlist. One dark look by choice (streaming). Boldness lives in the hero type and the trailer strip; the rest stays quiet. */
+:root{
+  --bg:#0d0e14; --surface:#161823; --surface-2:#1f2230; --line:#2a2e3f;
+  --fg:#f2f1ee; --muted:#9a9db0; --accent:#ffb547; --accent-ink:#1a1204; --ai:#7fd6c8; --own:#a99bf0; --good:#6fd38b; --bad:#ef7b7b;
+  --display:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif;
+  --body:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5}
+button,input{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1160px;margin:0 auto}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:20;background:var(--bg)}
+h1,h2,h3{font-family:var(--display);margin:0;letter-spacing:-.025em;text-wrap:balance}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:20px;padding-block:12px}
+.logo{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.04em;text-decoration:none}
+.logo i{font-style:normal;color:var(--accent)}
+nav{flex:1;display:flex;gap:4px;justify-content:center}
+nav a{padding:8px 12px;border-radius:8px;color:var(--muted);text-decoration:none;font-size:15px}
+nav a:hover{color:var(--fg)}
+@media(max-width:760px){nav{display:none}.bar{justify-content:space-between}}
+.btn{display:inline-block;border:0;border-radius:12px;padding:13px 22px;font-weight:700;background:var(--accent);color:var(--accent-ink);text-decoration:none;cursor:pointer}
+.btn.ghost{background:var(--surface-2);color:var(--fg)}
+.btn.sm{padding:9px 16px;font-size:14px;border-radius:10px}
+/* hero */
+.hero{padding-block:64px 36px}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;font-size:13px;color:var(--ai);background:rgba(127,214,200,.1);padding:5px 12px;border-radius:99px;font-weight:500}
+.hero h1{font-size:clamp(44px,9vw,112px);line-height:.92;letter-spacing:-.05em;margin:22px 0 22px;font-weight:800;max-width:11ch}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{font-size:clamp(17px,2vw,21px);color:#cfd0da;max-width:52ch;margin:0 0 28px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.strip{overflow:hidden;margin-top:48px;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.strip-in{display:flex;gap:14px;width:max-content;animation:slide 60s linear infinite}
+@keyframes slide{to{transform:translateX(-50%)}}
+.tc{flex:none;width:clamp(210px,26vw,300px);aspect-ratio:16/9;border-radius:12px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:10px}
+.tc .g{position:absolute;right:-2px;bottom:-18px;font-family:var(--display);font-weight:800;font-size:96px;line-height:1;color:rgba(255,255,255,.16);letter-spacing:-.05em}
+.tc b{position:relative;font-family:var(--display);font-size:16px;line-height:1.1;max-width:72%;text-shadow:0 1px 8px rgba(0,0,0,.5)}
+.tc .t{position:absolute;top:8px;left:8px;font-size:11px;padding:2px 8px;border-radius:99px;background:rgba(0,0,0,.5);font-weight:500}
+.tc .t.ai{color:var(--ai)}
+@media(prefers-reduced-motion:reduce){.strip-in{animation:none}.strip{overflow-x:auto}}
+/* sections */
+section{padding-block:72px}
+.kicker{font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:12px}
+h2{font-size:clamp(30px,5vw,52px);line-height:1.02;max-width:20ch}
+.lead{color:var(--muted);font-size:18px;max-width:58ch;margin:16px 0 0}
+.problem{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-top:32px}
+.problem div{border-top:2px solid var(--line);padding-top:14px}
+.problem b{display:block;font-family:var(--display);font-size:20px;margin-bottom:4px}
+.problem span{color:var(--muted)}
+/* bento */
+.bento{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-top:36px}
+.cell{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;min-width:0;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.cell h3{font-size:24px;line-height:1.1}
+.cell p{margin:0;color:#c3c5d2}
+.cell .tag{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.c-a{grid-column:span 4}.c-b{grid-column:span 2}.c-c{grid-column:span 2}.c-d{grid-column:span 2}.c-e{grid-column:span 2}.c-f{grid-column:span 3}.c-g{grid-column:span 3}
+@media(max-width:860px){.bento{grid-template-columns:1fr 1fr}.c-a{grid-column:span 2}.c-b,.c-c,.c-d,.c-e{grid-column:span 1}.c-f,.c-g{grid-column:span 2}}
+@media(max-width:560px){.bento{grid-template-columns:1fr}.cell{grid-column:auto!important}}
+.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:auto}
+.mini .tc{width:auto}
+.interests{display:flex;gap:6px;flex-wrap:wrap}
+.interests span{font-size:12px;padding:4px 10px;border-radius:99px;background:var(--surface-2);color:var(--muted)}
+.interests span.on{background:var(--accent);color:var(--accent-ink);font-weight:700}
+.vstack{display:flex;gap:8px;margin-top:auto}
+.vstack .v{flex:1;aspect-ratio:9/16;max-height:150px;border-radius:10px;padding:6px;font-family:var(--display);font-size:11px;font-weight:700;line-height:1.1;display:flex;align-items:flex-end}
+.nums{display:flex;gap:8px;margin-top:auto}
+.nums div{flex:1;background:var(--surface-2);border-radius:12px;padding:10px 6px;text-align:center}
+.nums b{display:block;font-family:var(--display);font-size:30px;letter-spacing:-.03em}
+.nums span{font-size:12px;color:var(--muted)}
+.pays{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+.pays span{font-size:13px;padding:5px 11px;border-radius:8px;background:var(--surface-2)}
+/* steps */
+.steps{list-style:none;margin:36px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;counter-reset:s}
+.steps li{padding:0 20px 0 0;position:relative;counter-increment:s}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-weight:800;margin-bottom:14px}
+.steps h3{font-size:20px;margin-bottom:6px}
+.steps p{margin:0;color:var(--muted);font-size:15px}
+/* compare */
+.scroll{overflow-x:auto;margin-top:32px;border:1px solid var(--line);border-radius:16px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:15px}
+th,td{padding:14px 16px;text-align:left;border-top:1px solid var(--line);vertical-align:top}
+thead th{border-top:0;font-family:var(--display);font-size:17px;background:var(--surface)}
+th:first-child,td:first-child{color:var(--muted);width:24%}
+td.us,th.us{background:rgba(255,181,71,.07)}
+th.us{color:var(--accent)}
+.y{color:var(--good);font-weight:700}.n{color:var(--bad)}.m{color:var(--muted)}
+.fine{font-size:13px;color:var(--muted);margin-top:12px;max-width:80ch}
+/* miami */
+.miami{background:var(--surface);border-block:1px solid var(--line)}
+.two{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px;align-items:center}
+@media(max-width:820px){.two{grid-template-columns:1fr}}
+.list{list-style:none;padding:0;margin:20px 0 0;display:grid;gap:12px}
+.list li{display:flex;gap:12px}
+.list li::before{content:"";flex:none;width:8px;height:8px;border-radius:2px;background:var(--accent);margin-top:9px}
+.card-demo{border-radius:18px;background:linear-gradient(135deg,#12304a,#5a2340);padding:26px;aspect-ratio:4/3;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden}
+.card-demo .g{position:absolute;right:10px;top:-10px;font-family:var(--display);font-weight:800;font-size:220px;line-height:1;color:rgba(255,255,255,.1)}
+.card-demo b{font-family:var(--display);font-size:clamp(24px,3.4vw,36px);line-height:1.05;position:relative}
+.card-demo span{position:relative;color:#d4d5de;margin-top:8px}
+/* faq + waitlist */
+.faq{display:grid;gap:10px;margin-top:28px;max-width:760px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 18px}
+summary{cursor:pointer;font-weight:700;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";float:right;color:var(--accent);font-size:20px;line-height:1}
+details[open] summary::after{content:"–"}
+details p{margin:10px 0 0;color:#c3c5d2}
+.final{text-align:left}
+.final h2{max-width:16ch}
+.form{display:flex;gap:10px;flex-wrap:wrap;margin-top:26px;max-width:520px}
+.form input{flex:1 1 220px;min-width:0;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:13px 16px}
+.msg{margin-top:12px;color:var(--good);min-height:24px}
+footer{border-top:1px solid var(--line);padding-block:28px 40px;color:var(--muted);font-size:13px}
+footer .wrap{display:grid;gap:8px}
+</style>
+
+<header><div class="wrap bar">
+  <a class="logo" href="#top">lernze<i>.</i></a>
+  <nav aria-label="Principal"><a href="#ventajas">Ventajas</a><a href="#como">Cómo funciona</a><a href="#comparar">Comparar</a><a href="#mundo">Para todo el mundo</a></nav>
+  <a class="btn sm" href="#unete">Quiero ser creador</a>
+</div></header>
+
+<main id="top">
+<div class="wrap hero">
+  <span class="eyebrow">Para creadores de cursos y comunidades</span>
+  <h1>Tu curso, con <em>público</em> incluido.</h1>
+  <p>Vende cursos y comunidades en un solo lugar. Lernze además te muestra a compradores nuevos con trailers y publica clips de tus clases en tus redes. No dependes solo de tu tráfico.</p>
+  <div class="cta"><a class="btn" href="#unete">Entrar a la lista de creadores</a><a class="btn ghost" href="#ventajas">Ver las ventajas</a></div>
+</div>
+<div class="strip" aria-hidden="true"><div class="strip-in" id="strip"></div></div>
+
+<section class="wrap" id="problema">
+  <div class="kicker">El problema</div>
+  <h2>Montar la tienda es lo fácil. Traer gente es lo difícil.</h2>
+  <p class="lead">La mayoría de las plataformas te dan herramientas para cobrar y enseñar. Los compradores te los pides tú.</p>
+  <div class="problem">
+    <div><b>Subes el curso y nadie entra</b><span>Sin audiencia propia, la plataforma no te manda a nadie.</span></div>
+    <div><b>Los clips toman horas</b><span>Cortar, subtitular y publicar a diario le quita tiempo a crear.</span></div>
+    <div><b>Pagas tu visibilidad dos veces</b><span>Suscripción cara más comisión, y el tráfico sigue siendo tuyo.</span></div>
+  </div>
+</section>
+
+<section class="wrap" id="ventajas">
+  <div class="kicker">Lo que nos distingue</div>
+  <h2>Seis razones para vender en Lernze</h2>
+  <div class="bento">
+    <article class="cell c-a">
+      <span class="tag">Discover feed</span>
+      <h3>Compradores que te descubren, no que ya te conocían</h3>
+      <p>Un feed con trailers horizontales de cursos, ordenado por los intereses de cada persona. Tu curso aparece ante quien quiere justo lo que enseñas.</p>
+      <div class="interests"><span class="on">Negocios</span><span class="on">Marketing</span><span>Idiomas</span><span>Oficios</span><span>Inversión</span></div>
+      <div class="mini" id="mini"></div>
+    </article>
+    <article class="cell c-b">
+      <span class="tag">Trailer con IA</span>
+      <h3>¿Sin trailer? Lo creamos</h3>
+      <p>Si no subes uno, Lernze genera el trailer con tu temario y los testimonios. Tú lo apruebas antes de que salga, y lleva una etiqueta clara de IA.</p>
+    </article>
+    <article class="cell c-c">
+      <span class="tag">Agentes de redes</span>
+      <h3>Clips verticales en tus cuentas</h3>
+      <p>Los agentes cortan tus clases en clips para Instagram, TikTok y YouTube Shorts. Por una suscripción mensual adicional, hasta 20 al mes.</p>
+      <div class="vstack"><div class="v" style="background:linear-gradient(160deg,#12304a,#5a2340)">Los 3 errores</div><div class="v" style="background:linear-gradient(160deg,#3b1450,#0f3a50)">EIN gratis</div><div class="v" style="background:linear-gradient(160deg,#173a2d,#0d2a45)">Sunbiz en 45 s</div></div>
+    </article>
+    <article class="cell c-d">
+      <span class="tag">Comisiones claras</span>
+      <h3>Pagas según quién trajo al cliente</h3>
+      <div class="nums"><div><b>0%</b><span>Tu tráfico</span></div><div><b>3%</b><span>Clip de agente</span></div><div><b>5%</b><span>Discover</span></div></div>
+      <p>Más el procesador de pago. Si traes tú al cliente, no cobramos comisión.</p>
+    </article>
+    <article class="cell c-e">
+      <span class="tag">Comunidad y classroom</span>
+      <h3>Todo lo de una comunidad de pago</h3>
+      <p>Foro, lecciones por módulos, calendario de sesiones en vivo, niveles y ranking. Lo bueno de Skool, en el mismo lugar donde te descubren.</p>
+    </article>
+    <article class="cell c-f">
+      <span class="tag">Cobros</span>
+      <h3>Cobra a compradores de cualquier país</h3>
+      <p>Pasarelas de pago internacionales para que pueda comprar cualquiera, sin que tengas que montar nada aparte.</p>
+      <div class="pays"><span>Tarjeta</span><span>Apple Pay</span><span>Transferencia internacional</span><span>Métodos locales</span></div>
+    </article>
+    <article class="cell c-g">
+      <span class="tag">Sin fronteras</span>
+      <h3>Enseña en tu idioma, llega a quien lo habla</h3>
+      <p>Tu comunidad puede estar en cualquier lugar. Tú enseñas en el idioma que quieras y el feed busca a las personas a las que les sirve.</p>
+    </article>
+  </div>
+</section>
+
+<section class="wrap" id="como">
+  <div class="kicker">Cómo funciona</div>
+  <h2>De tu curso a tu primera venta</h2>
+  <ol class="steps">
+    <li><h3>Sube tu curso</h3><p>Lecciones, materiales y comunidad. Fijas el precio.</p></li>
+    <li><h3>Aprueba tu trailer</h3><p>Sube el tuyo o revisa el que genera la IA.</p></li>
+    <li><h3>Te descubren</h3><p>Aparece en el Discover feed, y tus agentes publican clips en tus redes.</p></li>
+    <li><h3>Cobras y enseñas</h3><p>La gente entra a tu comunidad. Ves de dónde vino cada venta.</p></li>
+  </ol>
+</section>
+
+<section class="wrap" id="comparar">
+  <div class="kicker">Comparación</div>
+  <h2>Qué hace cada plataforma</h2>
+  <div class="scroll"><table>
+    <thead><tr><th></th><th class="us">Lernze</th><th>Skool</th><th>Kajabi</th><th>Whop</th></tr></thead>
+    <tbody>
+      <tr><td>Comunidad y classroom</td><td class="us y">Sí</td><td class="y">Sí</td><td>Cursos y comunidad</td><td>Sí, con apps</td></tr>
+      <tr><td>Te muestra a compradores nuevos</td><td class="us y">Discover feed con trailers</td><td class="n">Sin buscador de cursos claro</td><td class="n">No</td><td class="y">Marketplace Discover</td></tr>
+      <tr><td>Trailers por interés del espectador</td><td class="us y">Sí, con IA si no tienes</td><td class="m">No lo encontramos</td><td class="m">No lo encontramos</td><td class="m">No lo encontramos</td></tr>
+      <tr><td>Clips verticales en tus redes</td><td class="us y">Agentes, plan adicional</td><td class="m">No lo encontramos</td><td class="m">No lo encontramos</td><td class="m">No lo encontramos</td></tr>
+      <tr><td>Comisión sobre tu tráfico</td><td class="us y">0%</td><td>10% + 30¢ en el plan de $9, o 2,9% + 30¢ en el de $99</td><td>Sin comisión de plataforma</td><td>Sin comisión de plataforma, solo procesador</td></tr>
+    </tbody>
+  </table></div>
+  <p class="fine">Comparación hecha en octubre de 2026 con información pública y reseñas de terceros. Los precios y funciones cambian: confirma en cada sitio. "No lo encontramos" significa que no vimos la función en nuestra revisión.</p>
+</section>
+
+<section class="miami" id="mundo"><div class="wrap two">
+  <div>
+    <div class="kicker">Para todo el mundo</div>
+    <h2>Un solo lugar para crear, mostrar y vender</h2>
+    <ul class="list">
+      <li><span>Cursos de negocios, idiomas, oficios, inversión, marketing o lo que tú domines.</span></li>
+      <li><span>Un feed que recomienda cada curso a quien tiene interés en el tema.</span></li>
+      <li><span>Pasarelas de pago internacionales en el mismo checkout.</span></li>
+    </ul>
+  </div>
+  <div class="card-demo"><span class="g">$</span><b>Abre tu negocio online desde cero</b><span>Trailer del creador · 1:42 · 2.140 miembros (ejemplo)</span></div>
+</div></section>
+
+<section class="wrap" id="faq">
+  <div class="kicker">Preguntas</div>
+  <h2>Lo que suelen preguntar los creadores</h2>
+  <div class="faq">
+    <details><summary>¿Los clips se publican sin que yo los vea?</summary><p>Tú decides. Por defecto cada clip espera tu aprobación. Puedes pasar a publicación automática cuando confíes en el resultado.</p></details>
+    <details><summary>¿Cuánto cuesta la suscripción de agentes?</summary><p>$49 al mes en el plan inicial, con hasta 20 clips. El video generado con IA dentro de los clips se vende aparte, con créditos.</p></details>
+    <details><summary>¿Qué pasa si traigo yo a los compradores?</summary><p>No cobramos comisión de plataforma sobre tu propio tráfico. Solo se descuenta el procesador de pago.</p></details>
+    <details><summary>¿El trailer de IA usa mi cara o mi voz?</summary><p>No, salvo que tú lo pidas y verifiques tu identidad. Por defecto usa imágenes del curso, tu temario y testimonios.</p></details>
+    <details><summary>¿Cuándo abre Lernze?</summary><p>Estamos sumando a los primeros creadores. Anótate y te avisamos cuando abramos tu lugar.</p></details>
+  </div>
+</section>
+
+<section class="wrap final" id="unete">
+  <div class="kicker">Lista de creadores</div>
+  <h2>Sé de los primeros en vender en Lernze</h2>
+  <p class="lead">Déjanos tu correo y te escribimos cuando abramos a los primeros creadores.</p>
+  <form class="form" id="wl"><input type="email" id="email" required placeholder="tu@correo.com" aria-label="Correo electrónico" autocomplete="email"><button class="btn" type="submit">Anotarme</button></form>
+  <div class="msg" id="msg" role="status"></div>
+</section>
+</main>
+
+<footer><div class="wrap"><div class="logo">lernze<i>.</i></div><div>lernze.com · Boceto de la página de lanzamiento. Cursos, cifras y testimonios mostrados son ejemplos.</div></div></footer>
+
+<script>
+var C=[["$","Abre tu negocio online",["#12304a","#5a2340"],1],["En","Inglés para cerrar ventas",["#0f3d3e","#1b2a5a"],0],["✂","Barbería profesional",["#3a1c1c","#1c1c3a"],0],["TT","Ventas en TikTok Shop con IA",["#3b1450","#0f3a50"],1],["RE","Tu primera propiedad de inversión",["#173a2d","#0d2a45"],0],["✿","Uñas de salón desde cero",["#4a1b3c","#2b1b5a"],1],["%","Finanzas personales paso a paso",["#1b2f4a","#2f4a1b"],0],["IA","Contenido con IA para tu negocio",["#1b4a46","#3a1b4a"],1]];
+function tc(x){return '<div class="tc" style="background:linear-gradient(135deg,'+x[2][0]+','+x[2][1]+')"><span class="g">'+x[0]+'</span><span class="t'+(x[3]?' ai':'')+'">'+(x[3]?'Trailer IA':'Trailer del creador')+'</span><b>'+x[1]+'</b></div>'}
+var all=C.concat(C);document.getElementById('strip').innerHTML=all.map(tc).join('');
+document.getElementById('mini').innerHTML=[C[0],C[3],C[5]].map(tc).join('');
+document.getElementById('wl').onsubmit=function(e){e.preventDefault();document.getElementById('msg').textContent='Boceto: el correo no se guarda en ningún lado. Cuando la página esté conectada, aquí confirmaremos tu lugar.'};
+</script>
