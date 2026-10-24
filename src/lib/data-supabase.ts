@@ -48,14 +48,14 @@ export async function listCourses(): Promise<Course[]> {
     .select("*")
     .eq("published", true)
     .order("created_at", { ascending: false });
-  if (error) throw new Error(`No se pudieron leer los cursos: ${error.message}`);
+  if (error) throw new Error(`No se pudieron leer los programas: ${error.message}`);
   return (data as CourseRow[]).map(toCourse);
 }
 
 export async function getCourseBySlug(slug: string): Promise<Course | null> {
   const supabase = createPublicReadClient();
   const { data, error } = await supabase.from("courses").select("*").eq("slug", slug).eq("published", true).maybeSingle();
-  if (error) throw new Error(`No se pudo leer el curso: ${error.message}`);
+  if (error) throw new Error(`No se pudo leer el programa: ${error.message}`);
   return data ? toCourse(data as CourseRow) : null;
 }
 
@@ -70,7 +70,7 @@ const PALETTES = [
 
 export async function createCourse(input: NewCourseInput, userId: string): Promise<Course> {
   const supabase = await createSessionClient();
-  const base = slugify(input.title) || "curso";
+  const base = slugify(input.title) || "programa";
 
   for (let attempt = 0; attempt < 4; attempt++) {
     const slug = attempt === 0 ? base : `${base}-${Math.random().toString(36).slice(2, 6)}`;
@@ -93,9 +93,9 @@ export async function createCourse(input: NewCourseInput, userId: string): Promi
       .select("*")
       .single();
     if (!error) return toCourse(data as CourseRow);
-    if (error.code !== "23505") throw new Error(`No se pudo crear el curso: ${error.message}`);
+    if (error.code !== "23505") throw new Error(`No se pudo crear el programa: ${error.message}`);
   }
-  throw new Error("No se pudo crear un enlace único para el curso. Cambia el título e inténtalo otra vez.");
+  throw new Error("No se pudo crear un enlace único para el programa. Cambia el título e inténtalo otra vez.");
 }
 
 export async function enroll(course: Course, origin: SaleOrigin, userId: string): Promise<Enrollment> {

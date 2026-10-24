@@ -1,6 +1,6 @@
 # Lernze
 
-Plataforma para que creadores vendan cursos y comunidades, con un Discover feed de trailers y agentes que publican clips en sus redes.
+Plataforma para que creadores vendan programas (clases y comunidad), con un Discover feed de trailers y agentes que publican clips en sus redes.
 
 Next.js 16 (App Router, Cache Components) + TypeScript + Tailwind 4. Base de datos prevista: Supabase.
 
@@ -25,10 +25,14 @@ El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 y 0002 aplic
 
 ## Estado
 
-- **Hecho:** marca (tinta + ámbar), Discover feed con intereses por URL (`/?i=Negocios,Marketing`), página de curso con compra simulada que registra el origen de la venta (`?src=discover|agent`), formulario para crear curso.
-- **Cuentas:** registro, inicio de sesión y cierre de sesión con Supabase Auth. `/crear` exige sesión y comprar un curso también.
+- **Hecho:** marca (tinta + ámbar), Discover feed con intereses por URL (`/?i=Negocios,Marketing`), página de programa con compra simulada que registra el origen de la venta (`?src=discover|agent`), formulario para crear curso.
+- **Cuentas:** registro, inicio de sesión y cierre de sesión con Supabase Auth. `/crear` exige sesión y comprar un programa también.
 - **Modo demo:** sin variables de Supabase los datos viven en memoria (`src/lib/data-demo.ts`) y no hay cuentas. No hay cobros reales en ningún modo.
-- **Esquema:** `supabase/migrations/` (perfiles, cursos, inscripciones con RLS y contador de miembros). Con las variables puestas, `src/lib/data.ts` usa la base real.
+- **Esquema:** `supabase/migrations/` (perfiles, programas, inscripciones con RLS y contador de miembros). Con las variables puestas, `src/lib/data.ts` usa la base real.
+
+## Vocabulario
+
+La interfaz llama **programa** a lo que vende un creador y **clases** a sus lecciones. La palabra vive en `src/lib/copy.ts`; el código y la base de datos siguen usando `course`. La ruta pública es `/programa/[slug]`.
 
 ## Modelo de cobro (`src/lib/pricing.ts`)
 

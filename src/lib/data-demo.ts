@@ -4,7 +4,7 @@ import { SEED_COURSES } from "./seed";
 import type { Course, Enrollment, NewCourseInput, SaleOrigin } from "./types";
 
 /**
- * Modo demo: datos en memoria con cursos de ejemplo, sin cuentas.
+ * Modo demo: datos en memoria con programas de ejemplo, sin cuentas.
  * Se usa cuando no hay variables de Supabase (ver src/lib/data.ts).
  */
 type Store = { courses: Course[]; enrollments: Enrollment[] };
@@ -30,7 +30,7 @@ const PALETTES: [string, string][] = [
 ];
 
 export async function createCourse(input: NewCourseInput): Promise<Course> {
-  const base = slugify(input.title) || "curso";
+  const base = slugify(input.title) || "programa";
   let slug = base;
   for (let n = 2; store.courses.some((c) => c.slug === slug); n++) slug = `${base}-${n}`;
 

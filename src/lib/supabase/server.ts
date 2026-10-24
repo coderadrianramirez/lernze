@@ -20,7 +20,7 @@ export async function createSessionClient() {
   });
 }
 
-/** Cliente anónimo sin cookies, para lecturas públicas (cursos publicados). */
+/** Cliente anónimo sin cookies, para lecturas públicas (programas publicados). */
 export function createPublicReadClient() {
   return createPublicClient(supabaseUrl, supabaseKey, {
     auth: { persistSession: false, autoRefreshToken: false },

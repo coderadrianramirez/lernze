@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { signOutAction } from "@/app/auth/actions";
 import { getCurrentUser } from "@/lib/auth";
+import { NOUN } from "@/lib/copy";
 
 async function AccountNav() {
   const user = await getCurrentUser();
@@ -47,7 +48,7 @@ export function Header() {
             Descubrir
           </Link>
           <Link href="/crear" className="rounded-lg px-3 py-2 hover:text-fg">
-            Crear curso
+            Crear {NOUN.one}
           </Link>
         </nav>
         <Suspense fallback={<div className="h-9 w-24 animate-pulse rounded-lg bg-surface" />}>

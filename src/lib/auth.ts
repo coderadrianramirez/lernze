@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { isSupabaseConfigured } from "./supabase/config";
 import { createSessionClient } from "./supabase/server";
 
@@ -8,6 +9,8 @@ const DEMO_USER: CurrentUser = { id: "demo-user", email: "demo@lernze.com", name
 /** Quien hace la petición, validado contra Supabase. Sin Supabase devuelve un usuario demo. */
 export async function getCurrentUser(): Promise<CurrentUser | null> {
   if (!isSupabaseConfigured) return DEMO_USER;
+  // La sesión depende de cada petición: que Next no intente prerenderizarla.
+  await connection();
   const supabase = await createSessionClient();
   const { data } = await supabase.auth.getUser();
   const u = data.user;

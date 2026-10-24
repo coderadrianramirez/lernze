@@ -3,17 +3,18 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { Poster } from "@/components/TrailerCard";
+import { NOUN, cap } from "@/lib/copy";
 import { getCourseBySlug } from "@/lib/data";
 import { COMMISSION_BPS, formatPrice, parseOrigin } from "@/lib/pricing";
 import { enrollAction } from "./actions";
 
-export async function generateMetadata({ params }: PageProps<"/curso/[slug]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/programa/[slug]">): Promise<Metadata> {
   const { slug } = await params;
   const course = await getCourseBySlug(slug);
-  return { title: course?.title ?? "Curso" };
+  return { title: course?.title ?? cap(NOUN.one) };
 }
 
-export default function CoursePage({ params, searchParams }: PageProps<"/curso/[slug]">) {
+export default function CoursePage({ params, searchParams }: PageProps<"/programa/[slug]">) {
   return (
     <main className="mx-auto max-w-[900px] px-4 pt-5 pb-12">
       <Link href="/" className="text-sm text-muted hover:text-fg">
@@ -30,8 +31,8 @@ async function CourseDetail({
   params,
   searchParams,
 }: {
-  params: PageProps<"/curso/[slug]">["params"];
-  searchParams: PageProps<"/curso/[slug]">["searchParams"];
+  params: PageProps<"/programa/[slug]">["params"];
+  searchParams: PageProps<"/programa/[slug]">["searchParams"];
 }) {
   const { slug } = await params;
   const sp = await searchParams;
@@ -52,7 +53,7 @@ async function CourseDetail({
             por <b className="text-fg">{course.creatorName}</b> · {course.category}
             {course.rating > 0 && <> · {course.rating.toFixed(1)} de 5</>} · {course.members.toLocaleString("es")} miembros
           </p>
-          <p className="mt-4 max-w-[65ch] text-[#cfd0da]">{course.description || "Este curso aún no tiene descripción."}</p>
+          <p className="mt-4 max-w-[65ch] text-[#cfd0da]">{course.description || `Este ${NOUN.one} aún no tiene descripción.`}</p>
           <p className="mt-3 max-w-[65ch] text-[#cfd0da]">
             Incluye clases, comunidad con foro, calendario de sesiones en vivo y tabla de posiciones.
           </p>
@@ -63,7 +64,7 @@ async function CourseDetail({
           <p className="mt-1 text-[13px] text-muted">Pago único. Compra simulada: todavía no se cobra.</p>
           {done ? (
             <p role="status" className="mt-4 rounded-lg bg-good/15 p-3 text-sm text-good">
-              Listo, quedaste inscrito en este curso (simulado).
+              Listo, quedaste inscrito en este {NOUN.one} (simulado).
             </p>
           ) : (
             <form action={enrollAction} className="mt-4">

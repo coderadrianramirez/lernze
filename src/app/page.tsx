@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Rail, TrailerCard } from "@/components/TrailerCard";
 import { listCourses, rankForInterests } from "@/lib/data";
+import { NOUN, programPath } from "@/lib/copy";
 import { formatPrice } from "@/lib/pricing";
 import { CATEGORIES, type Category } from "@/lib/types";
 
@@ -35,12 +36,12 @@ async function Feed({ searchParams }: { searchParams: PageProps<"/">["searchPara
   if (courses.length === 0) {
     return (
       <section className="rounded-2xl border border-line bg-surface p-8 text-center">
-        <h1 className="font-display text-3xl font-extrabold tracking-tight">Aún no hay cursos publicados</h1>
+        <h1 className="font-display text-3xl font-extrabold tracking-tight">{`Aún no hay ${NOUN.other} publicados`}</h1>
         <p className="mx-auto mt-2 max-w-[48ch] text-muted">
-          El Discover feed se llena con los cursos de los creadores. Publica el primero y aparecerá aquí con su trailer.
+          {`El Discover feed se llena con los ${NOUN.other} de los creadores.`} Publica el primero y aparecerá aquí con su trailer.
         </p>
         <Link href="/crear" className="mt-5 inline-block rounded-xl bg-accent px-5 py-3 font-bold text-accent-ink">
-          Publicar un curso
+          {`Publicar un ${NOUN.one}`}
         </Link>
       </section>
     );
@@ -72,10 +73,10 @@ async function Feed({ searchParams }: { searchParams: PageProps<"/">["searchPara
             <p className="text-[#d4d5de]">{hero.description}</p>
             <div>
               <Link
-                href={`/curso/${hero.slug}?src=discover`}
+                href={`${programPath(hero.slug)}?src=discover`}
                 className="inline-block rounded-xl bg-accent px-5 py-3 font-bold text-accent-ink"
               >
-                Ver curso · {formatPrice(hero.priceCents, hero.currency)}
+                Ver {NOUN.one} · {formatPrice(hero.priceCents, hero.currency)}
               </Link>
             </div>
           </div>

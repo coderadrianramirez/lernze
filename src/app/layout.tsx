@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import { Header } from "@/components/Header";
+import { NOUN } from "@/lib/copy";
 import "./globals.css";
 
 const bricolage = Bricolage_Grotesque({
@@ -17,7 +18,7 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: { default: "Lernze", template: "%s · Lernze" },
   description:
-    "Vende cursos y comunidades, y deja que Lernze te muestre a compradores nuevos con trailers y clips.",
+    `Vende ${NOUN.other} y comunidades, y deja que Lernze te muestre a compradores nuevos con trailers y clips.`,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

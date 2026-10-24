@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { createCourse } from "@/lib/data";
+import { programPath } from "@/lib/copy";
 import { CATEGORIES, type Category } from "@/lib/types";
 
 export type CreateState = { errors: Partial<Record<"title" | "price" | "category" | "trailerUrl" | "creatorName", string>> };
@@ -43,5 +44,5 @@ export async function createCourseAction(_prev: CreateState, formData: FormData)
     trailerUrl: trailerRaw || null,
   }, user.id);
   revalidatePath("/");
-  redirect(`/curso/${course.slug}`);
+  redirect(programPath(course.slug));
 }

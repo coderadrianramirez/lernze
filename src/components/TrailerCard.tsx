@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { programPath } from "@/lib/copy";
 import { formatDuration, formatPrice } from "@/lib/pricing";
 import type { Course } from "@/lib/types";
 
@@ -36,7 +37,7 @@ export function Poster({ course, className = "" }: { course: Course; className?:
 export function TrailerCard({ course, why }: { course: Course; why?: string }) {
   return (
     <Link
-      href={`/curso/${course.slug}?src=discover`}
+      href={`${programPath(course.slug)}?src=discover`}
       className="group block w-[min(300px,78vw)] flex-none snap-start"
     >
       <div className="relative transition-transform duration-200 group-hover:-translate-y-0.5 group-focus-visible:-translate-y-0.5">

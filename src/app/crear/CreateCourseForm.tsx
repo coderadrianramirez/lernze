@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { createCourseAction, type CreateState } from "./actions";
+import { NOUN } from "@/lib/copy";
 import { CATEGORIES } from "@/lib/types";
 
 const initial: CreateState = { errors: {} };
@@ -16,7 +17,7 @@ export function CreateCourseForm() {
   return (
     <form action={action} className="grid gap-5" noValidate>
       <div>
-        <label htmlFor="title" className="mb-1.5 block text-sm">Título del curso</label>
+        <label htmlFor="title" className="mb-1.5 block text-sm">Título del {NOUN.one}</label>
         <input id="title" name="title" className={field} aria-invalid={!!e.title} aria-describedby="title-err" placeholder="Ej. Abre tu negocio online desde cero" />
         <p id="title-err" className="mt-1 text-[13px] text-bad">{e.title}</p>
       </div>
@@ -56,7 +57,7 @@ export function CreateCourseForm() {
         <p id="trailer-err" className="mt-1 text-[13px] text-bad">{e.trailerUrl}</p>
         <p className="mt-2 text-[13px] text-muted">
           Si lo dejas vacío, Lernze generará un trailer con IA a partir de tu temario y te lo mostrará para aprobar. Esa
-          parte aún está en construcción: por ahora el curso sale con la etiqueta de trailer IA.
+          parte aún está en construcción: por ahora el {NOUN.one} sale con la etiqueta de trailer IA.
         </p>
       </div>
 
@@ -65,7 +66,7 @@ export function CreateCourseForm() {
           disabled={pending}
           className="cursor-pointer rounded-xl bg-accent px-5 py-3 font-bold text-accent-ink disabled:cursor-default disabled:opacity-60"
         >
-          {pending ? "Publicando..." : "Publicar curso"}
+          {pending ? "Publicando..." : `Publicar ${NOUN.one}`}
         </button>
       </div>
     </form>

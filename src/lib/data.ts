@@ -23,7 +23,7 @@ export function enroll(course: Course, origin: SaleOrigin, userId: string): Prom
   return isSupabaseConfigured ? db.enroll(course, origin, userId) : demo.enroll(course, origin);
 }
 
-/** Orden de "Para ti": primero los cursos de tus intereses, luego por valoración. */
+/** Orden de "Para ti": primero los programas de tus intereses, luego por valoración. */
 export function rankForInterests(courses: Course[], interests: Category[]): Course[] {
   const mine = new Set(interests);
   return courses
