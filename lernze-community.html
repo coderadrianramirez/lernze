@@ -128,6 +128,30 @@ h3{font-size:16px}
 .lvtable{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
 .lvtable span{background:var(--surface-2);border-radius:8px;padding:5px 10px;font-size:13px;font-variant-numeric:tabular-nums}
 .lvtable b{color:var(--accent)}
+/* comentarios de la clase */
+.chead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.chead h2{font-size:18px}
+.csort{display:flex;gap:6px}
+.csort button{background:var(--surface-2);border:1px solid transparent;border-radius:99px;padding:5px 12px;color:var(--muted);font-size:13px}
+.csort button[aria-pressed=true]{border-color:var(--fg);color:var(--fg)}
+.compose2{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;margin-bottom:6px}
+.compose2 .f{display:grid;gap:8px;min-width:0}
+.compose2 textarea{width:100%;min-height:64px;resize:vertical;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.compose2 .row2{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.compose2 .min{width:min(100%,210px);background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:7px 10px;font-size:13px}
+.cerr{min-height:18px;font-size:13px;color:var(--bad);margin:0 0 6px 46px}
+.cc{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;padding:14px 0;border-top:1px solid var(--line)}
+.cc .who{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.cc .who b{color:var(--fg);font-size:14px}
+.cc p{margin:4px 0 0;color:#d4d5de;white-space:pre-line;overflow-wrap:anywhere}
+.tagc{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(255,181,71,.16);color:var(--accent)}
+.tagm{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--surface-2);color:var(--ai);font-variant-numeric:tabular-nums}
+.cc .acts{margin-top:4px;margin-left:-10px}
+.replies{display:grid;gap:0;margin-top:6px}
+.replies .cc{padding:10px 0 0;border-top:0}
+.rform{display:flex;gap:8px;margin-top:8px}
+.rform input{flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.cempty{padding:22px 0 8px;text-align:center;color:var(--muted);border-top:1px solid var(--line)}
 [role=tabpanel][hidden]{display:none}
 footer{padding-block:0 40px;color:var(--muted);font-size:12.5px}
 </style>
@@ -177,10 +201,13 @@ footer{padding-block:0 40px;color:var(--muted);font-size:12.5px}
       <small style="color:var(--muted)" id="ctext"></small>
       <div id="mods"></div>
     </div>
-    <div class="panel">
-      <div class="player"><span class="big" id="pbig">1</span><h2 id="ptitle"></h2><button class="pl" aria-label="Reproducir"></button></div>
-      <div class="lessonbar"><div><h3 id="ltitle"></h3><small style="color:var(--muted)" id="lmeta"></small></div><button class="btn" id="complete">Marcar como vista</button></div>
-      <div class="res" id="files"></div>
+    <div class="stack">
+      <div class="panel">
+        <div class="player"><span class="big" id="pbig">1</span><h2 id="ptitle"></h2><button class="pl" aria-label="Reproducir"></button></div>
+        <div class="lessonbar"><div><h3 id="ltitle"></h3><small style="color:var(--muted)" id="lmeta"></small></div><button class="btn" id="complete">Marcar como vista</button></div>
+        <div class="res" id="files"></div>
+      </div>
+      <section class="panel" id="cbox" aria-label="Comentarios de la clase"></section>
     </div>
   </div>
 </div>
@@ -275,7 +302,56 @@ function renderMods(){var my=lvlOf(myPts),n=Object.keys(done).length;
 function renderLesson(){var x=LIST.filter(function(q){return q.k===cur})[0];
   document.getElementById('pbig').textContent=cur;document.getElementById('ptitle').textContent=x.t;document.getElementById('ltitle').textContent=cur+' '+x.t;document.getElementById('lmeta').textContent=x.m+' · '+x.d;
   var c=document.getElementById('complete');c.textContent=done[cur]?'Vista':'Marcar como vista';c.disabled=!!done[cur];
-  document.getElementById('files').innerHTML='<div class="file">Guía en PDF<small>2 páginas</small></div><div class="file">Checklist de documentos<small>Plantilla</small></div>'}
+  document.getElementById('files').innerHTML='<div class="file">Guía en PDF<small>2 páginas</small></div><div class="file">Checklist de documentos<small>Plantilla</small></div>';
+  var t0=document.getElementById('c-text'),m0=document.getElementById('c-min');if(t0)t0.value='';if(m0)m0.value='';
+  replyFor=null;cErr='';cDraft='';cMin='';renderComments()}
+
+// comentarios de la comunidad, por clase (más recientes primero)
+var COMMENTS={
+ '2.2':[
+  {id:1,by:'Rafa Duarte',lv:2,ago:'hace 20 min',min:'',text:'Excelente explicación, gracias Marisol.',likes:3,replies:[]},
+  {id:2,by:'Jorge Alcántara',lv:4,ago:'hace 1 h',min:'6:20',text:'Dato útil: el agente tiene que poder recibir documentos en horario laboral en Florida. No sirve cualquier servicio.',likes:9,replies:[]},
+  {id:3,by:'Ana Pérez',lv:5,ago:'hace 3 h',min:'3:10',text:'¿Puedo poner mi propia dirección de casa como Registered Agent? Me da pena que quede pública.',likes:14,replies:[
+    {by:'Marisol Vega',lv:9,role:'Creadora',ago:'hace 2 h',text:'Puedes, pero tu dirección queda en el registro público. Con un servicio de agente la protegen. Lo explico mejor en el minuto 6.'},
+    {by:'Carla Núñez',lv:3,ago:'hace 1 h',text:'Yo usé un servicio y me costó $49 al año.'}]}
+ ],
+ '2.1':[
+  {id:11,by:'Luis Fernández',lv:4,ago:'ayer',min:'11:05',text:'Mi solicitud la rechazaron por poner mal el nombre del negocio. Revisen esa parte con calma.',likes:6,replies:[]}
+ ],
+ '1.1':[
+  {id:21,by:'Yaneisy Lora',lv:3,ago:'hace 2 días',min:'',text:'Mejor explicado que cualquier video que vi antes. Ya tengo claro cuándo me conviene una LLC.',likes:5,replies:[]}
+ ]
+};
+var cLiked={},cSort='recent',replyFor=null,cErr='',cNext=100,cDraft='',cMin='';
+function clist(){return COMMENTS[cur]||(COMMENTS[cur]=[])}
+function oneComment(c,isReply){
+  var tags=(c.role?'<span class="tagc">'+esc(c.role)+'</span>':'')+(c.min?'<span class="tagm">Minuto '+esc(c.min)+'</span>':'');
+  var likes=c.likes+(cLiked[c.id]?1:0);
+  var acts=isReply?'':'<div class="acts"><button class="act" data-clike="'+c.id+'" aria-pressed="'+!!cLiked[c.id]+'">♥ <span>'+likes+'</span></button><button class="act" data-creply="'+c.id+'">Responder</button></div>';
+  var reps=isReply?'':'<div class="replies">'+c.replies.map(function(r){return oneComment(r,true)}).join('')+'</div>'+(replyFor===c.id?'<form class="rform" data-rform="'+c.id+'"><input id="r-'+c.id+'" aria-label="Escribe tu respuesta" placeholder="Escribe tu respuesta"><button class="btn sm">Enviar</button></form>':'');
+  return '<div class="cc">'+avatar(c.by,isReply?28:36,c.lv)+'<div><div class="who"><b>'+esc(c.by)+'</b>'+tags+'<span>'+esc(c.ago)+'</span></div><p>'+esc(c.text)+'</p>'+acts+reps+'</div></div>'}
+function renderComments(){
+  var box=document.getElementById('cbox');if(!box)return;
+  var ta=document.getElementById('c-text'),mi=document.getElementById('c-min');
+  if(ta)cDraft=ta.value;if(mi)cMin=mi.value;
+  var arr=clist().slice();
+  if(cSort==='top')arr.sort(function(a,b){return (b.likes+(cLiked[b.id]?1:0))-(a.likes+(cLiked[a.id]?1:0))});
+  var total=arr.reduce(function(n,c){return n+1+c.replies.length},0);
+  box.innerHTML='<div class="chead"><h2>Comentarios de la comunidad · '+total+'</h2><div class="csort" role="group" aria-label="Orden"><button data-sort="recent" aria-pressed="'+(cSort==='recent')+'">Más recientes</button><button data-sort="top" aria-pressed="'+(cSort==='top')+'">Más útiles</button></div></div>'+
+   '<form class="compose2" id="cform">'+avatar('Daniela',36,lvlOf(myPts))+'<div class="f"><label for="c-text" style="position:absolute;left:-9999px">Escribe un comentario sobre esta clase</label><textarea id="c-text" placeholder="Pregunta o comenta algo sobre esta clase">'+esc(cDraft)+'</textarea><div class="row2"><input class="min" id="c-min" inputmode="numeric" placeholder="Minuto del video (3:10)" aria-label="Minuto del video, opcional" value="'+esc(cMin)+'"><button class="btn sm">Comentar</button></div></div></form>'+
+   '<p class="cerr" id="cerr" role="alert">'+esc(cErr)+'</p>'+
+   (arr.length?arr.map(function(c){return oneComment(c,false)}).join(''):'<div class="cempty">Aún no hay comentarios en esta clase. Haz la primera pregunta.</div>');
+  box.querySelectorAll('[data-sort]').forEach(function(b){b.onclick=function(){cSort=b.dataset.sort;renderComments()}});
+  box.querySelectorAll('[data-clike]').forEach(function(b){b.onclick=function(){var id=+b.dataset.clike;cLiked[id]=!cLiked[id];renderComments()}});
+  box.querySelectorAll('[data-creply]').forEach(function(b){b.onclick=function(){var id=+b.dataset.creply;replyFor=replyFor===id?null:id;renderComments();if(replyFor!==null){var i=document.getElementById('r-'+id);if(i)i.focus()}}});
+  box.querySelectorAll('[data-rform]').forEach(function(f){f.onsubmit=function(e){e.preventDefault();var id=+f.dataset.rform,i=document.getElementById('r-'+id),t=i.value.trim();if(!t)return;
+    clist().filter(function(c){return c.id===id})[0].replies.push({by:'Daniela (tú)',lv:lvlOf(myPts),ago:'ahora',text:t});replyFor=null;renderComments()}});
+  document.getElementById('cform').onsubmit=function(e){e.preventDefault();
+    var t=document.getElementById('c-text').value.trim(),m=document.getElementById('c-min').value.trim();
+    if(!t){cErr='Escribe tu comentario antes de enviarlo.';renderComments();document.getElementById('c-text').focus();return}
+    if(m&&!/^\d{1,2}:\d{2}$/.test(m)){cErr='Escribe el minuto como 3:10 o déjalo vacío.';renderComments();document.getElementById('c-min').focus();return}
+    clist().unshift({id:cNext++,by:'Daniela (tú)',lv:lvlOf(myPts),ago:'ahora',min:m,text:t,likes:0,replies:[]});
+    cErr='';cDraft='';cMin='';document.getElementById('c-text').value='';document.getElementById('c-min').value='';renderComments()}}
 document.getElementById('complete').onclick=function(){done[cur]=1;var i=LIST.findIndex(function(q){return q.k===cur});
   var nx=LIST.slice(i+1).filter(function(q){return q.lv<=lvlOf(myPts)})[0];if(nx)cur=nx.k;renderMods();renderLesson()};
 
