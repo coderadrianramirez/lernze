@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
 import { Header } from "@/components/Header";
 import { NOUN } from "@/lib/copy";
 import "./globals.css";
+import "./stage.css";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",

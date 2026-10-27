@@ -8,3 +8,6 @@ export const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 /** Ruta pública de un programa. */
 export const programPath = (slug: string) => `/programa/${slug}`;
+
+/** "1 miembro", "2.140 miembros". */
+export const memberCount = (n: number) => `${n.toLocaleString("es-US")} ${n === 1 ? "miembro" : "miembros"}`;

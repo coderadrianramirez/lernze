@@ -7,6 +7,25 @@ export type TrailerSource = "creator" | "ai";
 /** De dónde llegó la venta. Define la comisión de Lernze. */
 export type SaleOrigin = "own" | "discover" | "agent";
 
+export type PropKind = "doc" | "bubble" | "scissors" | "phone" | "house" | "bottle" | "percent" | "chip" | "case";
+export type BustKind = "long" | "short" | "bun" | "curly" | "beard";
+
+/** Datos con los que se dibuja la portada ilustrada de un programa. */
+export type ArtConfig = {
+  /** Líneas del título tal como se muestran (máximo 3). */
+  lines: string[];
+  /** Índice de la línea resaltada con el color de brillo. */
+  hl: number;
+  prop: PropKind;
+  bust: BustKind;
+  /** Colores en hexadecimal de 6 dígitos. */
+  outfit: string;
+  glow: string;
+  a: string;
+  b: string;
+  glyph: string;
+};
+
 export type Course = {
   id: string;
   slug: string;
@@ -17,13 +36,16 @@ export type Course = {
   priceCents: number;
   currency: string;
   trailerSource: TrailerSource;
+  /** Video del trailer. Si falta, se muestra el trailer animado con las frases de `scenes`. */
   trailerUrl: string | null;
   trailerSeconds: number;
   members: number;
   rating: number;
-  /** Dos colores hex para el póster generado. */
-  palette: [string, string];
-  glyph: string;
+  art: ArtConfig;
+  /** Cinco frases del trailer animado: gancho, problema, solución, testimonio y llamada. */
+  scenes: string[];
+  /** Programa de ejemplo, cargado para mostrar el diseño. */
+  demo: boolean;
 };
 
 export type NewCourseInput = {

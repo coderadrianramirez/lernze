@@ -1,6 +1,7 @@
-import { commissionCents } from "./pricing";
+import { defaultArt, defaultScenes } from "./art";
+import { DEMO_PROGRAMS } from "./demo-programs";
+import { commissionCents, formatPrice } from "./pricing";
 import { slugify } from "./slug";
-import { SEED_COURSES } from "./seed";
 import type { Course, Enrollment, NewCourseInput, SaleOrigin } from "./types";
 
 /**
@@ -10,7 +11,7 @@ import type { Course, Enrollment, NewCourseInput, SaleOrigin } from "./types";
 type Store = { courses: Course[]; enrollments: Enrollment[] };
 
 const g = globalThis as unknown as { __lernze?: Store };
-const store: Store = (g.__lernze ??= { courses: [...SEED_COURSES], enrollments: [] });
+const store: Store = (g.__lernze ??= { courses: [...DEMO_PROGRAMS], enrollments: [] });
 
 export async function listCourses(): Promise<Course[]> {
   return store.courses;
@@ -19,15 +20,6 @@ export async function listCourses(): Promise<Course[]> {
 export async function getCourseBySlug(slug: string): Promise<Course | null> {
   return store.courses.find((c) => c.slug === slug) ?? null;
 }
-
-const PALETTES: [string, string][] = [
-  ["#12304a", "#5a2340"],
-  ["#0f3d3e", "#1b2a5a"],
-  ["#3b1450", "#0f3a50"],
-  ["#173a2d", "#0d2a45"],
-  ["#4a1b3c", "#2b1b5a"],
-  ["#1b4a46", "#3a1b4a"],
-];
 
 export async function createCourse(input: NewCourseInput): Promise<Course> {
   const base = slugify(input.title) || "programa";
@@ -46,11 +38,12 @@ export async function createCourse(input: NewCourseInput): Promise<Course> {
     // Sin trailer propio, Lernze lo genera con IA (pendiente de construir).
     trailerSource: input.trailerUrl ? "creator" : "ai",
     trailerUrl: input.trailerUrl,
-    trailerSeconds: input.trailerUrl ? 0 : 90,
+    trailerSeconds: 0,
     members: 0,
     rating: 0,
-    palette: PALETTES[store.courses.length % PALETTES.length],
-    glyph: input.title.trim().charAt(0).toUpperCase() || "$",
+    art: defaultArt(input.title, input.category, slug),
+    scenes: defaultScenes(input.title, input.description, input.creatorName, formatPrice(input.priceCents)),
+    demo: false,
   };
   store.courses.unshift(course);
   return course;

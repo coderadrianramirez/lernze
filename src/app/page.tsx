@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { Rail, TrailerCard } from "@/components/TrailerCard";
+import { Feed, type FeedRow } from "@/components/Feed";
+import { NOUN } from "@/lib/copy";
 import { listCourses, rankForInterests } from "@/lib/data";
-import { NOUN, programPath } from "@/lib/copy";
-import { formatPrice } from "@/lib/pricing";
 import { CATEGORIES, type Category } from "@/lib/types";
 
 function parseInterests(raw: string | string[] | undefined): Category[] {
@@ -12,79 +11,66 @@ function parseInterests(raw: string | string[] | undefined): Category[] {
   return v.split(",").filter((x): x is Category => (CATEGORIES as string[]).includes(x));
 }
 
+function discoverHref(interests: Category[], fmt: "h" | "v") {
+  const p = new URLSearchParams();
+  if (interests.length) p.set("i", interests.join(","));
+  if (fmt === "v") p.set("f", "v");
+  const q = p.toString();
+  return q ? `/?${q}` : "/";
+}
+
 export default function Discover({ searchParams }: PageProps<"/">) {
   return (
-    <main className="mx-auto max-w-[1180px] px-4 pt-5 pb-12">
-      <Suspense fallback={<div className="min-h-[320px] animate-pulse rounded-2xl bg-surface" aria-label="Cargando" />}>
-        <Feed searchParams={searchParams} />
+    <main>
+      <Suspense fallback={<div className="h-[420px] animate-pulse bg-surface" aria-label="Cargando" />}>
+        <Page searchParams={searchParams} />
       </Suspense>
     </main>
   );
 }
 
-async function Feed({ searchParams }: { searchParams: PageProps<"/">["searchParams"] }) {
+async function Page({ searchParams }: { searchParams: PageProps<"/">["searchParams"] }) {
   const sp = await searchParams;
   const interests = parseInterests(sp.i);
+  const fmt: "h" | "v" = sp.f === "v" ? "v" : "h";
   const courses = await listCourses();
-
-  const forYou = rankForInterests(courses, interests);
-  const trending = [...courses].sort((a, b) => b.members - a.members).slice(0, 6);
-  const short = courses.filter((c) => c.trailerSeconds > 0 && c.trailerSeconds <= 105);
-  const cheap = courses.filter((c) => c.priceCents < 10_000).sort((a, b) => a.priceCents - b.priceCents);
-  const hero = forYou[0] ?? trending[0];
 
   if (courses.length === 0) {
     return (
-      <section className="rounded-2xl border border-line bg-surface p-8 text-center">
-        <h1 className="font-display text-3xl font-extrabold tracking-tight">{`Aún no hay ${NOUN.other} publicados`}</h1>
-        <p className="mx-auto mt-2 max-w-[48ch] text-muted">
-          {`El Discover feed se llena con los ${NOUN.other} de los creadores.`} Publica el primero y aparecerá aquí con su trailer.
-        </p>
-        <Link href="/crear" className="mt-5 inline-block rounded-xl bg-accent px-5 py-3 font-bold text-accent-ink">
-          {`Publicar un ${NOUN.one}`}
-        </Link>
-      </section>
+      <div className="mx-auto max-w-[1180px] px-4 pt-5">
+        <section className="rounded-2xl border border-line bg-surface p-8 text-center">
+          <h1 className="font-display text-3xl font-extrabold tracking-tight">{`Aún no hay ${NOUN.other} publicados`}</h1>
+          <p className="mx-auto mt-2 max-w-[48ch] text-muted">
+            {`El Discover feed se llena con los ${NOUN.other} de los creadores. Publica el primero y aparecerá aquí con su trailer.`}
+          </p>
+          <Link href="/crear" className="mt-5 inline-block rounded-xl bg-accent px-5 py-3 font-bold text-accent-ink">
+            {`Publicar un ${NOUN.one}`}
+          </Link>
+        </section>
+      </div>
     );
   }
 
-  const toggle = (cat: Category) => {
-    const next = interests.includes(cat) ? interests.filter((c) => c !== cat) : [...interests, cat];
-    return next.length ? `/?i=${next.join(",")}` : "/";
-  };
+  const forYou = rankForInterests(courses, interests);
+  const trending = [...courses].sort((a, b) => b.members - a.members).slice(0, 8);
+  const rated = [...courses].filter((c) => c.rating > 0).sort((a, b) => b.rating - a.rating || b.members - a.members);
+  const cheap = courses.filter((c) => c.priceCents < 10_000).sort((a, b) => a.priceCents - b.priceCents);
+  const hero = forYou[0] ?? trending[0];
 
-  return (
-    <>
-      {hero && (
-        <section
-          className="relative flex min-h-[320px] items-end overflow-hidden rounded-2xl"
-          style={{ background: `linear-gradient(120deg, ${hero.palette[0]}, ${hero.palette[1]})` }}
-        >
-          <div aria-hidden className="absolute inset-0 bg-[radial-gradient(circle_at_78%_30%,rgba(255,181,71,.3),transparent_45%),linear-gradient(0deg,rgba(13,14,20,.92),rgba(13,14,20,.15)_65%)]" />
-          <div className="relative grid max-w-[640px] gap-3 p-6 sm:p-8">
-            <div className="flex flex-wrap items-center gap-2 text-xs">
-              <span className={`rounded-full bg-white/10 px-2.5 py-1 font-medium ${hero.trailerSource === "ai" ? "text-ai" : "text-accent"}`}>
-                {hero.trailerSource === "ai" ? "Trailer generado con IA" : "Trailer del creador"}
-              </span>
-              <span className="rounded-full bg-white/10 px-2.5 py-1">{hero.category}</span>
-            </div>
-            <h1 className="font-display text-[clamp(30px,5vw,48px)] leading-[1.05] font-extrabold tracking-tight text-balance">
-              {hero.title}
-            </h1>
-            <p className="text-[#d4d5de]">{hero.description}</p>
-            <div>
-              <Link
-                href={`${programPath(hero.slug)}?src=discover`}
-                className="inline-block rounded-xl bg-accent px-5 py-3 font-bold text-accent-ink"
-              >
-                Ver {NOUN.one} · {formatPrice(hero.priceCents, hero.currency)}
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
+  const rows: FeedRow[] = [
+    ...(forYou.length ? [{ key: "para-ti", title: "Para ti", items: forYou }] : []),
+    { key: "tendencia", title: "Tendencia esta semana", items: trending },
+    ...(rated.length ? [{ key: "valorados", title: "Mejor valorados", items: rated }] : []),
+    ...(cheap.length ? [{ key: "baratos", title: "Por menos de $100", items: cheap }] : []),
+  ];
 
-      <div role="group" aria-label="Tus intereses" className="scrollbar-thin mt-5 flex items-center gap-2 overflow-x-auto pb-1">
-        <span className="mr-1 text-[13px] whitespace-nowrap text-muted">Tus intereses</span>
+  const toggle = (cat: Category) =>
+    discoverHref(interests.includes(cat) ? interests.filter((c) => c !== cat) : [...interests, cat], fmt);
+
+  const controls = (
+    <div className="mt-1.5 flex flex-wrap items-center gap-x-6 gap-y-3.5">
+      <div key="intereses" role="group" aria-label="Tus intereses" className="flex items-center gap-2 overflow-x-auto">
+        <span key="etiqueta" className="mr-0.5 text-[13px] whitespace-nowrap text-muted">Tus intereses</span>
         {CATEGORIES.map((cat) => {
           const on = interests.includes(cat);
           return (
@@ -102,33 +88,30 @@ async function Feed({ searchParams }: { searchParams: PageProps<"/">["searchPara
           );
         })}
       </div>
+      <div key="formato" role="group" aria-label="Formato de portada" className="flex rounded-[10px] border border-line bg-surface p-[3px] text-[13px]">
+        {(["h", "v"] as const).map((f) => (
+          <Link
+            key={f}
+            href={discoverHref(interests, f)}
+            aria-current={fmt === f ? "true" : undefined}
+            scroll={false}
+            className={`rounded-[7px] px-3 py-[5px] ${fmt === f ? "bg-surface-2 text-fg" : "text-muted"}`}
+          >
+            {f === "h" ? "Horizontal" : "Vertical"}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
 
-      {forYou.length > 0 && (
-        <Rail title="Para ti" subtitle={`Según ${interests.join(" y ").toLowerCase()}`}>
-          {forYou.map((c) => (
-            <TrailerCard key={c.id} course={c} why={`Porque te interesa ${c.category.toLowerCase()}`} />
-          ))}
-        </Rail>
-      )}
-      {forYou.length === 0 && (
-        <p className="mt-6 text-sm text-muted">Elige uno o más intereses para armar tu fila &ldquo;Para ti&rdquo;.</p>
-      )}
-
-      <Rail title="Tendencia esta semana" subtitle="Lo que más se inscribe ahora">
-        {trending.map((c) => (
-          <TrailerCard key={c.id} course={c} why={`${c.members.toLocaleString("es")} personas ya están dentro`} />
-        ))}
-      </Rail>
-      <Rail title="Trailers cortos" subtitle="Para decidir en un minuto">
-        {short.map((c) => (
-          <TrailerCard key={c.id} course={c} />
-        ))}
-      </Rail>
-      <Rail title="Por menos de $100" subtitle="Entra hoy y empieza esta noche">
-        {cheap.map((c) => (
-          <TrailerCard key={c.id} course={c} />
-        ))}
-      </Rail>
-    </>
+  return (
+    <Feed
+      key={`${fmt}|${interests.join(",")}`}
+      hero={hero}
+      rows={rows}
+      fmt={fmt}
+      controls={controls}
+      demo={courses.some((c) => c.demo)}
+    />
   );
 }

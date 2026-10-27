@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { Poster } from "@/components/TrailerCard";
-import { NOUN, cap } from "@/lib/copy";
+import { StageLive } from "@/components/StageLive";
+import { NOUN, cap, memberCount } from "@/lib/copy";
 import { getCourseBySlug } from "@/lib/data";
 import { COMMISSION_BPS, formatPrice, parseOrigin } from "@/lib/pricing";
 import { enrollAction } from "./actions";
@@ -45,13 +45,15 @@ async function CourseDetail({
   return (
       <div className="mt-4 grid gap-6 md:grid-cols-[minmax(0,1fr)_280px]">
         <div className="min-w-0">
-          <Poster course={course} />
+          <div className="lz-detail">
+            <StageLive course={course} active controls />
+          </div>
           <h1 className="mt-5 font-display text-[clamp(28px,4vw,40px)] leading-[1.05] font-extrabold tracking-tight text-balance">
             {course.title}
           </h1>
           <p className="mt-2 text-sm text-muted">
             por <b className="text-fg">{course.creatorName}</b> · {course.category}
-            {course.rating > 0 && <> · {course.rating.toFixed(1)} de 5</>} · {course.members.toLocaleString("es")} miembros
+            {course.rating > 0 && <> · {course.rating.toFixed(1)} de 5</>} · {memberCount(course.members)}
           </p>
           <p className="mt-4 max-w-[65ch] text-[#cfd0da]">{course.description || `Este ${NOUN.one} aún no tiene descripción.`}</p>
           <p className="mt-3 max-w-[65ch] text-[#cfd0da]">

@@ -34,6 +34,18 @@ El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 y 0002 aplic
 
 La interfaz llama **programa** a lo que vende un creador y **clases** a sus lecciones. La palabra vive en `src/lib/copy.ts`; el código y la base de datos siguen usando `course`. La ruta pública es `/programa/[slug]`.
 
+## Portadas y trailers
+
+Cada programa se dibuja como una portada ilustrada (`src/lib/art.ts`, datos en la columna `art`) y tiene un trailer: un video en `trailer_url` o, si falta, un trailer animado con las cinco frases de `scenes`. Al pasar el mouse sobre una portada se abre una tarjeta ampliada que reproduce el trailer.
+
+- **Programas de ejemplo:** `src/lib/demo-programs.ts` (modo demo y SQL de carga). En la base se cargan con `supabase/seed/demo_programs.sql` y llevan `demo = true`. Para quitarlos: `delete from public.courses where demo;`.
+- **Videos de prueba:** se graban con Chrome y se codifican con las librerías de macOS, sin instalar nada.
+  1. `ENABLE_RENDER=1 npm run build && ENABLE_RENDER=1 PORT=3200 npm run start`
+  2. `node scripts/render-trailers.mjs http://127.0.0.1:3200 /tmp/lz-frames`
+  3. `swiftc -O scripts/encode.swift -o /tmp/lz-encode && /tmp/lz-encode /tmp/lz-frames/<slug> 24 <slug>.mp4`
+  4. Se suben al bucket `trailers` dentro de la carpeta del usuario (`trailers/<id>/<slug>.mp4`), como lo harán los creadores.
+  La ruta `/render/<slug>` solo existe con `ENABLE_RENDER=1`; en producción responde 404.
+
 ## Modelo de cobro (`src/lib/pricing.ts`)
 
 | Origen de la venta | Comisión |

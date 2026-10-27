@@ -1,4 +1,5 @@
-import { commissionCents } from "./pricing";
+import { defaultArt, defaultScenes, sanitizeArt } from "./art";
+import { commissionCents, formatPrice } from "./pricing";
 import { createPublicReadClient, createSessionClient } from "./supabase/server";
 import { slugify } from "./slug";
 import type { Category, Course, Enrollment, NewCourseInput, SaleOrigin } from "./types";
@@ -15,10 +16,11 @@ type CourseRow = {
   trailer_source: "creator" | "ai";
   trailer_url: string | null;
   trailer_seconds: number;
-  palette: string[];
-  glyph: string;
   rating: number | null;
   members_count: number;
+  art: unknown;
+  scenes: string[] | null;
+  demo: boolean;
 };
 
 function toCourse(row: CourseRow): Course {
@@ -36,8 +38,9 @@ function toCourse(row: CourseRow): Course {
     trailerSeconds: row.trailer_seconds,
     members: row.members_count,
     rating: row.rating ?? 0,
-    palette: [row.palette[0] ?? "#12304a", row.palette[1] ?? "#5a2340"],
-    glyph: row.glyph,
+    art: sanitizeArt(row.art, defaultArt(row.title, row.category, row.slug)),
+    scenes: row.scenes && row.scenes.length ? row.scenes : defaultScenes(row.title, row.description, row.creator_name, formatPrice(row.price_cents, row.currency)),
+    demo: row.demo,
   };
 }
 
@@ -59,15 +62,6 @@ export async function getCourseBySlug(slug: string): Promise<Course | null> {
   return data ? toCourse(data as CourseRow) : null;
 }
 
-const PALETTES = [
-  ["#12304a", "#5a2340"],
-  ["#0f3d3e", "#1b2a5a"],
-  ["#3b1450", "#0f3a50"],
-  ["#173a2d", "#0d2a45"],
-  ["#4a1b3c", "#2b1b5a"],
-  ["#1b4a46", "#3a1b4a"],
-];
-
 export async function createCourse(input: NewCourseInput, userId: string): Promise<Course> {
   const supabase = await createSessionClient();
   const base = slugify(input.title) || "programa";
@@ -86,9 +80,9 @@ export async function createCourse(input: NewCourseInput, userId: string): Promi
         price_cents: input.priceCents,
         trailer_source: input.trailerUrl ? "creator" : "ai",
         trailer_url: input.trailerUrl,
-        trailer_seconds: input.trailerUrl ? 0 : 90,
-        palette: PALETTES[Math.floor(Math.random() * PALETTES.length)],
-        glyph: input.title.trim().charAt(0).toUpperCase() || "$",
+        trailer_seconds: 0,
+        art: defaultArt(input.title, input.category, slug),
+        scenes: defaultScenes(input.title, input.description, input.creatorName, formatPrice(input.priceCents)),
       })
       .select("*")
       .single();
