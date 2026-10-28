@@ -12,13 +12,13 @@ async function AccountNav() {
       <div className="flex items-center gap-2">
         <Link
           href="/entrar"
-          className="rounded-lg px-3.5 py-2 text-sm text-muted transition-colors hover:text-fg"
+          className="rounded-lg px-4 py-2.5 text-sm text-muted transition-colors hover:text-fg"
         >
           Entrar
         </Link>
         <Link
           href="/registro"
-          className="rounded-lg bg-accent px-3.5 py-2 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90"
+          className="rounded-lg bg-accent px-4 py-2.5 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90"
         >
           Crear cuenta
         </Link>
@@ -30,7 +30,7 @@ async function AccountNav() {
     <div className="flex items-center gap-3">
       <Link
         href="/crear"
-        className="hidden rounded-lg bg-surface-2 px-3.5 py-2 text-sm font-medium text-fg transition-colors hover:text-accent sm:block"
+        className="hidden rounded-lg bg-surface-2 px-4 py-2.5 text-sm font-medium text-fg transition-colors hover:text-accent sm:block"
       >
         Crear programa
       </Link>
@@ -49,10 +49,10 @@ async function AccountNav() {
 export function Header() {
   return (
     <header className="sticky top-0 z-10 border-b border-line bg-ink/90 backdrop-blur">
-      <div className="mx-auto flex max-w-[1180px] items-center gap-4 px-4 py-3">
+      <div className="mx-auto flex max-w-[1180px] items-center gap-4 px-5 py-4">
         <Link
           href="/"
-          className="shrink-0 font-display text-2xl font-extrabold tracking-tight"
+          className="shrink-0 font-display text-[26px] font-extrabold tracking-tight"
           aria-label="Lernze — inicio"
         >
           lernze<span className="text-accent">.</span>
