@@ -11,7 +11,7 @@ import { StageLive } from "./StageLive";
 export type FeedRow = { key: string; title: string; items: Course[] };
 
 type Props = {
-  hero: Course;
+  heroes: Course[];
   rows: FeedRow[];
   /** Controles entre el billboard y las filas (intereses). */
   controls: ReactNode;
@@ -20,7 +20,7 @@ type Props = {
 
 const stars = (c: Course) => (c.rating > 0 ? `★ ${c.rating.toFixed(1)}` : "Nuevo");
 
-export function Feed({ hero, rows, controls, demo }: Props) {
+export function Feed({ heroes, rows, controls, demo }: Props) {
   const [modal, setModal] = useState<Course | null>(null);
   const [pop, setPop] = useState<{ course: Course; left: number; top: number; width: number } | null>(null);
   const timers = useRef<{ hover?: number; leave?: number }>({});
@@ -80,7 +80,7 @@ export function Feed({ hero, rows, controls, demo }: Props) {
 
   return (
     <>
-      <Hero course={hero} onInfo={() => openModal(hero)} />
+      <Hero courses={heroes} onInfo={openModal} />
 
       <div className="mx-auto max-w-[1400px] px-4 pb-12">
         {controls}
@@ -139,49 +139,104 @@ function otherPrograms(rows: FeedRow[], current: Course): Course[] {
 }
 
 /* ---------- billboard ---------- */
-function Hero({ course, onInfo }: { course: Course; onInfo: () => void }) {
-  const [active, setActive] = useState(false);
+function Hero({ courses, onInfo }: { courses: Course[]; onInfo: (c: Course) => void }) {
+  const [idx, setIdx] = useState(0);
+  const [visible, setVisible] = useState(true);
   const [playing, setPlaying] = useState(false);
-  const hasVideo = Boolean(course.trailerUrl);
+  const course = courses[idx];
 
+  const fadeTo = useCallback(
+    (i: number) => {
+      setVisible(false);
+      window.setTimeout(() => {
+        setIdx(i);
+        setVisible(true);
+        setPlaying(false);
+      }, 450);
+    },
+    [],
+  );
+
+  // Auto-rotate every 10s
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const t = window.setTimeout(() => setActive(true), 1100);
+    if (courses.length <= 1) return;
+    const t = window.setTimeout(() => fadeTo((idx + 1) % courses.length), 10_000);
     return () => window.clearTimeout(t);
-  }, []);
+  }, [idx, courses.length, fadeTo]);
+
+  const transition = "opacity 0.45s ease";
 
   return (
-    <section className={`lz-hero ${playing ? "is-playing" : ""} ${hasVideo ? "has-video" : ""}`} aria-label="Programa destacado">
-      <StageLive course={course} active={active} lockup={false} badges={false} onPlayingChange={setPlaying} />
-      <div className="lz-hero-copy" style={{ "--glow": course.art.glow } as React.CSSProperties}>
-        <div className="mx-auto w-full max-w-[1400px] px-4">
+    <section className={`lz-hero ${playing ? "is-playing" : ""}`} aria-label="Programa destacado">
+      {/* fondo: portada / video */}
+      <div className="lz-hero-bg" style={{ opacity: visible ? 1 : 0, transition }}>
+        <StageLive
+          key={course.id}
+          course={course}
+          active={visible}
+          lockup={false}
+          badges={false}
+          onPlayingChange={setPlaying}
+        />
+      </div>
+
+      {/* overlay con copy */}
+      <div
+        className="lz-hero-copy"
+        style={{ "--glow": course.art.glow, opacity: visible ? 1 : 0, transition } as React.CSSProperties}
+      >
+        <div className="mx-auto w-full max-w-[1400px] px-6">
           <div className="lz-hero-in">
             <div className="flex flex-wrap items-center gap-2 text-[13px]">
-              <span>{course.category}</span>
+              <span className="rounded-full border border-white/25 px-3 py-0.5">{course.category}</span>
               <span className="font-bold text-good">{stars(course)}</span>
             </div>
-            <div className="lz-tbox">
-              <h1>
-                {course.art.lines.map((l, i) => (
-                  <span key={i} className={i === course.art.hl ? "hl" : undefined} style={{ display: "block" }}>
-                    {l}
-                  </span>
-                ))}
-              </h1>
-            </div>
-            <p className="lz-desc max-w-[46ch] text-[#e3e3ea] [text-shadow:0_1px_10px_rgba(0,0,0,.6)]">{course.description}</p>
-            <div className="flex flex-wrap gap-2.5">
-              <Link href={`${programPath(course.slug)}?src=discover`} className="rounded-[10px] bg-accent px-[22px] py-3 font-bold text-accent-ink">
+            <h1>
+              {course.art.lines.map((l, i) => (
+                <span key={i} className={i === course.art.hl ? "hl" : undefined} style={{ display: "block" }}>
+                  {l}
+                </span>
+              ))}
+            </h1>
+            <p className="lz-desc max-w-[44ch] text-[#dcdde8] [text-shadow:0_1px_12px_rgba(0,0,0,.7)]">
+              {course.description}
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href={`${programPath(course.slug)}?src=discover`}
+                className="flex items-center gap-2 rounded-[10px] bg-white px-[22px] py-3 font-bold text-black"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden>
+                  <path d="M3 2l9 5-9 5V2z" />
+                </svg>
                 Ver {NOUN.one} · {formatPrice(course.priceCents, course.currency)}
               </Link>
               <button
-                onClick={onInfo}
-                className="cursor-pointer rounded-[10px] bg-[rgba(120,124,150,.4)] px-[22px] py-3 font-bold backdrop-blur-sm"
+                onClick={() => onInfo(course)}
+                className="flex cursor-pointer items-center gap-2 rounded-[10px] bg-[rgba(120,124,150,.38)] px-[22px] py-3 font-bold backdrop-blur-sm"
               >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+                  <circle cx="8" cy="8" r="6.5" />
+                  <path d="M8 7v4M8 5.5v.5" strokeLinecap="round" />
+                </svg>
                 Más información
               </button>
             </div>
           </div>
+
+          {/* dots de rotación */}
+          {courses.length > 1 && (
+            <div className="lz-hero-dots">
+              {courses.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => fadeTo(i)}
+                  className={`lz-hero-dot${i === idx ? " active" : ""}`}
+                  aria-label={`Ir al programa ${i + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -225,7 +280,7 @@ function Row({
             onMouseEnter={(e) => onEnter(e.currentTarget, c)}
             onMouseLeave={onLeave}
           >
-            <Stage course={c} mode={fmt} />
+            <Stage course={c} />
             <span className="lz-under">
               {c.creatorName} · {formatPrice(c.priceCents, c.currency)}
             </span>

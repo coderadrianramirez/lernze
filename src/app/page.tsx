@@ -85,7 +85,7 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
         ) : (
           <Feed
             key={`search|${query}`}
-            hero={results[0]}
+            heroes={results.slice(0, 1)}
             rows={[{ key: "resultados", title: `Resultados para "${query}"`, items: results }]}
             controls={null}
             demo={results.some((c) => c.demo)}
@@ -99,7 +99,10 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
   const trending = [...allCourses].sort((a, b) => b.members - a.members).slice(0, 8);
   const rated = [...allCourses].filter((c) => c.rating > 0).sort((a, b) => b.rating - a.rating || b.members - a.members);
   const cheap = allCourses.filter((c) => c.priceCents < 10_000).sort((a, b) => a.priceCents - b.priceCents);
-  const hero = courses[0] ?? trending[0];
+
+  // Top 5 cursos para el hero rotatorio (destacados por miembros, mezclados con intereses si los hay)
+  const heroPool = interests.length ? courses.slice(0, 5) : trending.slice(0, 5);
+  const heroes = heroPool.length ? heroPool : allCourses.slice(0, 5);
 
   const rows: FeedRow[] = [
     ...(interests.length ? [{ key: "para-ti", title: "Para ti", items: courses }] : []),
@@ -142,7 +145,7 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
   return (
     <Feed
       key={`feed|${interests.join(",")}`}
-      hero={hero}
+      heroes={heroes}
       rows={rows}
       controls={controls}
       demo={allCourses.some((c) => c.demo)}
