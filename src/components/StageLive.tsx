@@ -11,7 +11,7 @@ const sceneMs = (i: number) => SCENE_MS[i] ?? 2600;
 export const sceneTotalSeconds = (n: number) => Array.from({ length: n }, (_, i) => sceneMs(i)).reduce((a, b) => a + b, 0) / 1000;
 
 /** Una frase del trailer animado. La cuarta se muestra como testimonio y la última como llamada a entrar. */
-export function Scene({ course, i }: { course: Course; i: number }) {
+export function Scene({ course, i, noCta }: { course: Course; i: number; noCta?: boolean }) {
   const text = course.scenes[i] ?? "";
   const last = i === course.scenes.length - 1 && i > 0;
   if (i === 3 && text.includes(" — ")) {
@@ -27,8 +27,7 @@ export function Scene({ course, i }: { course: Course; i: number }) {
     return (
       <div className="lz-cap cta">
         {text}
-        <br />
-        <em>Entrar · {formatPrice(course.priceCents, course.currency)}</em>
+        {!noCta && <><br /><em>Entrar · {formatPrice(course.priceCents, course.currency)}</em></>}
       </div>
     );
   }

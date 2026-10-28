@@ -175,7 +175,7 @@ function Hero({ course, onInfo }: { course: Course; onInfo: () => void }) {
               </h1>
               {!hasVideo && (
                 <div className="lz-hcaps" aria-hidden="true">
-                  {scene !== null && <Scene key={scene} course={course} i={scene} />}
+                  {scene !== null && <Scene key={scene} course={course} i={scene} noCta />}
                 </div>
               )}
             </div>
