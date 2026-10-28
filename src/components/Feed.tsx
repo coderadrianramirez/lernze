@@ -6,7 +6,7 @@ import { NOUN, memberCount, programPath } from "@/lib/copy";
 import { formatDuration, formatPrice } from "@/lib/pricing";
 import type { Course } from "@/lib/types";
 import { Stage } from "./Stage";
-import { Scene, StageLive } from "./StageLive";
+import { StageLive } from "./StageLive";
 
 export type FeedRow = { key: string; title: string; items: Course[] };
 
@@ -143,7 +143,6 @@ function otherPrograms(rows: FeedRow[], current: Course): Course[] {
 function Hero({ course, onInfo }: { course: Course; onInfo: () => void }) {
   const [active, setActive] = useState(false);
   const [playing, setPlaying] = useState(false);
-  const [scene, setScene] = useState<number | null>(null);
   const hasVideo = Boolean(course.trailerUrl);
 
   useEffect(() => {
@@ -154,14 +153,11 @@ function Hero({ course, onInfo }: { course: Course; onInfo: () => void }) {
 
   return (
     <section className={`lz-hero ${playing ? "is-playing" : ""} ${hasVideo ? "has-video" : ""}`} aria-label="Programa destacado">
-      <StageLive course={course} active={active} lockup={false} badges={false} onPlayingChange={setPlaying} onScene={setScene} />
+      <StageLive course={course} active={active} lockup={false} badges={false} onPlayingChange={setPlaying} />
       <div className="lz-hero-copy" style={{ "--glow": course.art.glow } as React.CSSProperties}>
         <div className="mx-auto w-full max-w-[1400px] px-4">
           <div className="lz-hero-in">
             <div className="flex flex-wrap items-center gap-2 text-[13px]">
-              <span className={`lz-b ${course.trailerSource === "ai" ? "ai" : "cr"}`}>
-                {course.trailerSource === "ai" ? "Trailer IA" : "Trailer del creador"}
-              </span>
               <span>{course.category}</span>
               <span className="font-bold text-good">{stars(course)}</span>
             </div>
@@ -173,11 +169,6 @@ function Hero({ course, onInfo }: { course: Course; onInfo: () => void }) {
                   </span>
                 ))}
               </h1>
-              {!hasVideo && (
-                <div className="lz-hcaps" aria-hidden="true">
-                  {scene !== null && <Scene key={scene} course={course} i={scene} noCta />}
-                </div>
-              )}
             </div>
             <p className="lz-desc max-w-[46ch] text-[#e3e3ea] [text-shadow:0_1px_10px_rgba(0,0,0,.6)]">{course.description}</p>
             <div className="flex flex-wrap gap-2.5">
