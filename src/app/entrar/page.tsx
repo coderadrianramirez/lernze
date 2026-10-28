@@ -21,6 +21,9 @@ export default function SignInPage({ searchParams }: PageProps<"/entrar">) {
 async function Form({ searchParams }: { searchParams: PageProps<"/entrar">["searchParams"] }) {
   const sp = await searchParams;
   const next = safeNext(typeof sp.next === "string" ? sp.next : undefined, "/");
-  const notice = sp.error === "enlace" ? "El enlace del correo venció o ya se usó. Inicia sesión o regístrate otra vez." : undefined;
+  const notice =
+    sp.error === "enlace" ? "El enlace del correo venció o ya se usó. Inicia sesión o regístrate otra vez." :
+    sp.error === "oauth" ? "No pudimos conectar con Google. Inténtalo de nuevo." :
+    undefined;
   return <AuthForm mode="signin" next={next} notice={notice} />;
 }
