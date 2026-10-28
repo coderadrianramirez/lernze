@@ -1,17 +1,28 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { NOUN } from "@/lib/copy";
 
 export const metadata: Metadata = { title: "Mi panel" };
 
-export default async function DashboardPage() {
+export default function DashboardPage() {
+  return (
+    <main className="mx-auto max-w-[1180px] px-4 py-10">
+      <Suspense fallback={<div className="h-64 animate-pulse rounded-2xl bg-surface" />}>
+        <Panel />
+      </Suspense>
+    </main>
+  );
+}
+
+async function Panel() {
   const user = await getCurrentUser();
   if (!user || user.demo) redirect("/entrar?next=/dashboard");
 
   return (
-    <main className="mx-auto max-w-[1180px] px-4 py-10">
+    <>
       <div className="mb-8 flex items-center gap-4">
         <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent text-xl font-bold text-accent-ink">
           {user.name.charAt(0).toUpperCase()}
@@ -60,6 +71,6 @@ export default async function DashboardPage() {
           <p className="mt-1 text-sm text-muted">Próximamente — {NOUN.other} que compraste y tu progreso.</p>
         </div>
       </div>
-    </main>
+    </>
   );
 }
