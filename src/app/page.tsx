@@ -87,7 +87,6 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
             key={`search|${query}`}
             hero={results[0]}
             rows={[{ key: "resultados", title: `Resultados para "${query}"`, items: results }]}
-            fmt="h"
             controls={null}
             demo={results.some((c) => c.demo)}
           />
@@ -113,7 +112,11 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
     categoryHref(interests.includes(cat) ? interests.filter((c) => c !== cat) : [...interests, cat]);
 
   const controls = (
-    <div className="mt-2 flex items-center gap-2 overflow-x-auto pb-1">
+    <div className="mt-4">
+    <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted">
+      {interests.length > 0 ? "Tus intereses" : "Categorías"}
+    </p>
+    <div className="flex items-center gap-2 overflow-x-auto pb-1">
       {CATEGORIES.map((cat) => {
         const on = interests.includes(cat);
         return (
@@ -133,6 +136,7 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
         );
       })}
     </div>
+    </div>
   );
 
   return (
@@ -140,7 +144,6 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
       key={`feed|${interests.join(",")}`}
       hero={hero}
       rows={rows}
-      fmt="h"
       controls={controls}
       demo={allCourses.some((c) => c.demo)}
     />

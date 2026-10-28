@@ -13,15 +13,14 @@ export type FeedRow = { key: string; title: string; items: Course[] };
 type Props = {
   hero: Course;
   rows: FeedRow[];
-  fmt: "h" | "v";
-  /** Controles entre el billboard y las filas (intereses y formato). */
+  /** Controles entre el billboard y las filas (intereses). */
   controls: ReactNode;
   demo: boolean;
 };
 
 const stars = (c: Course) => (c.rating > 0 ? `★ ${c.rating.toFixed(1)}` : "Nuevo");
 
-export function Feed({ hero, rows, fmt, controls, demo }: Props) {
+export function Feed({ hero, rows, controls, demo }: Props) {
   const [modal, setModal] = useState<Course | null>(null);
   const [pop, setPop] = useState<{ course: Course; left: number; top: number; width: number } | null>(null);
   const timers = useRef<{ hover?: number; leave?: number }>({});
@@ -86,7 +85,7 @@ export function Feed({ hero, rows, fmt, controls, demo }: Props) {
       <div className="mx-auto max-w-[1400px] px-4 pb-12">
         {controls}
         {rows.map((row) => (
-          <Row key={row.key} row={row} fmt={fmt} onEnter={enter} onLeave={leave} onOpen={openModal} onScroll={closePop} />
+          <Row key={row.key} row={row} onEnter={enter} onLeave={leave} onOpen={openModal} onScroll={closePop} />
         ))}
         {demo && (
           <p className="mt-10 max-w-[78ch] text-[12.5px] text-muted">
@@ -192,14 +191,12 @@ function Hero({ course, onInfo }: { course: Course; onInfo: () => void }) {
 /* ---------- filas ---------- */
 function Row({
   row,
-  fmt,
   onEnter,
   onLeave,
   onOpen,
   onScroll,
 }: {
   row: FeedRow;
-  fmt: "h" | "v";
   onEnter: (el: HTMLElement, c: Course) => void;
   onLeave: () => void;
   onOpen: (c: Course) => void;
@@ -222,7 +219,7 @@ function Row({
         {row.items.map((c) => (
           <button
             key={c.id}
-            className={`lz-card ${fmt}`}
+            className="lz-card h"
             aria-label={`${c.title}, de ${c.creatorName}`}
             onClick={() => onOpen(c)}
             onMouseEnter={(e) => onEnter(e.currentTarget, c)}
