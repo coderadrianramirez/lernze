@@ -11,12 +11,21 @@ function parseInterests(raw: string | string[] | undefined): Category[] {
   return v.split(",").filter((x): x is Category => (CATEGORIES as string[]).includes(x));
 }
 
-function discoverHref(interests: Category[], fmt: "h" | "v") {
+function categoryHref(interests: Category[]) {
   const p = new URLSearchParams();
   if (interests.length) p.set("i", interests.join(","));
-  if (fmt === "v") p.set("f", "v");
   const q = p.toString();
   return q ? `/?${q}` : "/";
+}
+
+function filterByQuery(courses: Awaited<ReturnType<typeof listCourses>>, q: string) {
+  const lower = q.toLowerCase();
+  return courses.filter(
+    (c) =>
+      c.title.toLowerCase().includes(lower) ||
+      c.creatorName.toLowerCase().includes(lower) ||
+      c.category.toLowerCase().includes(lower),
+  );
 }
 
 export default function Discover({ searchParams }: PageProps<"/">) {
@@ -32,18 +41,26 @@ export default function Discover({ searchParams }: PageProps<"/">) {
 async function Page({ searchParams }: { searchParams: PageProps<"/">["searchParams"] }) {
   const sp = await searchParams;
   const interests = parseInterests(sp.i);
-  const fmt: "h" | "v" = sp.f === "v" ? "v" : "h";
-  const courses = await listCourses();
+  const query = typeof sp.q === "string" ? sp.q.trim() : "";
+  const allCourses = await listCourses();
 
-  if (courses.length === 0) {
+  if (allCourses.length === 0) {
     return (
       <div className="mx-auto max-w-[1180px] px-4 pt-5">
-        <section className="rounded-2xl border border-line bg-surface p-8 text-center">
-          <h1 className="font-display text-3xl font-extrabold tracking-tight">{`Aún no hay ${NOUN.other} publicados`}</h1>
-          <p className="mx-auto mt-2 max-w-[48ch] text-muted">
+        <section className="rounded-2xl border border-line bg-surface p-12 text-center">
+          <p className="font-display text-5xl font-extrabold tracking-tight">
+            lernze<span className="text-accent">.</span>
+          </p>
+          <h1 className="mt-4 font-display text-2xl font-bold tracking-tight">
+            {`Aún no hay ${NOUN.other} publicados`}
+          </h1>
+          <p className="mx-auto mt-2 max-w-[44ch] text-muted">
             {`El Discover feed se llena con los ${NOUN.other} de los creadores. Publica el primero y aparecerá aquí con su trailer.`}
           </p>
-          <Link href="/crear" className="mt-5 inline-block rounded-xl bg-accent px-5 py-3 font-bold text-accent-ink">
+          <Link
+            href="/registro"
+            className="mt-6 inline-block rounded-xl bg-accent px-6 py-3 font-bold text-accent-ink transition-opacity hover:opacity-90"
+          >
             {`Publicar un ${NOUN.one}`}
           </Link>
         </section>
@@ -51,67 +68,81 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
     );
   }
 
-  const forYou = rankForInterests(courses, interests);
-  const trending = [...courses].sort((a, b) => b.members - a.members).slice(0, 8);
-  const rated = [...courses].filter((c) => c.rating > 0).sort((a, b) => b.rating - a.rating || b.members - a.members);
-  const cheap = courses.filter((c) => c.priceCents < 10_000).sort((a, b) => a.priceCents - b.priceCents);
-  const hero = forYou[0] ?? trending[0];
+  // Resultados de búsqueda
+  if (query) {
+    const results = filterByQuery(allCourses, query);
+    return (
+      <div className="mx-auto max-w-[1180px] px-4 pt-6">
+        <p className="mb-4 text-sm text-muted">
+          {results.length > 0
+            ? `${results.length} resultado${results.length !== 1 ? "s" : ""} para "${query}"`
+            : `Sin resultados para "${query}"`}
+        </p>
+        {results.length === 0 ? (
+          <section className="rounded-2xl border border-line bg-surface p-8 text-center">
+            <p className="text-muted">Prueba con otro nombre o categoría.</p>
+          </section>
+        ) : (
+          <Feed
+            key={`search|${query}`}
+            hero={results[0]}
+            rows={[{ key: "resultados", title: `Resultados para "${query}"`, items: results }]}
+            fmt="h"
+            controls={null}
+            demo={results.some((c) => c.demo)}
+          />
+        )}
+      </div>
+    );
+  }
+
+  const courses = interests.length ? rankForInterests(allCourses, interests) : allCourses;
+  const trending = [...allCourses].sort((a, b) => b.members - a.members).slice(0, 8);
+  const rated = [...allCourses].filter((c) => c.rating > 0).sort((a, b) => b.rating - a.rating || b.members - a.members);
+  const cheap = allCourses.filter((c) => c.priceCents < 10_000).sort((a, b) => a.priceCents - b.priceCents);
+  const hero = courses[0] ?? trending[0];
 
   const rows: FeedRow[] = [
-    ...(forYou.length ? [{ key: "para-ti", title: "Para ti", items: forYou }] : []),
+    ...(interests.length ? [{ key: "para-ti", title: "Para ti", items: courses }] : []),
     { key: "tendencia", title: "Tendencia esta semana", items: trending },
     ...(rated.length ? [{ key: "valorados", title: "Mejor valorados", items: rated }] : []),
     ...(cheap.length ? [{ key: "baratos", title: "Por menos de $100", items: cheap }] : []),
   ];
 
   const toggle = (cat: Category) =>
-    discoverHref(interests.includes(cat) ? interests.filter((c) => c !== cat) : [...interests, cat], fmt);
+    categoryHref(interests.includes(cat) ? interests.filter((c) => c !== cat) : [...interests, cat]);
 
   const controls = (
-    <div className="mt-1.5 flex flex-wrap items-center gap-x-6 gap-y-3.5">
-      <div key="intereses" role="group" aria-label="Tus intereses" className="flex items-center gap-2 overflow-x-auto">
-        <span key="etiqueta" className="mr-0.5 text-[13px] whitespace-nowrap text-muted">Tus intereses</span>
-        {CATEGORIES.map((cat) => {
-          const on = interests.includes(cat);
-          return (
-            <Link
-              key={cat}
-              href={toggle(cat)}
-              aria-current={on ? "true" : undefined}
-              scroll={false}
-              className={`rounded-full border px-3.5 py-1.5 text-sm whitespace-nowrap ${
-                on ? "border-accent bg-accent font-bold text-accent-ink" : "border-line bg-surface text-muted hover:text-fg"
-              }`}
-            >
-              {cat}
-            </Link>
-          );
-        })}
-      </div>
-      <div key="formato" role="group" aria-label="Formato de portada" className="flex rounded-[10px] border border-line bg-surface p-[3px] text-[13px]">
-        {(["h", "v"] as const).map((f) => (
+    <div className="mt-2 flex items-center gap-2 overflow-x-auto pb-1">
+      {CATEGORIES.map((cat) => {
+        const on = interests.includes(cat);
+        return (
           <Link
-            key={f}
-            href={discoverHref(interests, f)}
-            aria-current={fmt === f ? "true" : undefined}
+            key={cat}
+            href={toggle(cat)}
+            aria-current={on ? "true" : undefined}
             scroll={false}
-            className={`rounded-[7px] px-3 py-[5px] ${fmt === f ? "bg-surface-2 text-fg" : "text-muted"}`}
+            className={`rounded-full border px-3.5 py-1.5 text-sm whitespace-nowrap transition-colors ${
+              on
+                ? "border-accent bg-accent font-bold text-accent-ink"
+                : "border-line bg-surface text-muted hover:border-fg/20 hover:text-fg"
+            }`}
           >
-            {f === "h" ? "Horizontal" : "Vertical"}
+            {cat}
           </Link>
-        ))}
-      </div>
+        );
+      })}
     </div>
   );
 
   return (
     <Feed
-      key={`${fmt}|${interests.join(",")}`}
+      key={`feed|${interests.join(",")}`}
       hero={hero}
       rows={rows}
-      fmt={fmt}
+      fmt="h"
       controls={controls}
-      demo={courses.some((c) => c.demo)}
+      demo={allCourses.some((c) => c.demo)}
     />
   );
 }
