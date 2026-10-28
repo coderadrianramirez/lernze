@@ -142,8 +142,10 @@ function otherPrograms(rows: FeedRow[], current: Course): Course[] {
 function Hero({ courses, onInfo }: { courses: Course[]; onInfo: (c: Course) => void }) {
   const [idx, setIdx] = useState(0);
   const [visible, setVisible] = useState(true);
-  const [playing, setPlaying] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
   const course = courses[idx];
+  const hasVideo = Boolean(course.trailerUrl);
+  const playing = videoPlaying && hasVideo;
 
   const fadeTo = useCallback(
     (i: number) => {
@@ -151,7 +153,7 @@ function Hero({ courses, onInfo }: { courses: Course[]; onInfo: (c: Course) => v
       window.setTimeout(() => {
         setIdx(i);
         setVisible(true);
-        setPlaying(false);
+        setVideoPlaying(false);
       }, 450);
     },
     [],
@@ -176,7 +178,7 @@ function Hero({ courses, onInfo }: { courses: Course[]; onInfo: (c: Course) => v
           active={visible}
           lockup={false}
           badges={false}
-          onPlayingChange={setPlaying}
+          onPlayingChange={setVideoPlaying}
         />
       </div>
 
