@@ -53,7 +53,8 @@ type Props = {
 export function StageLive({ course, active, mode = "h", lockup = true, badges = true, controls = false, onPlayingChange, onScene }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const barRef = useRef<HTMLElement>(null);
-  const hasVideo = Boolean(course.trailerUrl);
+  const [videoError, setVideoError] = useState(false);
+  const hasVideo = Boolean(course.trailerUrl) && !videoError;
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [scene, setScene] = useState<number | null>(null);
   const playing = hasVideo ? videoPlaying : active;
@@ -123,6 +124,7 @@ export function StageLive({ course, active, mode = "h", lockup = true, badges = 
             onPlaying={() => setVideoPlaying(true)}
             onPause={() => setVideoPlaying(false)}
             onEnded={() => setVideoPlaying(false)}
+            onError={() => { setVideoError(true); setVideoPlaying(false); }}
             onTimeUpdate={(e) => {
               const v = e.currentTarget;
               if (barRef.current && v.duration) barRef.current.style.width = `${(v.currentTime / v.duration) * 100}%`;
