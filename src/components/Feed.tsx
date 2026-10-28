@@ -19,11 +19,6 @@ type Props = {
   demo: boolean;
 };
 
-const IC = {
-  play: <svg viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z" /></svg>,
-  down: <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>,
-};
-
 const stars = (c: Course) => (c.rating > 0 ? `★ ${c.rating.toFixed(1)}` : "Nuevo");
 
 export function Feed({ hero, rows, fmt, controls, demo }: Props) {
@@ -109,7 +104,7 @@ export function Feed({ hero, rows, fmt, controls, demo }: Props) {
           onMouseLeave={scheduleClose}
           onClick={() => openModal(pop.course)}
         >
-          <PopBody key={pop.course.id} course={pop.course} onOpen={() => openModal(pop.course)} />
+          <PopBody key={pop.course.id} course={pop.course} />
         </div>
       )}
 
@@ -257,7 +252,7 @@ function Row({
 }
 
 /* ---------- tarjeta ampliada ---------- */
-function PopBody({ course, onOpen }: { course: Course; onOpen: () => void }) {
+function PopBody({ course }: { course: Course }) {
   const [live, setLive] = useState(false);
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -268,28 +263,6 @@ function PopBody({ course, onOpen }: { course: Course; onOpen: () => void }) {
     <>
       <StageLive course={course} active={live} />
       <div className="lz-pinfo">
-        <div className="lz-pbtns">
-          <button
-            className="lz-circ play"
-            aria-label={`Ver ${NOUN.one}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpen();
-            }}
-          >
-            {IC.play}
-          </button>
-          <button
-            className="lz-circ more"
-            aria-label="Más información"
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpen();
-            }}
-          >
-            {IC.down}
-          </button>
-        </div>
         <div className="lz-pmeta">
           <span className="m">{stars(course)}</span>
           <span>{memberCount(course.members)}</span>
