@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { signOutAction } from "@/app/auth/actions";
 import { getCurrentUser } from "@/lib/auth";
 import { SearchBar } from "./SearchBar";
+import { UserMenu } from "./UserMenu";
 
 async function AccountNav() {
   const user = await getCurrentUser();
@@ -26,24 +26,7 @@ async function AccountNav() {
     );
   }
 
-  return (
-    <div className="flex items-center gap-3">
-      <Link
-        href="/crear"
-        className="hidden rounded-lg bg-surface-2 px-4 py-2.5 text-sm font-medium text-fg transition-colors hover:text-accent sm:block"
-      >
-        Crear programa
-      </Link>
-      <form action={signOutAction}>
-        <button
-          title={user.name}
-          className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-full bg-accent text-sm font-bold text-accent-ink transition-opacity hover:opacity-80"
-        >
-          {user.name.charAt(0).toUpperCase()}
-        </button>
-      </form>
-    </div>
-  );
+  return <UserMenu name={user.name} />;
 }
 
 export function Header() {
