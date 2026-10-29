@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Feed, type FeedRow } from "@/components/Feed";
@@ -141,48 +142,37 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
     ...(cheap.length ? [{ key: "baratos", title: "Por menos de $100", items: cheap }] : []),
   ];
 
-  // Toggle manual de categorías (afecta URL, no DB)
-  const toggle = (cat: Category) =>
-    categoryHref(
-      activeInterests.includes(cat)
-        ? activeInterests.filter((c) => c !== cat)
-        : [...activeInterests, cat],
-    );
-
-  const controls = (
-    <div className="mt-4">
-      <div className="mb-2 flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted">
-          {hasInterests ? "Tus intereses" : "Categorías"}
+  // Strip contextual debajo del hero según estado del usuario
+  let controls: React.ReactNode = null;
+  if (!user || user.demo) {
+    controls = (
+      <div className="flex items-center justify-between gap-4 rounded-xl border border-line bg-surface px-5 py-3.5">
+        <p className="text-sm text-muted">
+          Descubrí cursos adaptados a lo que querés aprender.
         </p>
-        {needsOnboarding && (
-          <Link href="/bienvenida" className="text-xs text-accent hover:underline">
-            Personalizar →
-          </Link>
-        )}
+        <Link
+          href="/registro"
+          className="shrink-0 rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90"
+        >
+          Crear cuenta gratis →
+        </Link>
       </div>
-      <div className="flex items-center gap-2 overflow-x-auto pb-1">
-        {CATEGORIES.map((cat) => {
-          const on = activeInterests.includes(cat);
-          return (
-            <Link
-              key={cat}
-              href={toggle(cat)}
-              aria-current={on ? "true" : undefined}
-              scroll={false}
-              className={`rounded-full border px-3.5 py-1.5 text-sm whitespace-nowrap transition-colors ${
-                on
-                  ? "border-accent bg-accent font-bold text-accent-ink"
-                  : "border-line bg-surface text-muted hover:border-fg/20 hover:text-fg"
-              }`}
-            >
-              {cat}
-            </Link>
-          );
-        })}
+    );
+  } else if (needsOnboarding) {
+    controls = (
+      <div className="flex items-center justify-between gap-4 rounded-xl border border-accent/30 bg-accent/5 px-5 py-3.5">
+        <p className="text-sm text-fg">
+          Elegí tus temas y personalizamos el feed para vos.
+        </p>
+        <Link
+          href="/bienvenida"
+          className="shrink-0 rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90"
+        >
+          Elegir temas →
+        </Link>
       </div>
-    </div>
-  );
+    );
+  }
 
   return (
     <Feed
