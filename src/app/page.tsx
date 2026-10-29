@@ -149,10 +149,27 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
     },
     ...interestRows,
     ...(rated.length
-      ? [{ key: "valorados", title: "Mejor valorados", items: rated, reason: `Los ${NOUN.other} ${scope} con mejor calificación de sus alumnos.` }]
+      ? [
+          {
+            key: "valorados",
+            title: "Mejor valorados",
+            items: rated,
+            reason: `Los ${NOUN.other} ${scope} con mejor calificación de sus alumnos.`,
+            layout: "top" as const,
+          },
+        ]
       : []),
     ...(cheap.length
-      ? [{ key: "baratos", title: "Por menos de $100", items: cheap, reason: `${cap(NOUN.other)} ${scope} que cuestan menos de $100.` }]
+      ? [
+          {
+            key: "ofertas",
+            title: "Ofertas especiales",
+            items: cheap,
+            reason: `${cap(NOUN.other)} ${scope} que cuestan menos de $100.`,
+            layout: "grid" as const,
+            more: { href: "/ofertas", label: "Ver todas" },
+          },
+        ]
       : []),
   ];
   let rows = allRows;

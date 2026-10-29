@@ -8,7 +8,14 @@ import type { Course } from "@/lib/types";
 import { Stage } from "./Stage";
 import { StageLive } from "./StageLive";
 
-export type FeedRow = { key: string; title: string; items: Course[]; reason?: string };
+export type FeedRow = {
+  key: string;
+  title: string;
+  items: Course[];
+  reason?: string;
+  layout?: "grid" | "top";
+  more?: { href: string; label: string };
+};
 
 type Props = {
   heroes: Course[];
@@ -84,9 +91,15 @@ export function Feed({ heroes, rows, controls, demo }: Props) {
 
       <div className="mx-auto max-w-[1400px] px-4 pb-12">
         {controls}
-        {rows.map((row) => (
-          <Row key={row.key} row={row} onEnter={enter} onLeave={leave} onOpen={openModal} onScroll={closePop} />
-        ))}
+        {rows.map((row) =>
+          row.layout === "grid" ? (
+            <GridRow key={row.key} row={row} onOpen={openModal} />
+          ) : row.layout === "top" ? (
+            <TopRow key={row.key} row={row} onOpen={openModal} />
+          ) : (
+            <Row key={row.key} row={row} onEnter={enter} onLeave={leave} onOpen={openModal} onScroll={closePop} />
+          ),
+        )}
         {demo && (
           <p className="mt-10 max-w-[78ch] text-[12.5px] text-muted">
             Los programas, los creadores, las cifras y los testimonios de esta página son ejemplos mientras llegan los primeros
@@ -245,6 +258,188 @@ function Hero({ courses, onInfo }: { courses: Course[]; onInfo: (c: Course) => v
   );
 }
 
+/* ---------- título de fila ---------- */
+function RowHead({ row }: { row: FeedRow }) {
+  return (
+    <div className="mb-2 flex items-center gap-2">
+      <h2 className="font-display text-xl font-bold tracking-tight">{row.title}</h2>
+      {row.reason && (
+        <span className="lz-why">
+          <button type="button" aria-label="¿Por qué ves esto?" aria-describedby={`why-${row.key}`}>
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+              <circle cx="8" cy="8" r="6.5" />
+              <path d="M8 7.2v3.8M8 5v.4" strokeLinecap="round" />
+            </svg>
+          </button>
+          <span role="tooltip" id={`why-${row.key}`}>
+            <b>¿Por qué ves esto?</b>
+            {row.reason}
+          </span>
+        </span>
+      )}
+      {row.more && (
+        <Link
+          href={row.more.href}
+          className="ml-auto flex items-center gap-1.5 text-sm font-semibold text-muted transition-colors hover:text-accent"
+        >
+          {row.more.label}
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+            <circle cx="8" cy="8" r="6.5" />
+            <path d="M7 5.5 9.5 8 7 10.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </Link>
+      )}
+    </div>
+  );
+}
+
+/* ---------- grilla destacada ---------- */
+function GridRow({ row, onOpen }: { row: FeedRow; onOpen: (c: Course) => void }) {
+  const items = row.items.slice(0, 5);
+  return (
+    <section className="relative mt-8" aria-label={row.title}>
+      <RowHead row={row} />
+      <div className="lz-bento">
+        {items.map((c, i) => (
+          <button
+            key={c.id}
+            className={`lz-bento-cell${i === 0 ? " big" : ""}`}
+            aria-label={`${c.title}, de ${c.creatorName}, ${formatPrice(c.priceCents, c.currency)}`}
+            onClick={() => onOpen(c)}
+          >
+            <Stage course={c} badges={false} />
+            <span className="lz-bento-price">{formatPrice(c.priceCents, c.currency)}</span>
+            {i === 0 && (
+              <span className="lz-bento-meta">
+                <span className="lz-bento-play" aria-hidden>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                    <path d="M3 2l9 5-9 5V2z" />
+                  </svg>
+                </span>
+                {c.category} · {c.creatorName} · {stars(c)}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ---------- top 5 con pestañas ---------- */
+function TopRow({ row, onOpen }: { row: FeedRow; onOpen: (c: Course) => void }) {
+  const [cat, setCat] = useState<string>("all");
+  const [sel, setSel] = useState(0);
+  const cats = [...new Set(row.items.map((c) => c.category))];
+  const list = (cat === "all" ? row.items : row.items.filter((c) => c.category === cat)).slice(0, 5);
+  const current = list[sel] ?? list[0];
+  if (!current) return null;
+
+  const pick = (c: string) => {
+    setCat(c);
+    setSel(0);
+  };
+  const tab = (on: boolean) =>
+    `whitespace-nowrap text-sm transition-colors ${on ? "font-semibold text-fg" : "text-muted hover:text-fg"}`;
+
+  return (
+    <section className="relative mt-10" aria-label={row.title}>
+      <div className="mb-4 flex flex-wrap items-center gap-x-6 gap-y-2">
+        <RowHead row={{ ...row, more: undefined }} />
+        <div className="ml-auto flex items-center gap-5 overflow-x-auto" role="tablist" aria-label="Filtrar por categoría">
+          <button role="tab" aria-selected={cat === "all"} className={tab(cat === "all")} onClick={() => pick("all")}>
+            Todas
+          </button>
+          {cats.map((c) => (
+            <button key={c} role="tab" aria-selected={cat === c} className={tab(cat === c)} onClick={() => pick(c)}>
+              {c}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="lz-top">
+        {/* portadas del seleccionado */}
+        <div className="lz-top-art" key={current.id}>
+          <div className="lz-top-col">
+            <button className="lz-top-tile" onClick={() => onOpen(current)} aria-label={`Ver ${current.title}`}>
+              <Stage course={current} lockup={false} badges={false} />
+            </button>
+            <div className="lz-top-tile lz-top-text" style={{ "--glow": current.art.glow } as React.CSSProperties}>
+              <p className="font-display text-[clamp(18px,1.6vw,24px)] leading-tight font-extrabold uppercase">
+                {current.title}
+              </p>
+              <p className="mt-2 line-clamp-2 text-[13px] text-[#cfd0da]">{current.description}</p>
+            </div>
+            <div className="lz-top-tile lz-top-cta">
+              <Link
+                href={`${programPath(current.slug)}?src=discover`}
+                className="flex items-center justify-center gap-2 rounded-[10px] bg-accent px-4 py-2.5 text-sm font-bold text-accent-ink"
+              >
+                Ver {NOUN.one} · {formatPrice(current.priceCents, current.currency)}
+              </Link>
+              <button
+                onClick={() => onOpen(current)}
+                className="cursor-pointer rounded-[10px] border border-line px-4 py-2.5 text-sm font-semibold text-muted transition-colors hover:text-fg"
+              >
+                Más información
+              </button>
+            </div>
+          </div>
+          <button className="lz-top-poster" onClick={() => onOpen(current)} aria-label={`Ver ${current.title}`}>
+            <Stage course={current} mode="v" badges={false} />
+          </button>
+        </div>
+
+        {/* ranking */}
+        <ol className="flex flex-col gap-2.5">
+          {list.map((c, i) => {
+            const on = c.id === current.id;
+            return (
+              <li key={c.id}>
+                <button
+                  onClick={() => setSel(i)}
+                  onDoubleClick={() => onOpen(c)}
+                  aria-current={on ? "true" : undefined}
+                  className={`flex w-full cursor-pointer items-center gap-5 rounded-xl px-6 text-left transition-colors ${
+                    on ? "bg-surface-2 py-5 shadow-[inset_3px_0_0_var(--color-accent)]" : "bg-surface py-3.5 hover:bg-surface-2"
+                  }`}
+                >
+                  <span className={`w-10 shrink-0 font-display text-2xl font-extrabold ${on ? "text-accent" : "text-fg"}`}>
+                    #{i + 1}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-semibold">{c.title}</span>
+                    {on && (
+                      <>
+                        <span className="mt-1 block text-xs text-muted">
+                          {c.category} · {c.creatorName}
+                        </span>
+                        <span className="mt-2 flex items-center gap-3 text-xs text-muted">
+                          <span className="text-sm text-accent">
+                            {"★★★★★".slice(0, Math.round(c.rating))}
+                            <span className="text-line">{"★★★★★".slice(Math.round(c.rating))}</span>
+                          </span>
+                          {memberCount(c.members)}
+                        </span>
+                      </>
+                    )}
+                  </span>
+                  {on && (
+                    <span className="shrink-0 rounded-full bg-accent px-3 py-1 text-sm font-extrabold text-accent-ink">
+                      {formatPrice(c.priceCents, c.currency)}
+                    </span>
+                  )}
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    </section>
+  );
+}
+
 /* ---------- filas ---------- */
 function Row({
   row,
@@ -281,23 +476,7 @@ function Row({
   };
   return (
     <section className="lz-rowsec relative mt-6" aria-label={row.title}>
-      <div className="mb-2 flex items-center gap-2">
-        <h2 className="font-display text-xl font-bold tracking-tight">{row.title}</h2>
-        {row.reason && (
-          <span className="lz-why">
-            <button type="button" aria-label="¿Por qué ves esto?" aria-describedby={`why-${row.key}`}>
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
-                <circle cx="8" cy="8" r="6.5" />
-                <path d="M8 7.2v3.8M8 5v.4" strokeLinecap="round" />
-              </svg>
-            </button>
-            <span role="tooltip" id={`why-${row.key}`}>
-              <b>¿Por qué ves esto?</b>
-              {row.reason}
-            </span>
-          </span>
-        )}
-      </div>
+      <RowHead row={row} />
       <button className="lz-arr l" aria-label="Anterior" onClick={() => scrollBy(-1)}>
         ‹
       </button>
