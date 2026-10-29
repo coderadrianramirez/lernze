@@ -13,7 +13,7 @@ npm run dev
 
 ## Conectar Supabase
 
-El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0006 aplicadas, y `.env.local` apunta a él. Para otro entorno, estos son los pasos:
+El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0007 aplicadas, y `.env.local` apunta a él. Para otro entorno, estos son los pasos:
 
 1. En supabase.com crea un proyecto (el plan gratuito basta) y espera a que termine de crearse.
 2. **SQL Editor**: ejecuta en orden los archivos de `supabase/migrations/`.
@@ -66,7 +66,6 @@ Suscripción de agentes: $49 al mes, hasta 20 clips.
 
 ## Pendientes para revisar a mano
 
-- [ ] **Activar las clases:** ejecutar `supabase/migrations/0007_lessons.sql` en el SQL Editor (crea `lessons`, `lesson_progress` y el bucket privado `lessons`). Sin ella, el editor de clases muestra un aviso y el aula dice "Las clases están en camino".
 - [ ] Con sesión iniciada: crear un programa subiendo un trailer desde `/crear`, cargarle 2 clases (una marcada como vista previa) y comprobar el temario en la página del programa.
 - [ ] Con otra cuenta: ver la clase de vista previa sin unirse, unirse, completar una clase y ver el avance en Mi cuenta.
 - [ ] Con sesión iniciada: abrir 2 o 3 programas y confirmar que en Inicio aparecen "Vistos recientemente" y "Porque viste X", y que salen en Mi cuenta.
