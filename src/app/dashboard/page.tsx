@@ -5,7 +5,7 @@ import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { NOUN } from "@/lib/copy";
 
-export const metadata: Metadata = { title: "Mi panel" };
+export const metadata: Metadata = { title: "Mi cuenta" };
 
 export default function DashboardPage() {
   return (

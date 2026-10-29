@@ -46,12 +46,10 @@ export function UserMenu({ name }: Props) {
             className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-fg transition-colors hover:bg-surface hover:text-accent"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-              <rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-              <rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-              <rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
-              <rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+              <circle cx="8" cy="5.5" r="3" stroke="currentColor" strokeWidth="1.5" />
+              <path d="M2.5 14.5a5.5 5.5 0 0 1 11 0" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
-            Mi panel
+            Mi cuenta
           </Link>
 
           <Link
