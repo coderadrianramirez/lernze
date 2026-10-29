@@ -21,37 +21,22 @@ const SOCIAL: { name: string; href: string; icon: string }[] = [
   },
 ];
 
-const COLUMNS: { title: string; links: { label: string; href: string }[] }[] = [
-  {
-    title: "Explorar",
-    links: [
-      { label: "Inicio", href: "/" },
-      ...CATEGORIES.map((c) => ({ label: c, href: `/?i=${encodeURIComponent(c)}` })),
-      { label: "Por menos de $100", href: "/ofertas" },
-    ],
-  },
-  {
-    title: "Para creadores",
-    links: [
-      { label: `Publicar un ${NOUN.one}`, href: "/crear" },
-      { label: "Mi panel", href: "/dashboard" },
-      { label: "Crear cuenta", href: "/registro" },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { label: "Términos y condiciones", href: "/legal/terminos" },
-      { label: "Política de privacidad", href: "/legal/privacidad" },
-      { label: "Política de cookies", href: "/legal/cookies" },
-    ],
-  },
+const EXPLORE = [
+  { label: "Inicio", href: "/" },
+  ...CATEGORIES.map((c) => ({ label: c, href: `/?i=${encodeURIComponent(c)}` })),
+  { label: "Por menos de $100", href: "/ofertas" },
+];
+
+const LEGAL = [
+  { label: "Términos", href: "/legal/terminos" },
+  { label: "Privacidad", href: "/legal/privacidad" },
+  { label: "Cookies", href: "/legal/cookies" },
 ];
 
 export function Footer() {
   return (
     <footer className="mt-10 border-t border-line bg-[#0b0c12]">
-      <div className="mx-auto grid max-w-[1400px] gap-10 px-5 pt-14 pb-10 md:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))]">
+      <div className="mx-auto flex max-w-[1400px] flex-col gap-10 px-5 pt-12 pb-10 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-[340px]">
           <Link href="/" className="font-display text-[28px] font-extrabold tracking-tight" aria-label="Lernze — inicio">
             lernze<span className="text-accent">.</span>
@@ -85,25 +70,30 @@ export function Footer() {
           </ul>
         </div>
 
-        {COLUMNS.map((col) => (
-          <nav key={col.title} aria-label={col.title}>
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-fg">{col.title}</h2>
-            <ul className="mt-4 flex flex-col gap-2.5">
-              {col.links.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-muted transition-colors hover:text-accent">
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        ))}
+        <nav aria-label="Explorar" className="lg:pt-2">
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-fg lg:text-right">Explorar</h2>
+          <ul className="mt-4 flex flex-wrap gap-x-7 gap-y-3 lg:justify-end">
+            {EXPLORE.map((l) => (
+              <li key={l.href}>
+                <Link href={l.href} className="text-sm text-muted transition-colors hover:text-accent">
+                  {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
 
       <div className="border-t border-line">
-        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-4 px-5 py-5 text-xs text-muted">
+        <div className="mx-auto flex max-w-[1400px] flex-wrap items-center justify-between gap-x-8 gap-y-4 px-5 py-5 text-xs text-muted">
           <p>© 2026 Lernze. Todos los derechos reservados.</p>
+          <nav aria-label="Legal" className="flex flex-wrap gap-x-6 gap-y-2 md:mr-auto md:ml-4">
+            {LEGAL.map((l) => (
+              <Link key={l.href} href={l.href} className="transition-colors hover:text-accent">
+                {l.label}
+              </Link>
+            ))}
+          </nav>
           <label className="flex items-center gap-2">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
               <circle cx="12" cy="12" r="9" />
