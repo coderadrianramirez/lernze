@@ -151,7 +151,7 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
       ? [
           {
             key: "ofertas",
-            title: "Ofertas especiales",
+            title: "Por menos de $100",
             items: cheap,
             reason: `${cap(NOUN.other)} ${scope} que cuestan menos de $100.`,
             layout: "grid" as const,
