@@ -18,7 +18,7 @@ export function CategoryNav() {
   };
 
   const linkClass = (on: boolean) =>
-    `text-sm font-medium whitespace-nowrap transition-colors ${
+    `text-base font-medium whitespace-nowrap transition-colors ${
       on ? "text-fg" : "text-muted hover:text-fg/80"
     }`;
 
