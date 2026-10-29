@@ -22,13 +22,51 @@
 }
 
 html {
+  overflow-x: clip;
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   background: var(--color-ink);
   color: var(--color-fg);
   font-family: var(--font-sans);
+  overflow-x: clip;
+}
+
+a,
+button {
+  touch-action: manipulation;
+}
+
+/* Con una ventana modal abierta, la página de fondo no se desplaza. */
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+/* Carruseles y tiras deslizables sin barra visible. */
+.no-scrollbar {
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Desvanece los bordes de una tira horizontal para indicar que se desliza. */
+.lz-fade-x {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+}
+
+/* En móvil, 16px evita que iOS haga zoom al enfocar un campo. */
+@media (max-width: 767px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
 }
 
 :focus-visible {

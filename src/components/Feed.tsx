@@ -200,7 +200,7 @@ function Hero({ courses, onInfo }: { courses: Course[]; onInfo: (c: Course) => v
         className="lz-hero-copy"
         style={{ "--glow": course.art.glow, opacity: visible ? 1 : 0, transition } as React.CSSProperties}
       >
-        <div className="mx-auto flex w-full max-w-[1400px] items-end justify-between gap-6 px-6">
+        <div className="mx-auto flex w-full max-w-[1400px] flex-col items-stretch gap-5 px-4 md:flex-row md:items-end md:justify-between md:gap-6 md:px-6">
           <div className="lz-hero-in">
             <div className="flex flex-wrap items-center gap-2 text-[13px]">
               <span className="rounded-full border border-white/25 px-3 py-0.5">{course.category}</span>
@@ -216,25 +216,26 @@ function Hero({ courses, onInfo }: { courses: Course[]; onInfo: (c: Course) => v
             <p className="lz-desc max-w-[44ch] text-[#dcdde8] [text-shadow:0_1px_12px_rgba(0,0,0,.7)]">
               {course.description}
             </p>
-            <div className="flex flex-wrap gap-3">
+            <div className="grid grid-cols-2 gap-2.5 md:flex md:flex-wrap md:gap-3">
               <Link
                 href={`${programPath(course.slug)}?src=discover`}
-                className="flex items-center gap-2 rounded-[10px] bg-white px-[22px] py-3 font-bold text-black"
+                className="flex items-center justify-center gap-2 rounded-[10px] bg-white px-4 py-3 font-bold whitespace-nowrap text-black active:scale-[0.98] md:px-[22px]"
               >
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden>
                   <path d="M3 2l9 5-9 5V2z" />
                 </svg>
-                Ver {NOUN.one} · {formatPrice(course.priceCents, course.currency)}
+                Ver <span className="hidden md:inline">{NOUN.one}</span> · {formatPrice(course.priceCents, course.currency)}
               </Link>
               <button
                 onClick={() => onInfo(course)}
-                className="flex cursor-pointer items-center gap-2 rounded-[10px] bg-[rgba(120,124,150,.38)] px-[22px] py-3 font-bold backdrop-blur-sm"
+                className="flex cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-[rgba(120,124,150,.38)] px-4 py-3 font-bold whitespace-nowrap backdrop-blur-sm active:scale-[0.98] md:px-[22px]"
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
                   <circle cx="8" cy="8" r="6.5" />
                   <path d="M8 7v4M8 5.5v.5" strokeLinecap="round" />
                 </svg>
-                Más información
+                <span className="md:hidden">Info</span>
+                <span className="hidden md:inline">Más información</span>
               </button>
             </div>
           </div>
@@ -261,7 +262,7 @@ function Hero({ courses, onInfo }: { courses: Course[]; onInfo: (c: Course) => v
 /* ---------- título de fila ---------- */
 function RowHead({ row }: { row: FeedRow }) {
   return (
-    <div className="mb-2 flex items-center gap-2">
+    <div className="relative mb-2 flex items-center gap-2">
       <h2 className="font-display text-xl font-bold tracking-tight">{row.title}</h2>
       {row.reason && (
         <span className="lz-why">
@@ -563,9 +564,9 @@ function ModalBody({
         </button>
         <StageLive course={course} active={live} />
       </div>
-      <div className="grid gap-[22px] px-6 pt-5 pb-6 sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+      <div className="grid gap-[22px] px-5 pt-5 pb-6 sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] sm:px-6">
         <div>
-          <h2 className="font-display text-[26px] font-bold tracking-tight">{course.title}</h2>
+          <h2 className="font-display text-[22px] leading-tight font-bold tracking-tight sm:text-[26px]">{course.title}</h2>
           <div className="lz-pmeta mt-1.5">
             <span className="m">{stars(course)}</span>
             <span>{course.category}</span>
@@ -573,7 +574,10 @@ function ModalBody({
           <p className="mt-2.5 text-[#cfd0da]">{course.description}</p>
           <p className="mt-2.5 text-[#cfd0da]">Incluye clases, comunidad con foro, calendario de sesiones en vivo y tabla de posiciones.</p>
           <div className="mt-4 flex flex-wrap gap-2.5">
-            <Link href={`${programPath(course.slug)}?src=discover`} className="rounded-[10px] bg-accent px-[22px] py-3 font-bold text-accent-ink">
+            <Link
+              href={`${programPath(course.slug)}?src=discover`}
+              className="w-full rounded-[10px] bg-accent px-[22px] py-3.5 text-center font-bold text-accent-ink active:scale-[0.98] sm:w-auto sm:py-3"
+            >
               Ver {NOUN.one} · {formatPrice(course.priceCents, course.currency)}
             </Link>
           </div>
@@ -592,7 +596,7 @@ function ModalBody({
         </div>
       </div>
       {others.length > 0 && (
-        <div className="lz-more grid grid-cols-3 gap-2 px-6 pb-6">
+        <div className="lz-more grid grid-cols-3 gap-2 px-5 pb-[max(24px,env(safe-area-inset-bottom))] sm:px-6">
           {others.map((o) => (
             <button key={o.id} className="border-0 bg-transparent p-0" aria-label={o.title} onClick={() => onSwitch(o)}>
               <Stage course={o} badges={false} />

@@ -1,15 +1,10 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { NOUN } from "@/lib/copy";
-import type { Category } from "@/lib/types";
+import { CATEGORY_META } from "@/lib/categories";
+import { CATEGORIES } from "@/lib/types";
 
-const CATS: { name: Category; glow: string; icon: string; hint: string }[] = [
-  { name: "Negocios", glow: "#ffb547", icon: "M4 8h16v11H4zM9 8V5h6v3", hint: "Emprender y vender" },
-  { name: "Idiomas", glow: "#7fd6c8", icon: "M4 5h16v11H9l-5 4z", hint: "Hablar con confianza" },
-  { name: "Oficios", glow: "#ff9ad5", icon: "M6 4l4 4-6 6 4 4 6-6 4 4", hint: "Manos a la obra" },
-  { name: "Marketing", glow: "#ff6ea8", icon: "M4 10v4h3l6 4V6L7 10zM17 9a4 4 0 0 1 0 6", hint: "Contenido que vende" },
-  { name: "Inversión", glow: "#6fd38b", icon: "M4 18l5-6 4 3 7-9M15 6h5v5", hint: "Que tu dinero trabaje" },
-];
+const CATS = CATEGORIES.map((name) => ({ name, ...CATEGORY_META[name] }));
 
 const STEPS = [
   { t: "Sube tu trailer", d: `Un video corto que cuente qué aprende quien entra a tu ${NOUN.one}.` },

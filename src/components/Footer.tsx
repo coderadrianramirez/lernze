@@ -44,8 +44,8 @@ const LEGAL = [
 
 export function Footer() {
   return (
-    <footer className="mt-10 border-t border-line bg-[#0b0c12]">
-      <div className="mx-auto grid max-w-[1400px] gap-12 px-5 pt-14 pb-12 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1.15fr)] lg:gap-16">
+    <footer className="mt-6 border-t border-line bg-[#0b0c12] md:mt-10">
+      <div className="mx-auto grid max-w-[1400px] grid-cols-[minmax(0,1fr)] gap-10 px-5 pt-10 pb-10 md:gap-12 md:pt-14 md:pb-12 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1.15fr)] lg:gap-16">
         <div className="max-w-[340px]">
           <Link href="/" className="font-display text-[28px] font-extrabold tracking-tight" aria-label="Lernze — inicio">
             lernze<span className="text-accent">.</span>
@@ -79,14 +79,14 @@ export function Footer() {
           </ul>
         </div>
 
-        <div className="flex gap-14 lg:pt-2">
+        <div className="grid grid-cols-2 gap-8 sm:flex sm:gap-14 lg:pt-2">
           {COLUMNS.map((col) => (
             <nav key={col.title} aria-label={col.title}>
               <h2 className="text-xs font-semibold uppercase tracking-widest text-fg">{col.title}</h2>
               <ul className="mt-4 flex flex-col gap-2.5">
                 {col.links.map((l) => (
                   <li key={l.href}>
-                    <Link href={l.href} className="text-sm whitespace-nowrap text-muted transition-colors hover:text-accent">
+                    <Link href={l.href} className="text-sm text-muted transition-colors hover:text-accent sm:whitespace-nowrap">
                       {l.label}
                     </Link>
                   </li>

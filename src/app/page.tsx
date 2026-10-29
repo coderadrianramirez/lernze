@@ -1,3 +1,4 @@
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { EmptyFeed } from "@/components/EmptyFeed";
 import { Feed, type FeedRow } from "@/components/Feed";
@@ -16,16 +17,6 @@ function joinEs(items: string[]) {
   return items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} y ${items[items.length - 1]}`;
 }
 
-function filterByQuery(courses: Awaited<ReturnType<typeof listCourses>>, q: string) {
-  const lower = q.toLowerCase();
-  return courses.filter(
-    (c) =>
-      c.title.toLowerCase().includes(lower) ||
-      c.creatorName.toLowerCase().includes(lower) ||
-      c.category.toLowerCase().includes(lower),
-  );
-}
-
 export default function Discover({ searchParams }: PageProps<"/">) {
   return (
     <main>
@@ -39,6 +30,7 @@ export default function Discover({ searchParams }: PageProps<"/">) {
 async function Page({ searchParams }: { searchParams: PageProps<"/">["searchParams"] }) {
   const sp = await searchParams;
   const query = typeof sp.q === "string" ? sp.q.trim() : "";
+  if (query) redirect(`/buscar?q=${encodeURIComponent(query)}`);
 
   // Intereses: URL param tiene prioridad (filtro manual); si no, cargamos desde DB
   const urlInterests = parseInterests(sp.i);
@@ -53,33 +45,6 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
     : (dbInterests ?? []).filter((x): x is Category => (CATEGORIES as string[]).includes(x));
 
   if (allCourses.length === 0) return <EmptyFeed />;
-
-  // Resultados de búsqueda
-  if (query) {
-    const results = filterByQuery(allCourses, query);
-    return (
-      <div className="mx-auto max-w-[1180px] px-4 pt-6">
-        <p className="mb-4 text-sm text-muted">
-          {results.length > 0
-            ? `${results.length} resultado${results.length !== 1 ? "s" : ""} para "${query}"`
-            : `Sin resultados para "${query}"`}
-        </p>
-        {results.length === 0 ? (
-          <section className="rounded-2xl border border-line bg-surface p-8 text-center">
-            <p className="text-muted">Prueba con otro nombre o categoría.</p>
-          </section>
-        ) : (
-          <Feed
-            key={`search|${query}`}
-            heroes={results.slice(0, 1)}
-            rows={[{ key: "resultados", title: `Resultados para "${query}"`, items: results }]}
-            controls={null}
-            demo={results.some((c) => c.demo)}
-          />
-        )}
-      </div>
-    );
-  }
 
   // Algoritmo: cursos rankeados por intereses del usuario
   const hasInterests = activeInterests.length > 0;

@@ -29,7 +29,8 @@ export function InterestPicker({ userId, name }: { userId: string; name: string 
   const toggle = (cat: Category) =>
     setSelected((prev) => {
       const next = new Set(prev);
-      next.has(cat) ? next.delete(cat) : next.add(cat);
+      if (next.has(cat)) next.delete(cat);
+      else next.add(cat);
       return next;
     });
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 const DOCS = {
   terminos: {
@@ -28,13 +29,23 @@ export async function generateMetadata({ params }: PageProps<"/legal/[doc]">): P
   return { title: DOCS[doc as Doc]?.title ?? "Legal" };
 }
 
-export default async function LegalPage({ params }: PageProps<"/legal/[doc]">) {
+export default function LegalPage({ params }: PageProps<"/legal/[doc]">) {
+  return (
+    <main className="mx-auto max-w-[760px] px-5 pt-10 pb-20 md:pt-14">
+      <Suspense fallback={<div className="h-48 animate-pulse rounded-2xl bg-surface" />}>
+        <LegalDoc params={params} />
+      </Suspense>
+    </main>
+  );
+}
+
+async function LegalDoc({ params }: { params: PageProps<"/legal/[doc]">["params"] }) {
   const { doc } = await params;
   const page = DOCS[doc as Doc];
   if (!page) notFound();
 
   return (
-    <main className="mx-auto max-w-[760px] px-5 pt-14 pb-20">
+    <>
       <p className="text-xs font-semibold uppercase tracking-widest text-muted">Legal</p>
       <h1 className="mt-2 font-display text-[clamp(28px,4vw,40px)] font-extrabold tracking-tight">{page.title}</h1>
       <div className="mt-8 rounded-2xl border border-line bg-surface p-6">
@@ -52,6 +63,6 @@ export default async function LegalPage({ params }: PageProps<"/legal/[doc]">) {
             </Link>
           ))}
       </nav>
-    </main>
+    </>
   );
 }

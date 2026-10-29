@@ -1,12 +1,15 @@
 "use client";
 
+import { usePathname } from "next/navigation";
+
 export function SearchBar() {
+  if (usePathname() === "/buscar") return null;
   return (
     <form
-      action="/"
+      action="/buscar"
       method="GET"
       role="search"
-      className="relative flex w-full max-w-[470px] items-center"
+      className="relative flex w-full items-center"
     >
       <span className="pointer-events-none absolute left-3 text-muted" aria-hidden>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">

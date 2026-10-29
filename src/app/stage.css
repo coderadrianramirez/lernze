@@ -315,10 +315,50 @@
   width: 44px;
   background: var(--lz-accent);
 }
+/* móvil: póster vertical con el texto abajo y un asomo de la fila siguiente */
+@media (max-width: 767px) {
+  .lz-hero {
+    height: min(max(430px, calc(100svh - 290px)), 600px);
+  }
+  .lz-hero-bg .lz-stage {
+    --cs: 7cqw;
+  }
+  .lz-hero-bg .lz-shade {
+    background: linear-gradient(0deg, rgba(13, 14, 20, 1) 0%, rgba(13, 14, 20, 0.86) 30%, rgba(13, 14, 20, 0.2) 62%, transparent 78%);
+  }
+  .lz-hero-copy {
+    padding-bottom: 18px;
+  }
+  .lz-hero-in {
+    max-width: none;
+    gap: 12px;
+  }
+  .lz-hero h1 {
+    font-size: clamp(28px, 8.4vw, 38px);
+    max-height: none;
+  }
+  .lz-hero .lz-desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  .lz-hero-dots {
+    align-self: center;
+    margin-bottom: 0;
+  }
+  .lz-hero-dot {
+    width: 16px;
+  }
+  .lz-hero-dot.active {
+    width: 28px;
+  }
+}
 
 /* ¿Por qué ves esto? */
 .lz-why {
-  position: relative;
   display: inline-flex;
   z-index: 6;
 }
@@ -335,10 +375,12 @@
 }
 .lz-why [role="tooltip"] {
   position: absolute;
-  left: -8px;
-  top: calc(100% + 8px);
+  z-index: 6;
+  left: 0;
+  top: calc(100% + 6px);
   width: max-content;
-  max-width: 260px;
+  max-width: min(300px, 100%);
+  visibility: hidden;
   padding: 10px 12px;
   border-radius: 10px;
   border: 1px solid rgba(127, 214, 200, 0.28);
@@ -367,6 +409,14 @@
 .lz-why:focus-within [role="tooltip"] {
   opacity: 1;
   transform: none;
+  visibility: visible;
+}
+
+/* miniatura de lista */
+.lz-thumb .lz-stage {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
 }
 
 /* newsletter del footer */
@@ -578,6 +628,24 @@
   background: var(--color-accent);
   color: var(--color-accent-ink);
   padding-left: 2px;
+}
+@media (max-width: 767px) {
+  .lz-track {
+    margin-inline: -16px;
+    padding-inline: 16px;
+    scroll-padding-inline: 16px;
+    gap: 10px;
+  }
+  .lz-card .lz-stage {
+    width: min(64vw, 260px);
+  }
+  .lz-bento-cell:not(.big) .lz-stage {
+    --ls: 9.5cqw;
+  }
+  .lz-bento-meta {
+    font-size: 12px;
+    gap: 8px;
+  }
 }
 @media (max-width: 720px) {
   .lz-bento {
@@ -893,6 +961,27 @@ button.lz-top-tile,
 }
 .lz-dlg::backdrop {
   background: rgba(5, 6, 10, 0.78);
+}
+/* móvil: hoja que sube desde abajo */
+@media (max-width: 639px) {
+  .lz-dlg {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92svh;
+    margin: auto 0 0;
+    border-radius: 18px 18px 0 0;
+    overscroll-behavior: contain;
+    animation: lzSheet 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .lz-dlg .lz-stage {
+    border-radius: 18px 18px 0 0;
+  }
+}
+@keyframes lzSheet {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
 }
 .lz-dlg .lz-stage {
   aspect-ratio: 16 / 9;
