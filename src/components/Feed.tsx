@@ -8,7 +8,7 @@ import type { Course } from "@/lib/types";
 import { Stage } from "./Stage";
 import { StageLive } from "./StageLive";
 
-export type FeedRow = { key: string; title: string; items: Course[] };
+export type FeedRow = { key: string; title: string; items: Course[]; reason?: string };
 
 type Props = {
   heroes: Course[];
@@ -281,7 +281,23 @@ function Row({
   };
   return (
     <section className="lz-rowsec relative mt-6" aria-label={row.title}>
-      <h2 className="mb-2 font-display text-xl font-bold tracking-tight">{row.title}</h2>
+      <div className="mb-2 flex items-center gap-2">
+        <h2 className="font-display text-xl font-bold tracking-tight">{row.title}</h2>
+        {row.reason && (
+          <span className="lz-why">
+            <button type="button" aria-label="¿Por qué ves esto?" aria-describedby={`why-${row.key}`}>
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+                <circle cx="8" cy="8" r="6.5" />
+                <path d="M8 7.2v3.8M8 5v.4" strokeLinecap="round" />
+              </svg>
+            </button>
+            <span role="tooltip" id={`why-${row.key}`}>
+              <b>¿Por qué ves esto?</b>
+              {row.reason}
+            </span>
+          </span>
+        )}
+      </div>
       <button className="lz-arr l" aria-label="Anterior" onClick={() => scrollBy(-1)}>
         ‹
       </button>

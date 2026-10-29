@@ -316,6 +316,59 @@
   background: var(--lz-accent);
 }
 
+/* ¿Por qué ves esto? */
+.lz-why {
+  position: relative;
+  display: inline-flex;
+  z-index: 6;
+}
+.lz-why button {
+  display: flex;
+  padding: 2px;
+  border: 0;
+  border-radius: 99px;
+  background: none;
+  color: var(--color-ai);
+  opacity: 0.55;
+  cursor: help;
+  transition: opacity 0.2s;
+}
+.lz-why [role="tooltip"] {
+  position: absolute;
+  left: -8px;
+  top: calc(100% + 8px);
+  width: max-content;
+  max-width: 260px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(127, 214, 200, 0.28);
+  background: #151722;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55);
+  font-size: 13px;
+  line-height: 1.4;
+  color: #cfd0da;
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 0.18s, transform 0.18s;
+}
+.lz-why [role="tooltip"] b {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 12px;
+  color: var(--color-ai);
+}
+.lz-why:hover button,
+.lz-why button:focus-visible {
+  opacity: 1;
+}
+.lz-why:hover [role="tooltip"],
+.lz-why button:focus [role="tooltip"],
+.lz-why:focus-within [role="tooltip"] {
+  opacity: 1;
+  transform: none;
+}
+
 /* filas */
 .lz-track {
   display: flex;

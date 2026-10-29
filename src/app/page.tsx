@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { Feed, type FeedRow } from "@/components/Feed";
-import { NOUN } from "@/lib/copy";
+import { NOUN, cap } from "@/lib/copy";
 import { listCourses, rankForInterests, getUserInterests } from "@/lib/data";
 import { getCurrentUser } from "@/lib/auth";
 import { CATEGORIES, type Category } from "@/lib/types";
@@ -123,24 +123,47 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
   const heroes = heroPool.length ? heroPool : allCourses.slice(0, 5);
 
   // Filas que cambian según intereses del algoritmo
+  const personal = Boolean(user && !user.demo && dbInterests?.length);
+  const label = activeInterests.join(", ");
+  const scope = hasInterests ? `de ${label}` : "de Lernze";
   const forYouRow: FeedRow[] = hasInterests
-    ? [{ key: "para-ti", title: user && !user.demo && dbInterests?.length ? "Para ti" : "Destacados", items: forYou }]
+    ? [
+        {
+          key: "para-ti",
+          title: personal ? "Para ti" : "Destacados",
+          items: forYou,
+          reason: personal
+            ? `Elegiste ${label} en tus intereses. Te mostramos los mejor valorados.`
+            : `Los ${NOUN.other} mejor valorados de ${label}.`,
+        },
+      ]
     : [];
 
   // Filas "Porque te interesa X" — una por categoría activa con suficientes cursos
   const interestRows: FeedRow[] = activeInterests
-    .map((cat) => {
+    .map((cat): FeedRow | null => {
       const items = allCourses.filter((c) => c.category === cat).sort((a, b) => b.rating - a.rating || b.members - a.members);
-      return items.length >= 2 ? { key: `cat-${cat}`, title: `Porque te interesa ${cat}`, items } : null;
+      return items.length >= 2
+        ? { key: `cat-${cat}`, title: `Porque te interesa ${cat}`, items, reason: `Elegiste ${cat} en tus intereses.` }
+        : null;
     })
     .filter((r): r is FeedRow => r !== null);
 
   const allRows: FeedRow[] = [
     ...forYouRow,
-    { key: "tendencia", title: "Tendencia esta semana", items: trending },
+    {
+      key: "tendencia",
+      title: "Tendencia esta semana",
+      items: trending,
+      reason: `Los ${NOUN.other} ${scope} con más alumnos esta semana.`,
+    },
     ...interestRows,
-    ...(rated.length ? [{ key: "valorados", title: "Mejor valorados", items: rated }] : []),
-    ...(cheap.length ? [{ key: "baratos", title: "Por menos de $100", items: cheap }] : []),
+    ...(rated.length
+      ? [{ key: "valorados", title: "Mejor valorados", items: rated, reason: `Los ${NOUN.other} ${scope} con mejor calificación de sus alumnos.` }]
+      : []),
+    ...(cheap.length
+      ? [{ key: "baratos", title: "Por menos de $100", items: cheap, reason: `${cap(NOUN.other)} ${scope} que cuestan menos de $100.` }]
+      : []),
   ];
   let rows = allRows;
   let heroList = heroes;
@@ -148,11 +171,26 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
     const inCat = allCourses.filter((c) => urlInterests.includes(c.category));
     const byRating = [...inCat].sort((a, b) => b.rating - a.rating || b.members - a.members);
     const byMembers = [...inCat].sort((a, b) => b.members - a.members);
-    const label = urlInterests.join(" y ");
+    const catLabel = urlInterests.join(" y ");
     rows = [
-      { key: "destacados", title: forYouRow[0]?.title ?? "Destacados", items: byRating.slice(0, 8) },
-      { key: "tendencia", title: "Tendencia esta semana", items: byMembers.slice(0, 8) },
-      { key: "todos", title: `Porque te interesa ${label}`, items: byRating },
+      {
+        key: "destacados",
+        title: forYouRow[0]?.title ?? "Destacados",
+        items: byRating.slice(0, 8),
+        reason: `Los ${NOUN.other} mejor valorados de ${catLabel}.`,
+      },
+      {
+        key: "tendencia",
+        title: "Tendencia esta semana",
+        items: byMembers.slice(0, 8),
+        reason: `Los ${NOUN.other} de ${catLabel} con más alumnos esta semana.`,
+      },
+      {
+        key: "todos",
+        title: `Porque te interesa ${catLabel}`,
+        items: byRating,
+        reason: `Todos los ${NOUN.other} de ${catLabel}, del mejor valorado al último.`,
+      },
     ];
     if (byRating.length) heroList = byRating.slice(0, 5);
   }
