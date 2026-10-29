@@ -105,7 +105,6 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
   // Sin intereses: toda la plataforma. Con intereses: solo sus temas.
   const pool = hasInterests ? forYou : allCourses;
   const trending = [...pool].sort((a, b) => b.members - a.members).slice(0, 8);
-  const rated = [...pool].filter((c) => c.rating > 0).sort((a, b) => b.rating - a.rating || b.members - a.members);
   const cheap = pool.filter((c) => c.priceCents < 10_000).sort((a, b) => a.priceCents - b.priceCents);
 
   // Hero: si tiene intereses, prioriza los cursos "Para ti"; sino top trending
@@ -148,17 +147,6 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
       reason: `Los ${NOUN.other} ${scope} con más alumnos esta semana.`,
     },
     ...interestRows,
-    ...(rated.length
-      ? [
-          {
-            key: "valorados",
-            title: "Mejor valorados",
-            items: rated,
-            reason: `Los ${NOUN.other} ${scope} con mejor calificación de sus alumnos.`,
-            layout: "top" as const,
-          },
-        ]
-      : []),
     ...(cheap.length
       ? [
           {
