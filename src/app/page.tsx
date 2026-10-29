@@ -12,13 +12,6 @@ function parseInterests(raw: string | string[] | undefined): Category[] {
   return v.split(",").filter((x): x is Category => (CATEGORIES as string[]).includes(x));
 }
 
-function categoryHref(interests: Category[]) {
-  const p = new URLSearchParams();
-  if (interests.length) p.set("i", interests.join(","));
-  const q = p.toString();
-  return q ? `/?${q}` : "/";
-}
-
 function filterByQuery(courses: Awaited<ReturnType<typeof listCourses>>, q: string) {
   const lower = q.toLowerCase();
   return courses.filter(
@@ -54,9 +47,6 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
   const activeInterests: Category[] = urlInterests.length
     ? urlInterests
     : (dbInterests ?? []).filter((x): x is Category => (CATEGORIES as string[]).includes(x));
-
-  // Onboarding pendiente: usuario logueado, nunca completó, y no viene de URL
-  const needsOnboarding = user && !user.demo && dbInterests === null && !urlInterests.length;
 
   if (allCourses.length === 0) {
     return (
