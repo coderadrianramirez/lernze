@@ -117,7 +117,7 @@ export function StageLive({ course, active, mode = "h", lockup = true, badges = 
             muted
             loop
             playsInline
-            preload="none"
+            preload={controls && active ? "auto" : "none"}
             controls={controls}
             aria-label={`Trailer de ${course.title}`}
             onPlaying={() => setVideoPlaying(true)}

@@ -564,8 +564,14 @@
     width: 100%;
   }
 }
-.lz-video.ctl {
-  opacity: 1;
+.lz-poster .lz-stage {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  border-radius: 12px;
+  --ls: 13.5cqw;
+}
+.lz-detail .lz-video {
+  transition: opacity 0.6s ease;
 }
 
 /* Grabación de videos de prueba: 1280x720 fijo, por encima del resto de la página. */
