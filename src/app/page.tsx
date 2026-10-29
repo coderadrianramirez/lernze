@@ -140,14 +140,27 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
     ...(rated.length ? [{ key: "valorados", title: "Mejor valorados", items: rated }] : []),
     ...(cheap.length ? [{ key: "baratos", title: "Por menos de $100", items: cheap }] : []),
   ];
-  const rows = urlInterests.length ? allRows.slice(0, 3) : allRows;
+  let rows = allRows;
+  let heroList = heroes;
+  if (urlInterests.length) {
+    const inCat = allCourses.filter((c) => urlInterests.includes(c.category));
+    const byRating = [...inCat].sort((a, b) => b.rating - a.rating || b.members - a.members);
+    const byMembers = [...inCat].sort((a, b) => b.members - a.members);
+    const label = urlInterests.join(" y ");
+    rows = [
+      { key: "destacados", title: forYouRow[0]?.title ?? "Destacados", items: byRating.slice(0, 8) },
+      { key: "tendencia", title: "Tendencia esta semana", items: byMembers.slice(0, 8) },
+      { key: "todos", title: `Porque te interesa ${label}`, items: byRating },
+    ];
+    if (byRating.length) heroList = byRating.slice(0, 5);
+  }
 
   const controls: React.ReactNode = null;
 
   return (
     <Feed
       key={`feed|${activeInterests.join(",")}`}
-      heroes={heroes}
+      heroes={heroList}
       rows={rows}
       controls={controls}
       demo={allCourses.some((c) => c.demo)}
