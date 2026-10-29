@@ -39,7 +39,7 @@ async function Ofertas() {
   const rows: FeedRow[] = CATEGORIES.map((cat): FeedRow | null => {
     const items = cheap.filter((c) => c.category === cat);
     return items.length
-      ? { key: `oferta-${cat}`, title: cat, items, reason: `${cap(NOUN.other)} de ${cat} que cuestan menos de $100.` }
+      ? { key: `oferta-${cat}`, title: cat, items, reason: `${cap(NOUN.other)} de ${cat} con pago único menor a $100. Primero van los mejor calificados.` }
       : null;
   }).filter((r): r is FeedRow => r !== null);
 

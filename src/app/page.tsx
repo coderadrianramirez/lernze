@@ -12,6 +12,10 @@ function parseInterests(raw: string | string[] | undefined): Category[] {
   return v.split(",").filter((x): x is Category => (CATEGORIES as string[]).includes(x));
 }
 
+function joinEs(items: string[]) {
+  return items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} y ${items[items.length - 1]}`;
+}
+
 function filterByQuery(courses: Awaited<ReturnType<typeof listCourses>>, q: string) {
   const lower = q.toLowerCase();
   return courses.filter(
@@ -113,8 +117,7 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
 
   // Filas que cambian según intereses del algoritmo
   const personal = Boolean(user && !user.demo && dbInterests?.length);
-  const label = activeInterests.join(", ");
-  const scope = hasInterests ? `de ${label}` : "de Lernze";
+  const label = joinEs(activeInterests);
   const forYouRow: FeedRow[] = hasInterests
     ? [
         {
@@ -122,8 +125,8 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
           title: personal ? "Para ti" : "Destacados",
           items: forYou,
           reason: personal
-            ? `Elegiste ${label} en tus intereses. Te mostramos los mejor valorados.`
-            : `Los ${NOUN.other} mejor valorados de ${label}.`,
+            ? `Según los temas que elegiste (${label}). Primero van los mejor calificados por sus alumnos.`
+            : `Los ${NOUN.other} de ${label} con mejor calificación de sus alumnos.`,
         },
       ]
     : [];
@@ -133,7 +136,12 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
     .map((cat): FeedRow | null => {
       const items = allCourses.filter((c) => c.category === cat).sort((a, b) => b.rating - a.rating || b.members - a.members);
       return items.length >= 2
-        ? { key: `cat-${cat}`, title: `Porque te interesa ${cat}`, items, reason: `Elegiste ${cat} en tus intereses.` }
+        ? {
+            key: `cat-${cat}`,
+            title: `Porque te interesa ${cat}`,
+            items,
+            reason: `Todo lo que hay de ${cat}, uno de los temas que elegiste al crear tu cuenta.`,
+          }
         : null;
     })
     .filter((r): r is FeedRow => r !== null);
@@ -144,7 +152,9 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
       key: "tendencia",
       title: "Tendencia esta semana",
       items: trending,
-      reason: `Los ${NOUN.other} ${scope} con más alumnos esta semana.`,
+      reason: hasInterests
+        ? `Los ${NOUN.other} de ${label} que más alumnos eligieron.`
+        : `Los ${NOUN.other} que más alumnos eligieron en Lernze.`,
     },
     ...interestRows,
     ...(cheap.length
@@ -153,7 +163,9 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
             key: "ofertas",
             title: "Por menos de $100",
             items: cheap,
-            reason: `${cap(NOUN.other)} ${scope} que cuestan menos de $100.`,
+            reason: hasInterests
+              ? `${cap(NOUN.other)} de ${label} con pago único menor a $100.`
+              : `${cap(NOUN.other)} completos con pago único menor a $100, para empezar sin gastar mucho.`,
             layout: "grid" as const,
             more: { href: "/ofertas", label: "Ver todas" },
           },
@@ -166,25 +178,28 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
     const inCat = allCourses.filter((c) => urlInterests.includes(c.category));
     const byRating = [...inCat].sort((a, b) => b.rating - a.rating || b.members - a.members);
     const byMembers = [...inCat].sort((a, b) => b.members - a.members);
-    const catLabel = urlInterests.join(" y ");
+    const catLabel = joinEs(urlInterests);
+    const chosen = personal && urlInterests.every((c) => dbInterests?.includes(c));
     rows = [
       {
         key: "destacados",
         title: forYouRow[0]?.title ?? "Destacados",
         items: byRating.slice(0, 8),
-        reason: `Los ${NOUN.other} mejor valorados de ${catLabel}.`,
+        reason: `Los ${NOUN.other} de ${catLabel} con mejor calificación de sus alumnos.`,
       },
       {
         key: "tendencia",
         title: "Tendencia esta semana",
         items: byMembers.slice(0, 8),
-        reason: `Los ${NOUN.other} de ${catLabel} con más alumnos esta semana.`,
+        reason: `Los ${NOUN.other} de ${catLabel} que más alumnos eligieron.`,
       },
       {
         key: "todos",
         title: `Porque te interesa ${catLabel}`,
         items: byRating,
-        reason: `Todos los ${NOUN.other} de ${catLabel}, del mejor valorado al último.`,
+        reason: chosen
+          ? `Todo lo que hay de ${catLabel}, uno de los temas que elegiste al crear tu cuenta.`
+          : `Todos los ${NOUN.other} de ${catLabel}, empezando por los mejor calificados.`,
       },
     ];
     if (byRating.length) heroList = byRating.slice(0, 5);
