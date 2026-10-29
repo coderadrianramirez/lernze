@@ -3,15 +3,25 @@ import { Suspense } from "react";
 import { EmptyFeed } from "@/components/EmptyFeed";
 import { Feed, type FeedRow } from "@/components/Feed";
 import { NOUN, cap } from "@/lib/copy";
-import { listCourses, rankForInterests, getUserInterests } from "@/lib/data";
+import { getUserInterests, listCourses, listRecentViews, rankForInterests } from "@/lib/data";
 import { getCurrentUser } from "@/lib/auth";
-import { CATEGORIES, type Category } from "@/lib/types";
+import { CATEGORIES, type Category, type Course } from "@/lib/types";
 import { ShowFooterOnMobile } from "@/components/Footer";
 
 function parseInterests(raw: string | string[] | undefined): Category[] {
   const v = Array.isArray(raw) ? raw[0] : raw;
   if (!v) return [];
   return v.split(",").filter((x): x is Category => (CATEGORIES as string[]).includes(x));
+}
+
+/** Las `n` categorías que más aparecen en una lista de programas. */
+function topCategories(courses: Course[], n: number): Category[] {
+  const counts = new Map<Category, number>();
+  courses.forEach((c) => counts.set(c.category, (counts.get(c.category) ?? 0) + 1));
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, n)
+    .map(([c]) => c);
 }
 
 function joinEs(items: string[]) {
@@ -38,13 +48,23 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
   const urlInterests = parseInterests(sp.i);
   const [allCourses, user] = await Promise.all([listCourses(), getCurrentUser()]);
 
-  // Intereses persistidos del usuario (null = onboarding pendiente, [] = no eligió)
-  const dbInterests = user && !user.demo ? await getUserInterests(user.id) : null;
+  // Intereses persistidos (null = onboarding pendiente, [] = no eligió) y programas que abrió hace poco.
+  const signedIn = Boolean(user && !user.demo);
+  const [dbInterests, recentViews] = signedIn
+    ? await Promise.all([getUserInterests(user!.id), listRecentViews(user!.id, 12)])
+    : [null, []];
 
-  // Intereses activos: URL > DB > []
+  // Si no eligió temas, los deducimos de lo que vio: las dos categorías que más abrió.
+  const chosenInterests = (dbInterests ?? []).filter((x): x is Category => (CATEGORIES as string[]).includes(x));
+  const inferredInterests: Category[] = chosenInterests.length ? [] : topCategories(recentViews, 2);
+
+  // Intereses activos: URL > elegidos > deducidos de lo visto
   const activeInterests: Category[] = urlInterests.length
     ? urlInterests
-    : (dbInterests ?? []).filter((x): x is Category => (CATEGORIES as string[]).includes(x));
+    : chosenInterests.length
+      ? chosenInterests
+      : inferredInterests;
+  const inferred = !urlInterests.length && !chosenInterests.length && inferredInterests.length > 0;
 
   if (allCourses.length === 0) return <EmptyFeed />;
 
@@ -61,20 +81,46 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
   const heroes = heroPool.length ? heroPool : allCourses.slice(0, 5);
 
   // Filas que cambian según intereses del algoritmo
-  const personal = Boolean(user && !user.demo && dbInterests?.length);
+  const personal = signedIn && chosenInterests.length > 0;
   const label = joinEs(activeInterests);
   const forYouRow: FeedRow[] = hasInterests
     ? [
         {
           key: "para-ti",
-          title: personal ? "Para ti" : "Destacados",
+          title: personal || inferred ? "Para ti" : "Destacados",
           items: forYou,
           reason: personal
             ? `Según los temas que elegiste (${label}). Primero van los mejor calificados por sus alumnos.`
-            : `Los ${NOUN.other} de ${label} con mejor calificación de sus alumnos.`,
+            : inferred
+              ? `Según lo que viste últimamente (${label}). Elige tus temas en Mi cuenta para afinarlo.`
+              : `Los ${NOUN.other} de ${label} con mejor calificación de sus alumnos.`,
         },
       ]
     : [];
+
+  // "Vistos recientemente" y "Porque viste X", como en cualquier plataforma de video.
+  const viewedIds = new Set(recentViews.map((c) => c.id));
+  const recentRow: FeedRow[] =
+    recentViews.length >= 2
+      ? [{ key: "recientes", title: "Vistos recientemente", items: recentViews, reason: `Los últimos ${NOUN.other} que abriste, para retomarlos.` }]
+      : [];
+  const last = recentViews[0];
+  const becauseItems = last
+    ? allCourses
+        .filter((c) => c.category === last.category && !viewedIds.has(c.id))
+        .sort((a, b) => b.rating - a.rating || b.members - a.members)
+    : [];
+  const becauseRow: FeedRow[] =
+    last && becauseItems.length >= 2
+      ? [
+          {
+            key: "porque-viste",
+            title: `Porque viste ${last.title}`,
+            items: becauseItems,
+            reason: `Más ${NOUN.other} de ${last.category} que todavía no abriste, el tema de lo último que viste.`,
+          },
+        ]
+      : [];
 
   // Filas "Porque te interesa X" — una por categoría activa con suficientes cursos
   const interestRows: FeedRow[] = activeInterests
@@ -85,7 +131,9 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
             key: `cat-${cat}`,
             title: `Porque te interesa ${cat}`,
             items,
-            reason: `Todo lo que hay de ${cat}, uno de los temas que elegiste al crear tu cuenta.`,
+            reason: inferred
+              ? `Viste varios ${NOUN.other} de ${cat} últimamente.`
+              : `Todo lo que hay de ${cat}, uno de los temas que elegiste al crear tu cuenta.`,
           }
         : null;
     })
@@ -93,6 +141,8 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
 
   const allRows: FeedRow[] = [
     ...forYouRow,
+    ...recentRow,
+    ...becauseRow,
     {
       key: "tendencia",
       title: "Los más elegidos",

@@ -114,6 +114,59 @@ export async function saveUserInterests(userId: string, interests: string[]): Pr
   if (error) throw new Error(`No se pudieron guardar los intereses: ${error.message}`);
 }
 
+/** Programas a los que se unió el usuario, del más reciente al más antiguo. */
+export async function listMyEnrollments(userId: string): Promise<{ course: Course; joinedAt: string }[]> {
+  const supabase = await createSessionClient();
+  const { data, error } = await supabase
+    .from("enrollments")
+    .select("created_at, course:courses(*)")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(`No se pudieron leer tus programas: ${error.message}`);
+  return (data as unknown as { created_at: string; course: CourseRow | null }[])
+    .filter((r) => r.course)
+    .map((r) => ({ course: toCourse(r.course as CourseRow), joinedAt: r.created_at }));
+}
+
+/** Programas publicados o en borrador que creó el usuario. */
+export async function listMyCourses(userId: string): Promise<Course[]> {
+  const supabase = await createSessionClient();
+  const { data, error } = await supabase
+    .from("courses")
+    .select("*")
+    .eq("creator_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(`No se pudieron leer los programas que creaste: ${error.message}`);
+  return (data as CourseRow[]).map(toCourse);
+}
+
+/** Registra (o actualiza la fecha de) la visita del usuario a un programa. */
+export async function recordView(userId: string, courseId: string): Promise<void> {
+  const supabase = await createSessionClient();
+  const { error } = await supabase
+    .from("course_views")
+    .upsert({ user_id: userId, course_id: courseId, viewed_at: new Date().toISOString() }, { onConflict: "user_id,course_id" });
+  if (error) console.error("[views]", error.message);
+}
+
+/** Últimos programas que abrió el usuario. */
+export async function listRecentViews(userId: string, limit = 12): Promise<Course[]> {
+  const supabase = await createSessionClient();
+  const { data, error } = await supabase
+    .from("course_views")
+    .select("viewed_at, course:courses(*)")
+    .eq("user_id", userId)
+    .order("viewed_at", { ascending: false })
+    .limit(limit);
+  if (error) {
+    console.error("[views]", error.message);
+    return [];
+  }
+  return (data as unknown as { course: CourseRow | null }[])
+    .filter((r) => r.course)
+    .map((r) => toCourse(r.course as CourseRow));
+}
+
 export async function enroll(course: Course, origin: SaleOrigin, userId: string): Promise<Enrollment> {
   const supabase = await createSessionClient();
   const row = {

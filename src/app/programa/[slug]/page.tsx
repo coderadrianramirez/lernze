@@ -9,6 +9,7 @@ import { getCourseBySlug, listCourses } from "@/lib/data";
 import { COMMISSION_BPS, formatPrice, parseOrigin } from "@/lib/pricing";
 import { enrollAction } from "./actions";
 import { ShareButtons } from "./ShareButtons";
+import { TrackView } from "./TrackView";
 import { NoTabBar } from "@/components/MobileTabBar";
 
 export async function generateMetadata({ params }: PageProps<"/programa/[slug]">): Promise<Metadata> {
@@ -93,6 +94,7 @@ async function CourseDetail({
   return (
     <>
       {/* ruta */}
+      <TrackView courseId={course.id} />
       <Link
         href={`/?i=${encodeURIComponent(course.category)}`}
         className="-ml-1 inline-flex items-center gap-1 rounded-lg px-1 py-1 text-sm font-medium text-muted active:text-fg md:hidden"

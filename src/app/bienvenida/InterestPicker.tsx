@@ -21,8 +21,11 @@ const CATEGORY_DESC: Record<Category, string> = {
   Inversión: "Finanzas personales y ahorro",
 };
 
-export function InterestPicker({ userId, name }: { userId: string; name: string }) {
-  const [selected, setSelected] = useState<Set<Category>>(new Set());
+export function InterestPicker({ name, initial, next }: { name: string; initial: string[]; next: string }) {
+  const editing = initial.length > 0;
+  const [selected, setSelected] = useState<Set<Category>>(
+    () => new Set(initial.filter((x): x is Category => (CATEGORIES as string[]).includes(x))),
+  );
   const [pending, startTransition] = useTransition();
   const router = useRouter();
 
@@ -36,16 +39,20 @@ export function InterestPicker({ userId, name }: { userId: string; name: string 
 
   const submit = () => {
     startTransition(async () => {
-      await saveInterestsAction(userId, [...selected]);
-      router.push("/");
+      await saveInterestsAction([...selected]);
+      router.push(next);
       router.refresh();
     });
   };
 
   const skip = () => {
+    if (editing) {
+      router.push(next);
+      return;
+    }
     startTransition(async () => {
-      await saveInterestsAction(userId, []);
-      router.push("/");
+      await saveInterestsAction([]);
+      router.push(next);
     });
   };
 
@@ -55,10 +62,12 @@ export function InterestPicker({ userId, name }: { userId: string; name: string 
       <div className="mb-8 text-center">
         <p className="mb-1 text-sm text-muted">Hola, {name} 👋</p>
         <h1 className="font-display text-3xl font-extrabold tracking-tight">
-          ¿Qué te interesa aprender?
+          {editing ? "Tus intereses" : "¿Qué te interesa aprender?"}
         </h1>
         <p className="mt-2 text-sm text-muted">
-          Elegí uno o varios temas y personalizamos tu feed al instante.
+          {editing
+            ? "Cambia los temas cuando quieras: tu feed se ajusta al instante."
+            : "Elige uno o varios temas y personalizamos tu feed al instante."}
         </p>
       </div>
 
@@ -70,7 +79,8 @@ export function InterestPicker({ userId, name }: { userId: string; name: string 
             <button
               key={cat}
               onClick={() => toggle(cat)}
-              className={`flex items-center gap-4 rounded-2xl border px-5 py-4 text-left transition-all ${
+              aria-pressed={on}
+              className={`flex cursor-pointer items-center gap-4 rounded-2xl border px-5 py-4 text-left transition-all ${
                 on
                   ? "border-accent bg-accent/10 text-fg shadow-[0_0_0_1px_var(--color-accent)]"
                   : "border-line bg-surface text-fg hover:border-fg/20 hover:bg-surface-2"
@@ -101,14 +111,16 @@ export function InterestPicker({ userId, name }: { userId: string; name: string 
           disabled={pending || selected.size === 0}
           className="w-full rounded-xl bg-accent px-6 py-3.5 font-bold text-accent-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
         >
-          {pending ? "Guardando…" : `Personalizar mi feed${selected.size > 0 ? ` · ${selected.size} ${selected.size === 1 ? "tema" : "temas"}` : ""}`}
+          {pending
+            ? "Guardando…"
+            : `${editing ? "Guardar cambios" : "Personalizar mi feed"}${selected.size > 0 ? ` · ${selected.size} ${selected.size === 1 ? "tema" : "temas"}` : ""}`}
         </button>
         <button
           onClick={skip}
           disabled={pending}
-          className="text-sm text-muted transition-colors hover:text-fg"
+          className="cursor-pointer py-2 text-sm text-muted transition-colors hover:text-fg"
         >
-          Saltar por ahora
+          {editing ? "Cancelar" : "Saltar por ahora"}
         </button>
       </div>
     </div>

@@ -31,6 +31,22 @@ export async function saveUserInterests(userId: string, interests: string[]): Pr
   if (isSupabaseConfigured) await db.saveUserInterests(userId, interests);
 }
 
+export async function listMyEnrollments(userId: string): Promise<{ course: Course; joinedAt: string }[]> {
+  return isSupabaseConfigured ? db.listMyEnrollments(userId) : [];
+}
+
+export async function listMyCourses(userId: string): Promise<Course[]> {
+  return isSupabaseConfigured ? db.listMyCourses(userId) : [];
+}
+
+export async function recordView(userId: string, courseId: string): Promise<void> {
+  if (isSupabaseConfigured) await db.recordView(userId, courseId);
+}
+
+export async function listRecentViews(userId: string, limit?: number): Promise<Course[]> {
+  return isSupabaseConfigured ? db.listRecentViews(userId, limit) : [];
+}
+
 /** Orden de "Para ti": primero los programas de tus intereses, luego por valoración. */
 export function rankForInterests(courses: Course[], interests: Category[]): Course[] {
   const mine = new Set(interests);
