@@ -187,7 +187,7 @@ function Hero({ courses, onInfo }: { courses: Course[]; onInfo: (c: Course) => v
         className="lz-hero-copy"
         style={{ "--glow": course.art.glow, opacity: visible ? 1 : 0, transition } as React.CSSProperties}
       >
-        <div className="mx-auto w-full max-w-[1400px] px-6">
+        <div className="mx-auto flex w-full max-w-[1400px] items-end justify-between gap-6 px-6">
           <div className="lz-hero-in">
             <div className="flex flex-wrap items-center gap-2 text-[13px]">
               <span className="rounded-full border border-white/25 px-3 py-0.5">{course.category}</span>
@@ -260,6 +260,19 @@ function Row({
   onScroll: () => void;
 }) {
   const track = useRef<HTMLDivElement>(null);
+  const [edges, setEdges] = useState({ l: false, r: false });
+  const updateEdges = useCallback(() => {
+    const t = track.current;
+    if (!t) return;
+    const l = t.scrollLeft > 4;
+    const r = t.scrollLeft + t.clientWidth < t.scrollWidth - 4;
+    setEdges((p) => (p.l === l && p.r === r ? p : { l, r }));
+  }, []);
+  useEffect(() => {
+    updateEdges();
+    window.addEventListener("resize", updateEdges);
+    return () => window.removeEventListener("resize", updateEdges);
+  }, [updateEdges]);
   const scrollBy = (dir: number) => {
     const t = track.current;
     if (!t) return;
@@ -272,7 +285,14 @@ function Row({
       <button className="lz-arr l" aria-label="Anterior" onClick={() => scrollBy(-1)}>
         ‹
       </button>
-      <div className="lz-track" ref={track} onScroll={onScroll}>
+      <div
+        className={`lz-track${edges.l ? " fade-l" : ""}${edges.r ? " fade-r" : ""}`}
+        ref={track}
+        onScroll={() => {
+          updateEdges();
+          onScroll();
+        }}
+      >
         {row.items.map((c) => (
           <button
             key={c.id}
