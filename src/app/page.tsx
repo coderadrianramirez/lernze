@@ -1,4 +1,3 @@
-import React from "react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Feed, type FeedRow } from "@/components/Feed";
@@ -142,37 +141,7 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
     ...(cheap.length ? [{ key: "baratos", title: "Por menos de $100", items: cheap }] : []),
   ];
 
-  // Strip contextual debajo del hero según estado del usuario
-  let controls: React.ReactNode = null;
-  if (!user || user.demo) {
-    controls = (
-      <div className="flex items-center justify-between gap-4 rounded-xl border border-line bg-surface px-5 py-3.5">
-        <p className="text-sm text-muted">
-          Descubrí cursos adaptados a lo que querés aprender.
-        </p>
-        <Link
-          href="/registro"
-          className="shrink-0 rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90"
-        >
-          Crear cuenta gratis →
-        </Link>
-      </div>
-    );
-  } else if (needsOnboarding) {
-    controls = (
-      <div className="flex items-center justify-between gap-4 rounded-xl border border-accent/30 bg-accent/5 px-5 py-3.5">
-        <p className="text-sm text-fg">
-          Elegí tus temas y personalizamos el feed para vos.
-        </p>
-        <Link
-          href="/bienvenida"
-          className="shrink-0 rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90"
-        >
-          Elegir temas →
-        </Link>
-      </div>
-    );
-  }
+  const controls: React.ReactNode = null;
 
   return (
     <Feed
