@@ -122,7 +122,7 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
 
   // Filas que cambian según intereses del algoritmo
   const forYouRow: FeedRow[] = hasInterests
-    ? [{ key: "para-ti", title: "Para ti", items: forYou }]
+    ? [{ key: "para-ti", title: user && !user.demo && dbInterests?.length ? "Para ti" : "Destacados", items: forYou }]
     : [];
 
   // Filas "Porque te interesa X" — una por categoría activa con suficientes cursos
