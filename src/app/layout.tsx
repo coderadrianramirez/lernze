@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque, DM_Sans } from "next/font/google";
+import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { NOUN } from "@/lib/copy";
 import "./globals.css";
@@ -28,9 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col">
         <Header />
         <div className="flex-1">{children}</div>
-        <footer className="border-t border-line py-8 text-sm text-muted">
-          <div className="mx-auto max-w-[1180px] px-4">lernze.com · versión en construcción</div>
-        </footer>
+        <Footer />
       </body>
     </html>
   );
