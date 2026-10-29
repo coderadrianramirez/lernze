@@ -112,9 +112,11 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
   // Algoritmo: cursos rankeados por intereses del usuario
   const hasInterests = activeInterests.length > 0;
   const forYou = hasInterests ? rankForInterests(allCourses, activeInterests) : [];
-  const trending = [...allCourses].sort((a, b) => b.members - a.members).slice(0, 8);
-  const rated = [...allCourses].filter((c) => c.rating > 0).sort((a, b) => b.rating - a.rating || b.members - a.members);
-  const cheap = allCourses.filter((c) => c.priceCents < 10_000).sort((a, b) => a.priceCents - b.priceCents);
+  // Sin intereses: toda la plataforma. Con intereses: solo sus temas.
+  const pool = hasInterests ? forYou : allCourses;
+  const trending = [...pool].sort((a, b) => b.members - a.members).slice(0, 8);
+  const rated = [...pool].filter((c) => c.rating > 0).sort((a, b) => b.rating - a.rating || b.members - a.members);
+  const cheap = pool.filter((c) => c.priceCents < 10_000).sort((a, b) => a.priceCents - b.priceCents);
 
   // Hero: si tiene intereses, prioriza los cursos "Para ti"; sino top trending
   const heroPool = hasInterests ? forYou.slice(0, 5) : trending.slice(0, 5);
