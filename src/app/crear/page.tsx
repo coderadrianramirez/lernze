@@ -1,7 +1,11 @@
 import type { Metadata } from "next";
-import { NOUN } from "@/lib/copy";
-import { CreateCourseForm } from "./CreateCourseForm";
+import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { NoTabBar } from "@/components/MobileTabBar";
+import { getCurrentUser } from "@/lib/auth";
+import { NOUN } from "@/lib/copy";
+import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { CreateCourseForm } from "./CreateCourseForm";
 
 export const metadata: Metadata = { title: `Crear ${NOUN.one}` };
 
@@ -13,9 +17,17 @@ export default function CreatePage() {
         Publica tu {NOUN.one}
       </h1>
       <p className="mt-2 mb-7 text-muted">
-        Aparece en el Discover feed ante quien tenga interés en tu tema.
+        {`Aparece en el Discover ante quien tenga interés en tu tema. Después de publicarlo agregas las clases.`}
       </p>
-      <CreateCourseForm />
+      <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface" />}>
+        <Gate />
+      </Suspense>
     </main>
   );
+}
+
+async function Gate() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/entrar?next=/crear");
+  return <CreateCourseForm defaultName={user.name} canUpload={isSupabaseConfigured && !user.demo} />;
 }

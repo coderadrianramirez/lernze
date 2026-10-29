@@ -38,7 +38,7 @@ export async function createCourse(input: NewCourseInput): Promise<Course> {
     // Sin trailer propio, Lernze lo genera con IA (pendiente de construir).
     trailerSource: input.trailerUrl ? "creator" : "ai",
     trailerUrl: input.trailerUrl,
-    trailerSeconds: 0,
+    trailerSeconds: input.trailerSeconds ?? 0,
     members: 0,
     rating: 0,
     art: defaultArt(input.title, input.category, slug),

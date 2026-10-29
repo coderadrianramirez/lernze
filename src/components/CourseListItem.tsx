@@ -5,11 +5,23 @@ import { formatPrice } from "@/lib/pricing";
 import type { Course } from "@/lib/types";
 import { Stage } from "./Stage";
 
-/** Fila de programa: miniatura, título, creador y precio. `aside` reemplaza el precio. */
-export function CourseListItem({ course, src = "discover", aside }: { course: Course; src?: string; aside?: ReactNode }) {
+/** Fila de programa: miniatura, título, creador y precio. `aside` reemplaza el precio; `href` el destino. */
+export function CourseListItem({
+  course,
+  src = "discover",
+  aside,
+  href,
+  footer,
+}: {
+  course: Course;
+  src?: string;
+  aside?: ReactNode;
+  href?: string;
+  footer?: ReactNode;
+}) {
   return (
     <Link
-      href={`${programPath(course.slug)}?src=${src}`}
+      href={href ?? `${programPath(course.slug)}?src=${src}`}
       className="group flex items-center gap-4 rounded-2xl p-2 transition-colors hover:bg-surface active:bg-surface"
     >
       <div className="lz-thumb w-[132px] shrink-0 sm:w-[168px]">
@@ -22,6 +34,7 @@ export function CourseListItem({ course, src = "discover", aside }: { course: Co
           <span>{course.category}</span>
           {course.rating > 0 && <span className="font-semibold text-good">★ {course.rating.toFixed(1)}</span>}
         </p>
+        {footer}
       </div>
       <div className="shrink-0 self-center pr-1 text-right">
         {aside ?? <span className="font-display text-base font-extrabold">{formatPrice(course.priceCents, course.currency)}</span>}

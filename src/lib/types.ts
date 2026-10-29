@@ -48,6 +48,26 @@ export type Course = {
   demo: boolean;
 };
 
+/** Una clase del programa. El video vive en el bucket privado "lessons". */
+export type Lesson = {
+  id: string;
+  courseId: string;
+  position: number;
+  title: string;
+  description: string;
+  videoPath: string | null;
+  durationSeconds: number;
+  isPreview: boolean;
+};
+
+export type LessonInput = {
+  title: string;
+  description: string;
+  videoPath: string | null;
+  durationSeconds: number;
+  isPreview: boolean;
+};
+
 export type NewCourseInput = {
   title: string;
   description: string;
@@ -55,6 +75,8 @@ export type NewCourseInput = {
   category: Category;
   priceCents: number;
   trailerUrl: string | null;
+  /** Duración del video subido, en segundos. 0 si no se conoce. */
+  trailerSeconds?: number;
 };
 
 export type Enrollment = {

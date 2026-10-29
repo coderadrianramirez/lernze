@@ -80,7 +80,7 @@ export async function createCourse(input: NewCourseInput, userId: string): Promi
         price_cents: input.priceCents,
         trailer_source: input.trailerUrl ? "creator" : "ai",
         trailer_url: input.trailerUrl,
-        trailer_seconds: 0,
+        trailer_seconds: input.trailerSeconds ?? 0,
         art: defaultArt(input.title, input.category, slug),
         scenes: defaultScenes(input.title, input.description, input.creatorName, formatPrice(input.priceCents)),
       })

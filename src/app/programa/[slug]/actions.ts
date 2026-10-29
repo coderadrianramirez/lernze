@@ -29,5 +29,5 @@ export async function enrollAction(formData: FormData) {
 
   await enroll(course, origin, user.id);
   revalidatePath("/");
-  redirect(`${programPath(course.slug)}?ok=1`);
+  redirect(`/aprender/${course.slug}?bienvenida=1`);
 }

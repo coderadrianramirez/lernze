@@ -31,6 +31,8 @@ El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0006 aplic
 - **Búsqueda:** `/buscar`, en vivo y sin importar acentos (`src/lib/search.ts`).
 - **Mi cuenta (`/dashboard`):** perfil, intereses, programas a los que te uniste, vistos recientemente, programas publicados y ajustes.
 - **Móvil:** experiencia tipo app con header compacto, barra de pestañas inferior, hoja de detalle y manifiesto para instalarla. Cada página oculta la barra con `<NoTabBar />` o muestra el footer con `<ShowFooterOnMobile />`.
+- **Programas como cursos:** el creador sube su trailer en `/crear` y gestiona las clases en `/programa/<slug>/clases` (subir video, ordenar, editar, marcar vista previa). Quien se une va al aula `/aprender/<slug>`: reproductor, lista de clases, siguiente clase al terminar y progreso. La página del programa muestra el temario con candados.
+- **Videos:** suben directo del navegador a Supabase Storage con un permiso firmado (`src/app/actions/upload.ts`, `src/components/VideoUpload.tsx`). Trailers en el bucket público `trailers`; clases en el bucket privado `lessons`, servidas con enlaces firmados de 3 horas solo a inscritos, al creador y, en vista previa, a cualquiera. Límite del plan gratuito de Supabase: 50 MB por archivo.
 - **Footer:** newsletter (tabla `newsletter_subscribers`, solo inserción) y páginas legales provisorias en `/legal/*`.
 - **Cuentas:** registro, inicio de sesión y cierre de sesión con Supabase Auth. `/crear` exige sesión y comprar un programa también.
 - **Modo demo:** sin variables de Supabase los datos viven en memoria (`src/lib/data-demo.ts`) y no hay cuentas. No hay cobros reales en ningún modo.
@@ -62,9 +64,20 @@ Cada programa se dibuja como una portada ilustrada (`src/lib/art.ts`, datos en l
 
 Suscripción de agentes: $49 al mes, hasta 20 clips.
 
+## Pendientes para revisar a mano
+
+- [ ] **Activar las clases:** ejecutar `supabase/migrations/0007_lessons.sql` en el SQL Editor (crea `lessons`, `lesson_progress` y el bucket privado `lessons`). Sin ella, el editor de clases muestra un aviso y el aula dice "Las clases están en camino".
+- [ ] Con sesión iniciada: crear un programa subiendo un trailer desde `/crear`, cargarle 2 clases (una marcada como vista previa) y comprobar el temario en la página del programa.
+- [ ] Con otra cuenta: ver la clase de vista previa sin unirse, unirse, completar una clase y ver el avance en Mi cuenta.
+- [ ] Con sesión iniciada: abrir 2 o 3 programas y confirmar que en Inicio aparecen "Vistos recientemente" y "Porque viste X", y que salen en Mi cuenta.
+- [ ] Con sesión iniciada: revisar Mi cuenta en el celular y editar intereses desde ahí (debe volver a Mi cuenta al guardar).
+- [ ] En el SQL Editor de Supabase, borrar el correo de prueba del newsletter: `delete from public.newsletter_subscribers where email = 'prueba-newsletter@lernze.test';`
+
 ## Siguiente
 
-1. Subida de trailer y generación del trailer con IA.
-2. Cobros con Stripe Connect en modo de prueba.
-3. Classroom, comunidad y panel del creador (métricas de sus programas).
+1. Cobros con Stripe Connect en modo de prueba (necesita cuenta y claves de Stripe).
+2. Comunidad del programa (foro), sesiones en vivo y tabla de posiciones.
+3. Panel del creador con métricas: alumnos, ingresos por origen, avance promedio.
+4. Videos más largos: Supabase gratis limita a 50 MB por archivo; para clases largas, plan Pro o un servicio de video (Mux, Cloudflare Stream).
+5. Generación del trailer con IA.
 4. Textos legales definitivos y direcciones reales de redes sociales (`SOCIAL` en `src/components/Footer.tsx`).

@@ -8,6 +8,7 @@ import { Stage } from "@/components/Stage";
 import { getCurrentUser } from "@/lib/auth";
 import { NOUN, memberCount, programPath } from "@/lib/copy";
 import { getUserInterests, listMyCourses, listMyEnrollments, listRecentViews } from "@/lib/data";
+import { completedLessonIds, lessonStats } from "@/lib/lessons";
 
 export const metadata: Metadata = { title: "Mi cuenta" };
 
@@ -47,12 +48,20 @@ async function Account() {
   const user = await getCurrentUser();
   if (!user || user.demo) redirect("/entrar?next=/dashboard");
 
-  const [interests, enrollments, recent, created] = await Promise.all([
+  const [interests, enrollments, recent, created, completed] = await Promise.all([
     getUserInterests(user.id),
     listMyEnrollments(user.id),
     listRecentViews(user.id, 10),
     listMyCourses(user.id),
+    completedLessonIds(user.id),
   ]);
+  const stats = await lessonStats([...enrollments.map((e) => e.course.id), ...created.map((c) => c.id)]);
+  const progress = (courseId: string) => {
+    const s = stats[courseId];
+    if (!s?.count) return null;
+    const done = s.ids.filter((id) => completed.has(id)).length;
+    return { done, count: s.count, pct: Math.round((done / s.count) * 100) };
+  };
 
   const rowCls =
     "flex w-full items-center gap-3 px-4 py-3.5 text-left text-sm transition-colors hover:bg-surface-2 active:bg-surface-2";
@@ -96,20 +105,32 @@ async function Account() {
       >
         {enrollments.length > 0 ? (
           <ul className="-mx-2 flex flex-col">
-            {enrollments.map(({ course, joinedAt }) => (
-              <li key={course.id}>
-                <CourseListItem
-                  course={course}
-                  src="own"
-                  aside={
-                    <span className="block text-right">
-                      <span className="block text-xs text-muted">Te uniste</span>
-                      <span className="block text-xs font-semibold text-fg">{fmtDate.format(new Date(joinedAt))}</span>
-                    </span>
-                  }
-                />
-              </li>
-            ))}
+            {enrollments.map(({ course, joinedAt }) => {
+              const p = progress(course.id);
+              return (
+                <li key={course.id}>
+                  <CourseListItem
+                    course={course}
+                    href={`/aprender/${course.slug}`}
+                    aside={
+                      <span className="block text-right">
+                        <span className="block text-xs text-muted">{p ? (p.pct === 100 ? "Terminado" : "Avance") : "Te uniste"}</span>
+                        <span className="block text-xs font-semibold text-fg">
+                          {p ? `${p.pct}%` : fmtDate.format(new Date(joinedAt))}
+                        </span>
+                      </span>
+                    }
+                    footer={
+                      p ? (
+                        <span className="mt-2 block h-1 w-full max-w-[220px] overflow-hidden rounded-full bg-line" aria-hidden>
+                          <span className="block h-full rounded-full bg-accent" style={{ width: `${p.pct}%` }} />
+                        </span>
+                      ) : null
+                    }
+                  />
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <div className="rounded-2xl border border-dashed border-line p-6 text-center">
@@ -158,8 +179,15 @@ async function Account() {
               <li key={c.id}>
                 <CourseListItem
                   course={c}
-                  src="own"
-                  aside={<span className="text-xs text-muted">{memberCount(c.members)}</span>}
+                  href={`/programa/${c.slug}/clases`}
+                  aside={
+                    <span className="block text-right text-xs">
+                      <span className="block text-muted">{memberCount(c.members)}</span>
+                      <span className="block font-semibold text-accent">
+                        {stats[c.id]?.count ? `${stats[c.id].count} clases` : "Agregar clases"}
+                      </span>
+                    </span>
+                  }
                 />
               </li>
             ))}

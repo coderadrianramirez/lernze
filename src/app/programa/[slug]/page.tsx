@@ -5,7 +5,9 @@ import { Suspense } from "react";
 import { Stage } from "@/components/Stage";
 import { StageLive } from "@/components/StageLive";
 import { NOUN, cap, memberCount, programPath } from "@/lib/copy";
+import { getCurrentUser } from "@/lib/auth";
 import { getCourseBySlug, listCourses } from "@/lib/data";
+import { clock, formatDuration, getOwnCourseId, isEnrolled, listLessons } from "@/lib/lessons";
 import { COMMISSION_BPS, formatPrice, parseOrigin } from "@/lib/pricing";
 import { enrollAction } from "./actions";
 import { ShareButtons } from "./ShareButtons";
@@ -31,9 +33,9 @@ export default function CoursePage({ params, searchParams }: PageProps<"/program
 
 const INCLUDES = [
   { t: "Clases a tu ritmo", d: "Lecciones en video, disponibles siempre", icon: "M8 5v14l11-7z" },
-  { t: "Comunidad y foro", d: "Preguntá y compartí con otros alumnos", icon: "M4 5h16v10H8l-4 4z" },
+  { t: "Comunidad y foro", d: "Pregunta y comparte con otros alumnos", icon: "M4 5h16v10H8l-4 4z" },
   { t: "Sesiones en vivo", d: "Calendario de encuentros con el creador", icon: "M12 7v5l3 2M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z" },
-  { t: "Tabla de posiciones", d: "Sumá puntos a medida que avanzás", icon: "M6 20V10M12 20V4M18 20v-7" },
+  { t: "Tabla de posiciones", d: "Suma puntos a medida que avanzas", icon: "M6 20V10M12 20V4M18 20v-7" },
 ];
 
 function Stars({ rating }: { rating: number }) {
@@ -55,8 +57,19 @@ async function CourseDetail({
 }) {
   const { slug } = await params;
   const sp = await searchParams;
-  const [course, all] = await Promise.all([getCourseBySlug(slug), listCourses()]);
+  const [course, all, user] = await Promise.all([getCourseBySlug(slug), listCourses(), getCurrentUser()]);
   if (!course) notFound();
+
+  const signedIn = Boolean(user && !user.demo);
+  const [lessons, enrolled, ownId] = await Promise.all([
+    listLessons(course.id),
+    signedIn ? isEnrolled(user!.id, course.id) : false,
+    signedIn ? getOwnCourseId(slug, user!.id) : null,
+  ]);
+  const isOwner = ownId === course.id;
+  const hasAccess = enrolled || isOwner;
+  const totalSeconds = lessons.reduce((s, l) => s + l.durationSeconds, 0);
+  const classroom = `/aprender/${course.slug}`;
 
   const origin = parseOrigin(sp.src);
   const done = sp.ok === "1";
@@ -74,11 +87,15 @@ async function CourseDetail({
     ...others.filter((c) => c.category !== course.category).sort((a, b) => b.members - a.members),
   ].slice(0, 6);
 
+  const ctaCls = `flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent font-bold text-accent-ink shadow-[0_10px_34px_-10px_var(--color-accent)] transition hover:brightness-110 active:scale-[0.98]`;
   const cta = (className: string) =>
-    done ? (
-      <p role="status" className="rounded-xl bg-good/15 p-3 text-sm text-good">
-        Listo, quedaste inscrito en este {NOUN.one} (simulado).
-      </p>
+    hasAccess || done ? (
+      <Link href={classroom} className={`${ctaCls} ${className}`}>
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden>
+          <path d="M3 2l9 5-9 5V2z" />
+        </svg>
+        {isOwner ? "Ver como alumno" : "Ir a las clases"}
+      </Link>
     ) : (
       <form action={enrollAction}>
         <input type="hidden" name="slug" value={course.slug} />
@@ -111,6 +128,20 @@ async function CourseDetail({
         <span aria-hidden>/</span>
         <span className="truncate text-fg">{course.title}</span>
       </nav>
+
+      {isOwner && (
+        <div className="mt-3 flex flex-wrap items-center gap-3 rounded-2xl border border-accent/40 bg-accent/5 px-4 py-3">
+          <p className="min-w-0 flex-1 text-sm">
+            <b>Es tu {NOUN.one}.</b>{" "}
+            <span className="text-muted">
+              {lessons.length ? `${lessons.length} ${lessons.length === 1 ? "clase publicada" : "clases publicadas"}.` : "Todavía no tiene clases."}
+            </span>
+          </p>
+          <Link href={`/programa/${course.slug}/clases`} className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-ink">
+            Gestionar clases
+          </Link>
+        </div>
+      )}
 
       <div className="mt-3 grid gap-8 md:mt-5 lg:grid-cols-[minmax(0,1fr)_360px]">
         {/* columna principal */}
@@ -147,6 +178,56 @@ async function CourseDetail({
               Incluye clases, comunidad con foro, calendario de sesiones en vivo y tabla de posiciones.
             </p>
           </div>
+
+          {/* temario */}
+          {lessons.length > 0 && (
+            <section className="mt-8" aria-labelledby="temario">
+              <div className="flex items-end justify-between gap-4">
+                <h2 id="temario" className="font-display text-xl font-bold">Contenido del {NOUN.one}</h2>
+                <p className="text-sm text-muted">
+                  {lessons.length} {lessons.length === 1 ? "clase" : "clases"}
+                  {totalSeconds ? ` · ${formatDuration(totalSeconds)}` : ""}
+                </p>
+              </div>
+              <ol className="mt-4 overflow-hidden rounded-2xl border border-line bg-surface">
+                {lessons.map((l, i) => {
+                  const open = hasAccess || l.isPreview;
+                  const inner = (
+                    <>
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-2 text-sm font-bold">{i + 1}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-sm font-semibold">{l.title}</span>
+                        {l.isPreview && !hasAccess && <span className="text-xs font-semibold text-ai">Vista previa gratis</span>}
+                      </span>
+                      {l.durationSeconds > 0 && <span className="shrink-0 text-xs text-muted">{clock(l.durationSeconds)}</span>}
+                      <span className={`shrink-0 ${open ? "text-accent" : "text-muted/60"}`} aria-label={open ? "Disponible" : "Bloqueada"}>
+                        {open ? (
+                          <svg width="16" height="16" viewBox="0 0 14 14" fill="currentColor" aria-hidden><path d="M3 2l9 5-9 5V2z" /></svg>
+                        ) : (
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+                            <rect x="5" y="11" width="14" height="10" rx="2" />
+                            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+                          </svg>
+                        )}
+                      </span>
+                    </>
+                  );
+                  const cls = `flex items-center gap-3 px-4 py-3.5 ${i ? "border-t border-line" : ""}`;
+                  return (
+                    <li key={l.id}>
+                      {open && l.videoPath ? (
+                        <Link href={`${classroom}?clase=${l.id}`} className={`${cls} transition-colors hover:bg-surface-2`}>
+                          {inner}
+                        </Link>
+                      ) : (
+                        <div className={cls}>{inner}</div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ol>
+            </section>
+          )}
 
           {/* creador */}
           <section className="mt-8">
@@ -192,7 +273,9 @@ async function CourseDetail({
               </div>
             </div>
             <div className="mt-5">{cta("px-4 py-4 text-lg")}</div>
-            <p className="mt-3 text-center text-xs text-muted">Pago único. Compra simulada: todavía no se cobra.</p>
+            <p className="mt-3 text-center text-xs text-muted">
+              {hasAccess ? `Ya eres parte de este ${NOUN.one}.` : "Pago único. Compra simulada: todavía no se cobra."}
+            </p>
           </div>
 
           <div className="rounded-2xl border border-line bg-surface p-5">
@@ -251,10 +334,12 @@ async function CourseDetail({
       {/* móvil: precio y CTA siempre visibles */}
       <div className="fixed inset-x-0 bottom-0 z-20 border-t border-line bg-ink/95 px-4 pt-3 pb-[max(12px,env(safe-area-inset-bottom))] backdrop-blur lg:hidden">
         <div className="flex items-center gap-4">
-          <div className="shrink-0">
-            <div className="font-display text-2xl leading-none font-extrabold">{price}</div>
-            <p className="mt-1 text-[11px] text-muted">Pago único</p>
-          </div>
+          {!hasAccess && (
+            <div className="shrink-0">
+              <div className="font-display text-2xl leading-none font-extrabold">{price}</div>
+              <p className="mt-1 text-[11px] text-muted">Pago único</p>
+            </div>
+          )}
           <div className="flex-1">{cta("px-4 py-3.5")}</div>
         </div>
       </div>

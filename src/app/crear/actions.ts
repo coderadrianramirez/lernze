@@ -19,6 +19,7 @@ export async function createCourseAction(_prev: CreateState, formData: FormData)
   const category = String(formData.get("category") ?? "");
   const price = Number(String(formData.get("price") ?? "").replace(",", "."));
   const trailerRaw = String(formData.get("trailerUrl") ?? "").trim();
+  const trailerSeconds = Math.max(0, Math.min(600, Math.round(Number(formData.get("trailerSeconds") ?? 0) || 0)));
 
   const errors: CreateState["errors"] = {};
   if (title.length < 4 || title.length > 120) errors.title = "El título debe tener entre 4 y 120 caracteres.";
@@ -42,7 +43,8 @@ export async function createCourseAction(_prev: CreateState, formData: FormData)
     category: category as Category,
     priceCents: Math.round(price * 100),
     trailerUrl: trailerRaw || null,
+    trailerSeconds,
   }, user.id);
   revalidatePath("/");
-  redirect(programPath(course.slug));
+  redirect(`${programPath(course.slug)}/clases`);
 }
