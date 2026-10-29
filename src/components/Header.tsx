@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { getCurrentUser } from "@/lib/auth";
 import { SearchBar } from "./SearchBar";
 import { UserMenu } from "./UserMenu";
+import { CategoryNav } from "./CategoryNav";
 
 async function AccountNav() {
   const user = await getCurrentUser();
@@ -32,7 +33,7 @@ async function AccountNav() {
 export function Header() {
   return (
     <header className="sticky top-0 z-10 border-b border-line bg-ink/90 backdrop-blur">
-      <div className="mx-auto flex max-w-[1180px] items-center gap-4 px-5 py-4">
+      <div className="mx-auto flex max-w-[1400px] items-center gap-6 px-5 py-4">
         <Link
           href="/"
           className="shrink-0 font-display text-[26px] font-extrabold tracking-tight"
@@ -41,11 +42,15 @@ export function Header() {
           lernze<span className="text-accent">.</span>
         </Link>
 
-        <div className="flex-1">
-          <Suspense fallback={<div className="h-9 w-full max-w-[480px] animate-pulse rounded-xl bg-surface" />}>
-            <SearchBar />
-          </Suspense>
-        </div>
+        <Suspense fallback={<div className="h-5 w-64 animate-pulse rounded bg-surface" />}>
+          <CategoryNav />
+        </Suspense>
+
+        <div className="flex-1" />
+
+        <Suspense fallback={<div className="h-9 w-48 animate-pulse rounded-xl bg-surface" />}>
+          <SearchBar />
+        </Suspense>
 
         <Suspense
           fallback={<div className="h-9 w-28 animate-pulse rounded-lg bg-surface" />}
