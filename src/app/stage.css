@@ -1017,6 +1017,11 @@ button.lz-top-tile,
   --cs: 5.4cqw;
   --ls: 9cqw;
 }
+@media (max-width: 767px) {
+  .lz-detail .lz-stage {
+    border-radius: 0;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .lz-playing .l-back,

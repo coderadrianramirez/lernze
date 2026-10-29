@@ -6,6 +6,7 @@ import { NOUN, cap } from "@/lib/copy";
 import { listCourses, rankForInterests, getUserInterests } from "@/lib/data";
 import { getCurrentUser } from "@/lib/auth";
 import { CATEGORIES, type Category } from "@/lib/types";
+import { ShowFooterOnMobile } from "@/components/Footer";
 
 function parseInterests(raw: string | string[] | undefined): Category[] {
   const v = Array.isArray(raw) ? raw[0] : raw;
@@ -20,6 +21,7 @@ function joinEs(items: string[]) {
 export default function Discover({ searchParams }: PageProps<"/">) {
   return (
     <main>
+      <ShowFooterOnMobile />
       <Suspense fallback={<div className="h-[420px] animate-pulse bg-surface" aria-label="Cargando" />}>
         <Page searchParams={searchParams} />
       </Suspense>

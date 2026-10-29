@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { ShowFooterOnMobile } from "@/components/Footer";
 
 const DOCS = {
   terminos: {
@@ -32,6 +33,7 @@ export async function generateMetadata({ params }: PageProps<"/legal/[doc]">): P
 export default function LegalPage({ params }: PageProps<"/legal/[doc]">) {
   return (
     <main className="mx-auto max-w-[760px] px-5 pt-10 pb-20 md:pt-14">
+      <ShowFooterOnMobile />
       <Suspense fallback={<div className="h-48 animate-pulse rounded-2xl bg-surface" />}>
         <LegalDoc params={params} />
       </Suspense>

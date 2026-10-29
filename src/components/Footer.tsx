@@ -42,9 +42,14 @@ const LEGAL = [
   { label: "Cookies", href: "/legal/cookies" },
 ];
 
+/** En móvil el footer se oculta salvo en las páginas que renderizan esto. */
+export function ShowFooterOnMobile() {
+  return <span data-mobile-footer hidden />;
+}
+
 export function Footer() {
   return (
-    <footer className="mt-6 border-t border-line bg-[#0b0c12] md:mt-10">
+    <footer className="lz-footer mt-6 border-t border-line bg-[#0b0c12] md:mt-10">
       <div className="mx-auto grid max-w-[1400px] grid-cols-[minmax(0,1fr)] gap-10 px-5 pt-10 pb-10 md:gap-12 md:pt-14 md:pb-12 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1.15fr)] lg:gap-16">
         <div className="max-w-[340px]">
           <Link href="/" className="font-display text-[28px] font-extrabold tracking-tight" aria-label="Lernze — inicio">

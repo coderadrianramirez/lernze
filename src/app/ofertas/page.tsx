@@ -4,6 +4,7 @@ import { Feed, type FeedRow } from "@/components/Feed";
 import { NOUN, cap } from "@/lib/copy";
 import { listCourses } from "@/lib/data";
 import { CATEGORIES } from "@/lib/types";
+import { ShowFooterOnMobile } from "@/components/Footer";
 
 export const metadata: Metadata = { title: "Ofertas especiales" };
 
@@ -12,6 +13,7 @@ const LIMIT_CENTS = 10_000;
 export default function OfertasPage() {
   return (
     <main>
+      <ShowFooterOnMobile />
       <Suspense fallback={<div className="h-[420px] animate-pulse bg-surface" aria-label="Cargando" />}>
         <Ofertas />
       </Suspense>

@@ -60,8 +60,13 @@ html:has(dialog[open]) {
   mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
 }
 
-/* En móvil, 16px evita que iOS haga zoom al enfocar un campo. */
 @media (max-width: 767px) {
+  /* Cada página decide con <NoTabBar /> y <ShowFooterOnMobile />. */
+  body:has([data-no-tabbar]) .lz-tabbar,
+  body:not(:has([data-mobile-footer])) .lz-footer {
+    display: none;
+  }
+  /* 16px evita que iOS haga zoom al enfocar un campo. */
   input,
   select,
   textarea {

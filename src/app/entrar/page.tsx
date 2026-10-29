@@ -3,12 +3,14 @@ import { Suspense } from "react";
 import { AuthForm } from "../auth/AuthForm";
 import { NOUN } from "@/lib/copy";
 import { safeNext } from "@/lib/auth";
+import { NoTabBar } from "@/components/MobileTabBar";
 
 export const metadata: Metadata = { title: "Entrar" };
 
 export default function SignInPage({ searchParams }: PageProps<"/entrar">) {
   return (
     <main className="mx-auto max-w-[420px] px-4 pt-10 pb-12">
+      <NoTabBar />
       <h1 className="font-display text-[34px] leading-[1.05] font-extrabold tracking-tight">Entrar a Lernze</h1>
       <p className="mt-2 mb-6 text-muted">{`Accede a tu cuenta y a tus ${NOUN.other}.`}</p>
       <Suspense fallback={<div className="h-64 animate-pulse rounded-xl bg-surface" />}>

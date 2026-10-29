@@ -9,6 +9,7 @@ import { getCourseBySlug, listCourses } from "@/lib/data";
 import { COMMISSION_BPS, formatPrice, parseOrigin } from "@/lib/pricing";
 import { enrollAction } from "./actions";
 import { ShareButtons } from "./ShareButtons";
+import { NoTabBar } from "@/components/MobileTabBar";
 
 export async function generateMetadata({ params }: PageProps<"/programa/[slug]">): Promise<Metadata> {
   const { slug } = await params;
@@ -19,6 +20,7 @@ export async function generateMetadata({ params }: PageProps<"/programa/[slug]">
 export default function CoursePage({ params, searchParams }: PageProps<"/programa/[slug]">) {
   return (
     <main className="mx-auto max-w-[1400px] px-5 pt-6 pb-32 md:pb-16">
+      <NoTabBar />
       <Suspense fallback={<div className="mt-4 aspect-video animate-pulse rounded-2xl bg-surface" aria-label="Cargando" />}>
         <CourseDetail params={params} searchParams={searchParams} />
       </Suspense>
@@ -91,7 +93,16 @@ async function CourseDetail({
   return (
     <>
       {/* ruta */}
-      <nav aria-label="Ruta" className="flex flex-wrap items-center gap-1.5 text-sm text-muted">
+      <Link
+        href={`/?i=${encodeURIComponent(course.category)}`}
+        className="-ml-1 inline-flex items-center gap-1 rounded-lg px-1 py-1 text-sm font-medium text-muted active:text-fg md:hidden"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+        {course.category}
+      </Link>
+      <nav aria-label="Ruta" className="hidden flex-wrap items-center gap-1.5 text-sm text-muted md:flex">
         <Link href="/" className="hover:text-fg">Inicio</Link>
         <span aria-hidden>/</span>
         <Link href={`/?i=${encodeURIComponent(course.category)}`} className="hover:text-fg">{course.category}</Link>
@@ -99,14 +110,14 @@ async function CourseDetail({
         <span className="truncate text-fg">{course.title}</span>
       </nav>
 
-      <div className="mt-5 grid gap-8 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <div className="mt-3 grid gap-8 md:mt-5 lg:grid-cols-[minmax(0,1fr)_360px]">
         {/* columna principal */}
         <div className="min-w-0">
-          <div className="lz-detail">
+          <div className="lz-detail -mx-5 md:mx-0">
             <StageLive course={course} active controls />
           </div>
 
-          <div className="mt-7 flex flex-wrap items-start justify-between gap-4">
+          <div className="mt-5 flex flex-wrap items-start justify-between gap-4 md:mt-7">
             <div className="min-w-0">
               <h1 className="font-display text-[clamp(28px,3.4vw,44px)] leading-[1.05] font-extrabold tracking-tight text-balance">
                 {course.title}
@@ -158,7 +169,7 @@ async function CourseDetail({
 
         {/* columna lateral */}
         <aside className="flex flex-col gap-5">
-          <div className="rounded-2xl border border-line bg-surface p-5">
+          <div className="hidden rounded-2xl border border-line bg-surface p-5 lg:block">
             <div className="lz-poster mx-auto w-[190px]">
               <Stage course={course} mode="v" badges={false} />
             </div>

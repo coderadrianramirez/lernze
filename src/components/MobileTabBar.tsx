@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 
 const TABS = [
   { href: "/", label: "Inicio", icon: "M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" },
@@ -10,21 +11,36 @@ const TABS = [
   { href: "/dashboard", label: "Cuenta", icon: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 21a8 8 0 0 1 16 0" },
 ];
 
-/** Pantallas con su propia barra inferior o que piden foco total. */
-const HIDDEN = ["/programa/", "/entrar", "/registro", "/bienvenida", "/crear"];
-
+/**
+ * Barra de pestañas fija en móvil. Una página la oculta renderizando `<NoTabBar />`
+ * (lo resuelve el CSS, así el layout no necesita leer la ruta).
+ */
 export function MobileTabBar() {
-  const pathname = usePathname();
-  if (HIDDEN.some((p) => pathname.startsWith(p))) return null;
+  return (
+    <Suspense fallback={<Bar pathname={null} />}>
+      <LiveBar />
+    </Suspense>
+  );
+}
 
-  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+export function NoTabBar() {
+  return <span data-no-tabbar hidden />;
+}
+
+function LiveBar() {
+  return <Bar pathname={usePathname()} />;
+}
+
+function Bar({ pathname }: { pathname: string | null }) {
+  const isActive = (href: string) =>
+    pathname !== null && (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
     <>
-      <div aria-hidden className="h-[calc(64px+env(safe-area-inset-bottom))] md:hidden" />
+      <div aria-hidden className="lz-tabbar h-[calc(64px+env(safe-area-inset-bottom))] md:hidden" />
       <nav
         aria-label="Navegación principal"
-        className="fixed inset-x-0 bottom-0 z-30 border-t border-line bg-ink/92 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+        className="lz-tabbar fixed inset-x-0 bottom-0 z-30 border-t border-line bg-ink/92 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
       >
         <ul className="grid h-16 grid-cols-4">
           {TABS.map((t) => {
