@@ -92,6 +92,28 @@ export async function createCourse(input: NewCourseInput, userId: string): Promi
   throw new Error("No se pudo crear un enlace único para el programa. Cambia el título e inténtalo otra vez.");
 }
 
+/** Lee los intereses guardados del usuario. null = onboarding pendiente. */
+export async function getUserInterests(userId: string): Promise<string[] | null> {
+  const supabase = await createSessionClient();
+  const { data } = await supabase
+    .from("profiles")
+    .select("interests, onboarding_done")
+    .eq("id", userId)
+    .maybeSingle();
+  if (!data) return null;
+  return data.onboarding_done ? (data.interests ?? []) : null;
+}
+
+/** Guarda los intereses del usuario y marca el onboarding como completado. */
+export async function saveUserInterests(userId: string, interests: string[]): Promise<void> {
+  const supabase = await createSessionClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ interests, onboarding_done: true })
+    .eq("id", userId);
+  if (error) throw new Error(`No se pudieron guardar los intereses: ${error.message}`);
+}
+
 export async function enroll(course: Course, origin: SaleOrigin, userId: string): Promise<Enrollment> {
   const supabase = await createSessionClient();
   const row = {

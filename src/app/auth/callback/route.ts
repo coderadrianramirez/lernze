@@ -10,8 +10,17 @@ export async function GET(request: NextRequest) {
 
   if (code) {
     const supabase = await createSessionClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(`${origin}${next}`);
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
+    if (!error && data.user) {
+      // Si el usuario nunca completó el onboarding, mandarlo ahí primero
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarding_done")
+        .eq("id", data.user.id)
+        .maybeSingle();
+      const destination = profile?.onboarding_done === false ? "/bienvenida" : next;
+      return NextResponse.redirect(`${origin}${destination}`);
+    }
   }
   return NextResponse.redirect(`${origin}/entrar?error=enlace`);
 }

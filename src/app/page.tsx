@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Feed, type FeedRow } from "@/components/Feed";
 import { NOUN } from "@/lib/copy";
-import { listCourses, rankForInterests } from "@/lib/data";
+import { listCourses, rankForInterests, getUserInterests } from "@/lib/data";
+import { getCurrentUser } from "@/lib/auth";
 import { CATEGORIES, type Category } from "@/lib/types";
 
 function parseInterests(raw: string | string[] | undefined): Category[] {
@@ -40,9 +41,22 @@ export default function Discover({ searchParams }: PageProps<"/">) {
 
 async function Page({ searchParams }: { searchParams: PageProps<"/">["searchParams"] }) {
   const sp = await searchParams;
-  const interests = parseInterests(sp.i);
   const query = typeof sp.q === "string" ? sp.q.trim() : "";
-  const allCourses = await listCourses();
+
+  // Intereses: URL param tiene prioridad (filtro manual); si no, cargamos desde DB
+  const urlInterests = parseInterests(sp.i);
+  const [allCourses, user] = await Promise.all([listCourses(), getCurrentUser()]);
+
+  // Intereses persistidos del usuario (null = onboarding pendiente, [] = no eligió)
+  const dbInterests = user && !user.demo ? await getUserInterests(user.id) : null;
+
+  // Intereses activos: URL > DB > []
+  const activeInterests: Category[] = urlInterests.length
+    ? urlInterests
+    : (dbInterests ?? []).filter((x): x is Category => (CATEGORIES as string[]).includes(x));
+
+  // Onboarding pendiente: usuario logueado, nunca completó, y no viene de URL
+  const needsOnboarding = user && !user.demo && dbInterests === null && !urlInterests.length;
 
   if (allCourses.length === 0) {
     return (
@@ -95,56 +109,84 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
     );
   }
 
-  const courses = interests.length ? rankForInterests(allCourses, interests) : allCourses;
+  // Algoritmo: cursos rankeados por intereses del usuario
+  const hasInterests = activeInterests.length > 0;
+  const forYou = hasInterests ? rankForInterests(allCourses, activeInterests) : [];
   const trending = [...allCourses].sort((a, b) => b.members - a.members).slice(0, 8);
   const rated = [...allCourses].filter((c) => c.rating > 0).sort((a, b) => b.rating - a.rating || b.members - a.members);
   const cheap = allCourses.filter((c) => c.priceCents < 10_000).sort((a, b) => a.priceCents - b.priceCents);
 
-  // Top 5 cursos para el hero rotatorio (destacados por miembros, mezclados con intereses si los hay)
-  const heroPool = interests.length ? courses.slice(0, 5) : trending.slice(0, 5);
+  // Hero: si tiene intereses, prioriza los cursos "Para ti"; sino top trending
+  const heroPool = hasInterests ? forYou.slice(0, 5) : trending.slice(0, 5);
   const heroes = heroPool.length ? heroPool : allCourses.slice(0, 5);
 
+  // Filas que cambian según intereses del algoritmo
+  const forYouRow: FeedRow[] = hasInterests
+    ? [{ key: "para-ti", title: "Para ti", items: forYou }]
+    : [];
+
+  // Filas "Porque te interesa X" — una por categoría activa con suficientes cursos
+  const interestRows: FeedRow[] = activeInterests
+    .map((cat) => {
+      const items = allCourses.filter((c) => c.category === cat).sort((a, b) => b.rating - a.rating || b.members - a.members);
+      return items.length >= 2 ? { key: `cat-${cat}`, title: `Porque te interesa ${cat}`, items } : null;
+    })
+    .filter((r): r is FeedRow => r !== null);
+
   const rows: FeedRow[] = [
-    ...(interests.length ? [{ key: "para-ti", title: "Para ti", items: courses }] : []),
+    ...forYouRow,
     { key: "tendencia", title: "Tendencia esta semana", items: trending },
+    ...interestRows,
     ...(rated.length ? [{ key: "valorados", title: "Mejor valorados", items: rated }] : []),
     ...(cheap.length ? [{ key: "baratos", title: "Por menos de $100", items: cheap }] : []),
   ];
 
+  // Toggle manual de categorías (afecta URL, no DB)
   const toggle = (cat: Category) =>
-    categoryHref(interests.includes(cat) ? interests.filter((c) => c !== cat) : [...interests, cat]);
+    categoryHref(
+      activeInterests.includes(cat)
+        ? activeInterests.filter((c) => c !== cat)
+        : [...activeInterests, cat],
+    );
 
   const controls = (
     <div className="mt-4">
-    <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-muted">
-      {interests.length > 0 ? "Tus intereses" : "Categorías"}
-    </p>
-    <div className="flex items-center gap-2 overflow-x-auto pb-1">
-      {CATEGORIES.map((cat) => {
-        const on = interests.includes(cat);
-        return (
-          <Link
-            key={cat}
-            href={toggle(cat)}
-            aria-current={on ? "true" : undefined}
-            scroll={false}
-            className={`rounded-full border px-3.5 py-1.5 text-sm whitespace-nowrap transition-colors ${
-              on
-                ? "border-accent bg-accent font-bold text-accent-ink"
-                : "border-line bg-surface text-muted hover:border-fg/20 hover:text-fg"
-            }`}
-          >
-            {cat}
+      <div className="mb-2 flex items-center justify-between">
+        <p className="text-xs font-semibold uppercase tracking-widest text-muted">
+          {hasInterests ? "Tus intereses" : "Categorías"}
+        </p>
+        {needsOnboarding && (
+          <Link href="/bienvenida" className="text-xs text-accent hover:underline">
+            Personalizar →
           </Link>
-        );
-      })}
-    </div>
+        )}
+      </div>
+      <div className="flex items-center gap-2 overflow-x-auto pb-1">
+        {CATEGORIES.map((cat) => {
+          const on = activeInterests.includes(cat);
+          return (
+            <Link
+              key={cat}
+              href={toggle(cat)}
+              aria-current={on ? "true" : undefined}
+              scroll={false}
+              className={`rounded-full border px-3.5 py-1.5 text-sm whitespace-nowrap transition-colors ${
+                on
+                  ? "border-accent bg-accent font-bold text-accent-ink"
+                  : "border-line bg-surface text-muted hover:border-fg/20 hover:text-fg"
+              }`}
+            >
+              {cat}
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 
   return (
     <Feed
-      key={`feed|${interests.join(",")}`}
+      key={`feed|${activeInterests.join(",")}`}
       heroes={heroes}
       rows={rows}
       controls={controls}

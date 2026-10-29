@@ -57,7 +57,7 @@ export async function signUpAction(_prev: AuthState, formData: FormData): Promis
     password,
     options: {
       data: { display_name: name },
-      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
+      emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent("/bienvenida")}`,
     },
   });
   if (error) return { error: translate(error.message) };

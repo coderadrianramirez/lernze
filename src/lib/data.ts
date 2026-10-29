@@ -23,6 +23,14 @@ export function enroll(course: Course, origin: SaleOrigin, userId: string): Prom
   return isSupabaseConfigured ? db.enroll(course, origin, userId) : demo.enroll(course, origin);
 }
 
+export async function getUserInterests(userId: string): Promise<string[] | null> {
+  return isSupabaseConfigured ? db.getUserInterests(userId) : null;
+}
+
+export async function saveUserInterests(userId: string, interests: string[]): Promise<void> {
+  if (isSupabaseConfigured) await db.saveUserInterests(userId, interests);
+}
+
 /** Orden de "Para ti": primero los programas de tus intereses, luego por valoración. */
 export function rankForInterests(courses: Course[], interests: Category[]): Course[] {
   const mine = new Set(interests);
