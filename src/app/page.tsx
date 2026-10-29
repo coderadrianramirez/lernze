@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { Suspense } from "react";
+import { EmptyFeed } from "@/components/EmptyFeed";
 import { Feed, type FeedRow } from "@/components/Feed";
 import { NOUN, cap } from "@/lib/copy";
 import { listCourses, rankForInterests, getUserInterests } from "@/lib/data";
@@ -52,29 +52,7 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
     ? urlInterests
     : (dbInterests ?? []).filter((x): x is Category => (CATEGORIES as string[]).includes(x));
 
-  if (allCourses.length === 0) {
-    return (
-      <div className="mx-auto max-w-[1180px] px-4 pt-5">
-        <section className="rounded-2xl border border-line bg-surface p-12 text-center">
-          <p className="font-display text-5xl font-extrabold tracking-tight">
-            lernze<span className="text-accent">.</span>
-          </p>
-          <h1 className="mt-4 font-display text-2xl font-bold tracking-tight">
-            {`Aún no hay ${NOUN.other} publicados`}
-          </h1>
-          <p className="mx-auto mt-2 max-w-[44ch] text-muted">
-            {`El Discover feed se llena con los ${NOUN.other} de los creadores. Publica el primero y aparecerá aquí con su trailer.`}
-          </p>
-          <Link
-            href="/registro"
-            className="mt-6 inline-block rounded-xl bg-accent px-6 py-3 font-bold text-accent-ink transition-opacity hover:opacity-90"
-          >
-            {`Publicar un ${NOUN.one}`}
-          </Link>
-        </section>
-      </div>
-    );
-  }
+  if (allCourses.length === 0) return <EmptyFeed />;
 
   // Resultados de búsqueda
   if (query) {
