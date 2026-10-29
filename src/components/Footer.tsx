@@ -21,10 +21,18 @@ const SOCIAL: { name: string; href: string; icon: string }[] = [
   },
 ];
 
-const EXPLORE = [
-  { label: "Inicio", href: "/" },
-  ...CATEGORIES.map((c) => ({ label: c, href: `/?i=${encodeURIComponent(c)}` })),
-  { label: "Por menos de $100", href: "/ofertas" },
+const COLUMNS = [
+  {
+    title: "Categorías",
+    links: CATEGORIES.map((c) => ({ label: c, href: `/?i=${encodeURIComponent(c)}` })),
+  },
+  {
+    title: "Descubrir",
+    links: [
+      { label: "Inicio", href: "/" },
+      { label: "Por menos de $100", href: "/ofertas" },
+    ],
+  },
 ];
 
 const LEGAL = [
@@ -36,7 +44,7 @@ const LEGAL = [
 export function Footer() {
   return (
     <footer className="mt-10 border-t border-line bg-[#0b0c12]">
-      <div className="mx-auto flex max-w-[1400px] flex-col gap-10 px-5 pt-12 pb-10 lg:flex-row lg:items-start lg:justify-between">
+      <div className="mx-auto grid max-w-[1400px] gap-10 px-5 pt-12 pb-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
         <div className="max-w-[340px]">
           <Link href="/" className="font-display text-[28px] font-extrabold tracking-tight" aria-label="Lernze — inicio">
             lernze<span className="text-accent">.</span>
@@ -70,18 +78,20 @@ export function Footer() {
           </ul>
         </div>
 
-        <nav aria-label="Explorar" className="lg:pt-2">
-          <h2 className="text-xs font-semibold uppercase tracking-widest text-fg lg:text-right">Explorar</h2>
-          <ul className="mt-4 flex flex-wrap gap-x-7 gap-y-3 lg:justify-end">
-            {EXPLORE.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="text-sm text-muted transition-colors hover:text-accent">
-                  {l.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        {COLUMNS.map((col) => (
+          <nav key={col.title} aria-label={col.title} className="sm:pt-2">
+            <h2 className="text-xs font-semibold uppercase tracking-widest text-fg">{col.title}</h2>
+            <ul className="mt-4 flex flex-col gap-2.5">
+              {col.links.map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="text-sm text-muted transition-colors hover:text-accent">
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ))}
       </div>
 
       <div className="border-t border-line">
@@ -94,22 +104,21 @@ export function Footer() {
               </Link>
             ))}
           </nav>
-          <label className="flex items-center gap-2">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+          <div role="group" aria-label="Idioma" className="flex items-center gap-2.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
               <circle cx="12" cy="12" r="9" />
               <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
             </svg>
-            <span className="sr-only">Idioma</span>
-            <select
-              defaultValue="es"
-              className="w-28 cursor-pointer rounded-lg border border-line bg-surface py-1.5 pr-7 pl-2.5 text-xs text-fg focus:border-accent focus:outline-none"
-            >
-              <option value="es">Español</option>
-              <option value="en" disabled>
-                English (próximamente)
-              </option>
-            </select>
-          </label>
+            <span aria-current="true" className="font-semibold text-fg">
+              Español
+            </span>
+            <span className="text-line" aria-hidden>
+              /
+            </span>
+            <span title="Próximamente" aria-disabled="true" className="cursor-default text-muted/50">
+              English <span className="sr-only">(próximamente)</span>
+            </span>
+          </div>
         </div>
       </div>
     </footer>
