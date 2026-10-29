@@ -29,7 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Header />
         <div className="flex-1">{children}</div>
         <footer className="border-t border-line py-8 text-sm text-muted">
-          <div className="px-4 md:px-[60px]">lernze.com · versión en construcción</div>
+          <div className="px-4 md:px-[80px]">lernze.com · versión en construcción</div>
         </footer>
       </body>
     </html>

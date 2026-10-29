@@ -33,7 +33,7 @@ async function AccountNav() {
 export function Header() {
   return (
     <header className="sticky top-0 z-10 border-b border-line bg-ink/90 backdrop-blur">
-      <div className="flex h-[60px] items-center gap-6 px-4 md:px-[60px]">
+      <div className="flex h-[80px] items-center gap-6 px-4 md:px-[80px]">
         <Link
           href="/"
           className="shrink-0 font-display text-[26px] font-extrabold tracking-tight"

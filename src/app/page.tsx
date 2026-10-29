@@ -60,7 +60,7 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
 
   if (allCourses.length === 0) {
     return (
-      <div className="px-4 pt-5 md:px-[60px]">
+      <div className="px-4 pt-5 md:px-[80px]">
         <section className="rounded-2xl border border-line bg-surface p-12 text-center">
           <p className="font-display text-5xl font-extrabold tracking-tight">
             lernze<span className="text-accent">.</span>
@@ -86,7 +86,7 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
   if (query) {
     const results = filterByQuery(allCourses, query);
     return (
-      <div className="px-4 pt-6 md:px-[60px]">
+      <div className="px-4 pt-6 md:px-[80px]">
         <p className="mb-4 text-sm text-muted">
           {results.length > 0
             ? `${results.length} resultado${results.length !== 1 ? "s" : ""} para "${query}"`

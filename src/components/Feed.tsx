@@ -82,7 +82,7 @@ export function Feed({ heroes, rows, controls, demo }: Props) {
     <>
       <Hero courses={heroes} onInfo={openModal} />
 
-      <div className="px-4 pb-12 md:px-[60px]">
+      <div className="px-4 pb-12 md:px-[80px]">
         {controls}
         {rows.map((row) => (
           <Row key={row.key} row={row} onEnter={enter} onLeave={leave} onOpen={openModal} onScroll={closePop} />
@@ -187,7 +187,7 @@ function Hero({ courses, onInfo }: { courses: Course[]; onInfo: (c: Course) => v
         className="lz-hero-copy"
         style={{ "--glow": course.art.glow, opacity: visible ? 1 : 0, transition } as React.CSSProperties}
       >
-        <div className="w-full px-4 md:px-[60px]">
+        <div className="w-full px-4 md:px-[80px]">
           <div className="lz-hero-in">
             <div className="flex flex-wrap items-center gap-2 text-[13px]">
               <span className="rounded-full border border-white/25 px-3 py-0.5">{course.category}</span>

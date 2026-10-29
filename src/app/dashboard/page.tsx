@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Mi panel" };
 
 export default function DashboardPage() {
   return (
-    <main className="px-4 py-10 md:px-[60px]">
+    <main className="px-4 py-10 md:px-[80px]">
       <Suspense fallback={<div className="h-64 animate-pulse rounded-2xl bg-surface" />}>
         <Panel />
       </Suspense>
