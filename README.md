@@ -13,7 +13,7 @@ npm run dev
 
 ## Conectar Supabase
 
-El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0005 aplicadas, y `.env.local` apunta a él. **Pendiente:** ejecutar `0006_course_views.sql` (historial de vistas); hasta entonces la app no guarda visitas y oculta "Vistos recientemente" sin dar error. Para otro entorno, estos son los pasos:
+El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0006 aplicadas, y `.env.local` apunta a él. Para otro entorno, estos son los pasos:
 
 1. En supabase.com crea un proyecto (el plan gratuito basta) y espera a que termine de crearse.
 2. **SQL Editor**: ejecuta en orden los archivos de `supabase/migrations/`.
