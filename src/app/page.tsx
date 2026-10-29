@@ -150,7 +150,7 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
     ...forYouRow,
     {
       key: "tendencia",
-      title: "Tendencia esta semana",
+      title: "Los más elegidos",
       items: trending,
       reason: hasInterests
         ? `Los ${NOUN.other} de ${label} que más alumnos eligieron.`
@@ -189,7 +189,7 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
       },
       {
         key: "tendencia",
-        title: "Tendencia esta semana",
+        title: "Los más elegidos",
         items: byMembers.slice(0, 8),
         reason: `Los ${NOUN.other} de ${catLabel} que más alumnos eligieron.`,
       },
