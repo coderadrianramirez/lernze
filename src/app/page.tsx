@@ -133,13 +133,14 @@ async function Page({ searchParams }: { searchParams: PageProps<"/">["searchPara
     })
     .filter((r): r is FeedRow => r !== null);
 
-  const rows: FeedRow[] = [
+  const allRows: FeedRow[] = [
     ...forYouRow,
     { key: "tendencia", title: "Tendencia esta semana", items: trending },
     ...interestRows,
     ...(rated.length ? [{ key: "valorados", title: "Mejor valorados", items: rated }] : []),
     ...(cheap.length ? [{ key: "baratos", title: "Por menos de $100", items: cheap }] : []),
   ];
+  const rows = urlInterests.length ? allRows.slice(0, 3) : allRows;
 
   const controls: React.ReactNode = null;
 
