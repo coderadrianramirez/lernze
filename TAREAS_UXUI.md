@@ -1,5 +1,7 @@
 # Tareas UX/UI — Lernze
 
+> **Estado (2026-10-29):** las 12 tareas están completas. El detalle de lo construido está en la sección "Estado" del README.
+
 ## Prioridades identificadas (orden de ejecución)
 
 ### 1. Dashboard de usuario (perfil)

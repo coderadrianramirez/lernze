@@ -20,6 +20,7 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: { default: "Lernze", template: "%s · Lernze" },
+  appleWebApp: { capable: true, title: "Lernze", statusBarStyle: "black-translucent" },
   description:
     `Vende ${NOUN.other} y comunidades, y deja que Lernze te muestre a compradores nuevos con trailers y clips.`,
 };

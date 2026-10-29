@@ -224,7 +224,9 @@ function Hero({ courses, onInfo }: { courses: Course[]; onInfo: (c: Course) => v
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden>
                   <path d="M3 2l9 5-9 5V2z" />
                 </svg>
-                Ver <span className="hidden md:inline">{NOUN.one}</span> · {formatPrice(course.priceCents, course.currency)}
+                <span>
+                  Ver<span className="hidden md:inline"> {NOUN.one}</span> · {formatPrice(course.priceCents, course.currency)}
+                </span>
               </Link>
               <button
                 onClick={() => onInfo(course)}

@@ -13,7 +13,7 @@ npm run dev
 
 ## Conectar Supabase
 
-El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 y 0002 aplicadas, y `.env.local` apunta a él. Para otro entorno, estos son los pasos:
+El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0005 aplicadas, y `.env.local` apunta a él. **Pendiente:** ejecutar `0006_course_views.sql` (historial de vistas); hasta entonces la app no guarda visitas y oculta "Vistos recientemente" sin dar error. Para otro entorno, estos son los pasos:
 
 1. En supabase.com crea un proyecto (el plan gratuito basta) y espera a que termine de crearse.
 2. **SQL Editor**: ejecuta en orden los archivos de `supabase/migrations/`.
@@ -26,6 +26,12 @@ El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 y 0002 aplic
 ## Estado
 
 - **Hecho:** marca (tinta + ámbar), Discover feed con intereses por URL (`/?i=Negocios,Marketing`), página de programa con compra simulada que registra el origen de la venta (`?src=discover|agent`), formulario para crear curso.
+- **Descubrir:** navbar con categorías, hero rotativo, filas con tooltip "¿Por qué ves esto?", grilla "Por menos de $100" y página `/ofertas` por categoría.
+- **Recomendaciones:** onboarding de intereses (`/bienvenida`, editable desde Mi cuenta), filas "Para ti" y "Porque te interesa X", y con el historial de vistas "Vistos recientemente", "Porque viste X" e intereses deducidos de lo visto.
+- **Búsqueda:** `/buscar`, en vivo y sin importar acentos (`src/lib/search.ts`).
+- **Mi cuenta (`/dashboard`):** perfil, intereses, programas a los que te uniste, vistos recientemente, programas publicados y ajustes.
+- **Móvil:** experiencia tipo app con header compacto, barra de pestañas inferior, hoja de detalle y manifiesto para instalarla. Cada página oculta la barra con `<NoTabBar />` o muestra el footer con `<ShowFooterOnMobile />`.
+- **Footer:** newsletter (tabla `newsletter_subscribers`, solo inserción) y páginas legales provisorias en `/legal/*`.
 - **Cuentas:** registro, inicio de sesión y cierre de sesión con Supabase Auth. `/crear` exige sesión y comprar un programa también.
 - **Modo demo:** sin variables de Supabase los datos viven en memoria (`src/lib/data-demo.ts`) y no hay cuentas. No hay cobros reales en ningún modo.
 - **Esquema:** `supabase/migrations/` (perfiles, programas, inscripciones con RLS y contador de miembros). Con las variables puestas, `src/lib/data.ts` usa la base real.
@@ -60,4 +66,5 @@ Suscripción de agentes: $49 al mes, hasta 20 clips.
 
 1. Subida de trailer y generación del trailer con IA.
 2. Cobros con Stripe Connect en modo de prueba.
-3. Classroom, comunidad y panel del creador.
+3. Classroom, comunidad y panel del creador (métricas de sus programas).
+4. Textos legales definitivos y direcciones reales de redes sociales (`SOCIAL` en `src/components/Footer.tsx`).
