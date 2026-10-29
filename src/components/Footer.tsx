@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { NOUN } from "@/lib/copy";
 import { CATEGORIES } from "@/lib/types";
+import { NewsletterForm } from "./NewsletterForm";
 
 /** Redes oficiales de Lernze. Sin dirección, el ícono se muestra pero no enlaza. */
 const SOCIAL: { name: string; href: string; icon: string }[] = [
@@ -44,7 +45,7 @@ const LEGAL = [
 export function Footer() {
   return (
     <footer className="mt-10 border-t border-line bg-[#0b0c12]">
-      <div className="mx-auto grid max-w-[1400px] gap-10 px-5 pt-12 pb-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
+      <div className="mx-auto grid max-w-[1400px] gap-12 px-5 pt-14 pb-12 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1.15fr)] lg:gap-16">
         <div className="max-w-[340px]">
           <Link href="/" className="font-display text-[28px] font-extrabold tracking-tight" aria-label="Lernze — inicio">
             lernze<span className="text-accent">.</span>
@@ -78,20 +79,39 @@ export function Footer() {
           </ul>
         </div>
 
-        {COLUMNS.map((col) => (
-          <nav key={col.title} aria-label={col.title} className="sm:pt-2">
-            <h2 className="text-xs font-semibold uppercase tracking-widest text-fg">{col.title}</h2>
-            <ul className="mt-4 flex flex-col gap-2.5">
-              {col.links.map((l) => (
-                <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-muted transition-colors hover:text-accent">
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        ))}
+        <div className="flex gap-14 lg:pt-2">
+          {COLUMNS.map((col) => (
+            <nav key={col.title} aria-label={col.title}>
+              <h2 className="text-xs font-semibold uppercase tracking-widest text-fg">{col.title}</h2>
+              <ul className="mt-4 flex flex-col gap-2.5">
+                {col.links.map((l) => (
+                  <li key={l.href}>
+                    <Link href={l.href} className="text-sm whitespace-nowrap text-muted transition-colors hover:text-accent">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          ))}
+        </div>
+
+        <section aria-labelledby="newsletter-title" className="lz-news rounded-2xl border border-line p-6 sm:p-7">
+          <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-accent">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <rect x="3" y="5" width="18" height="14" rx="2" />
+              <path d="m3 7 9 6 9-6" />
+            </svg>
+            Newsletter
+          </p>
+          <h2 id="newsletter-title" className="mt-3 font-display text-xl font-bold tracking-tight">
+            {`Nuevos ${NOUN.other}, primero para ti`}
+          </h2>
+          <p className="mt-1.5 mb-5 text-sm text-muted">
+            Te avisamos cuando un creador publica algo nuevo. Un correo por semana, sin spam.
+          </p>
+          <NewsletterForm />
+        </section>
       </div>
 
       <div className="border-t border-line">

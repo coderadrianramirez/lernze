@@ -369,6 +369,11 @@
   transform: none;
 }
 
+/* newsletter del footer */
+.lz-news {
+  background: radial-gradient(90% 120% at 100% 0%, rgba(255, 181, 71, 0.1), transparent 60%), var(--color-surface);
+}
+
 /* feed vacío */
 .lz-empty-hero {
   position: relative;
