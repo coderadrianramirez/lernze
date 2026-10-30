@@ -110,5 +110,13 @@ Suscripción de agentes: $49 al mes, hasta 20 clips.
 - Correo y contraseña se despliegan al pulsar su botón y permiten Cancelar. El login incluye «Olvidé mi contraseña», con enlace de recuperación PKCE y validación de sesión reciente de recuperación en el servidor. Abre el enlace en el mismo navegador.
 - 0011_account_password_status.sql aplicada con autorización: consulta únicamente si la cuenta propia tiene contraseña; no modifica credenciales ni contenido. Permite detectar también cuentas de Google con contraseña añadida.
 - Para cuentas externas, crear una contraseña requiere un enlace de correo verificado. No se cambiaron credenciales ni se enviaron correos reales durante las pruebas. La entrega real de emails depende de la configuración de Supabase/SMTP y las URL de redirección.
-- /vista-previa-portadas muestra tres imágenes generadas como ejemplos, con los títulos nativos de Lernze y recorte vertical. No reemplaza las portadas del catálogo publicado.
+- Las 17 portadas fotográficas se muestran directamente en el catálogo, búsqueda, categorías y programas. /vista-previa-portadas redirige a Inicio.
 - Intereses permite consultar los temas iniciales. Las recomendaciones conservan las señales de vistas existentes; combinar creadores, búsquedas y temas acumulados sigue pendiente.
+
+### Portadas y trailers de los 17 programas de prueba
+
+- Cada programa publicado existente tiene una fotografía generada con una persona ficticia mirando a cámara, en `public/images/catalog-covers`. `Stage` conserva los títulos y colores nativos, con encuadre preparado para móvil. No hay una galería aparte.
+- `public/videos/catalog-trailers` contiene 17 MP4 H.264, 1280×720, 14 segundos, con movimiento suave de las fotografías. No tienen audio ni animación de labios. `StageLive` superpone cuatro frases con la tipografía existente, sincronizadas con el tiempo del video y la búsqueda del reproductor.
+- La selección en `src/lib/catalog-media.ts` está limitada a los 17 IDs exactos del catálogo consultado. No depende de `demo` (estos registros históricos no tienen esa marca). Los programas nuevos y las clases conservan su comportamiento.
+- Una portada propia o una ilustración elegida expresamente tiene prioridad. Un nuevo trailer subido también tiene prioridad sobre la muestra. Los datos originales de Supabase se mantienen para la edición, sin mutaciones ni nuevas migraciones.
+- Para regenerar los clips: `FFMPEG=/ruta/al/ejecutable node scripts/render-catalog-trailers.mjs`. El codificador es externo al proyecto; no se añadió dependencia de FFmpeg a la aplicación. `npm run test:catalog` comprueba los 34 archivos, reproducción progresiva y prioridad del contenido del creador.

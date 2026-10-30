@@ -1075,3 +1075,11 @@ button.lz-top-tile,
 
 /* Las portadas personalizadas conservan la tipografía y las capas de Lernze. */
 .lz-cover-image { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:1; }
+
+/* Las capas de marca no bloquean los controles nativos del video. */
+.lz-stage > .lz-shade, .lz-stage > .lz-lockup, .lz-stage > .lz-badges, .lz-stage > .lz-bar { pointer-events: none; }
+/* Al pausar una muestra se conserva el fotograma y su frase, sin duplicar el título. */
+.lz-paused-trailer .lz-video { opacity: 1; }
+.lz-paused-trailer .lz-lockup { opacity: 0; }
+
+.lz-catalog-player .lz-caps { padding-bottom: max(64px, 11%); }

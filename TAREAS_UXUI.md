@@ -92,4 +92,11 @@ No se agregaron notificaciones, pagos ni eliminación de cuenta en Configuració
 - [x] Formularios de correo y contraseña detrás de botones, con Cancelar.
 - [x] Recuperación de contraseña desde el login y creación con enlace verificado para cuentas externas.
 - [x] Migración 0011 aplicada con autorización; verificados permisos de consulta propia.
-- [x] Tres ejemplos de portadas fotográficas con título nativo en /vista-previa-portadas.
+- [x] 17 portadas frontales integradas en el catálogo actual; el enlace de la antigua galería vuelve a Inicio.
+
+## Catálogo de prueba: portadas y clips
+
+- [x] Imagen propia para cada uno de los 17 programas publicados, con el instructor mirando a cámara.
+- [x] Inicio, categorías, búsqueda, tarjetas y páginas de programa comparten las portadas nativas.
+- [x] 17 clips MP4 de 14 segundos con movimiento suave y frases sincronizadas en la web. Sin voz ni animación facial.
+- [x] Las portadas y trailers nuevos del creador tienen prioridad; no se modificaron registros de Supabase.
