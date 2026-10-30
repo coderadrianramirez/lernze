@@ -4,7 +4,7 @@ import { readFile, readdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 // PostgreSQL local y efímero. Nunca lee .env ni se conecta a Supabase.
-export async function createTestDb({ legacyPolicyNames = false } = {}) {
+export async function createTestDb({ legacyPolicyNames = false, maxMigration = Infinity } = {}) {
   const db = new PGlite();
   await db.exec(`
     create role anon nologin;
@@ -24,7 +24,7 @@ export async function createTestDb({ legacyPolicyNames = false } = {}) {
   `);
   const migrations = new URL("../supabase/migrations/", import.meta.url);
   for (const name of (await readdir(migrations))
-    .filter((s) => s.endsWith(".sql"))
+    .filter((s) => s.endsWith(".sql") && Number.parseInt(s,10) <= maxMigration)
     .sort()) {
     if (legacyPolicyNames && name.startsWith("0008_")) {
       await db.exec('alter policy "cursos publicados son públicos" on public.courses rename to "cursos publicados son publicos"');
