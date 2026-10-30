@@ -68,3 +68,16 @@
 - [x] Retirar y volver a publicar conservando acceso de alumnos.
 - [x] Pruebas locales de migraciones y permisos sin modificar producción.
 - [x] Migración 0008 aplicada en Supabase el 2026-10-30 con autorización del usuario: publicación y retirada activadas.
+
+
+## Entrega 2026-10-30: control del contenido y configuración
+
+- [x] Portada del trailer y de cada clase, con título + ilustración/fotograma/imagen y encuadre.
+- [x] Cancelar creación y edición; quitar/reemplazar videos; confirmar eliminación de clase/programa.
+- [x] Configuración separada del dashboard, accesible desde el desplegable.
+- [x] Foto propia o inicial, nombre público sincronizado en los programas, temas del feed, correo y contraseña.
+- [x] Pruebas locales de permisos, acciones de cuenta y navegador (escritorio y 375 px), sin modificar producción.
+- [ ] Ejecutar manualmente migración 0009 y luego 0010 en Supabase para activar los permisos y columnas nuevos.
+- [ ] Verificar entregas de correos de confirmación en el dominio publicado con una cuenta de prueba autorizada; no se enviaron mensajes reales.
+
+No se agregaron notificaciones, pagos ni eliminación de cuenta en Configuración. No hay reintento automático si falla la limpieza de archivos de Storage.

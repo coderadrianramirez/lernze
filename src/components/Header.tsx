@@ -27,7 +27,7 @@ async function AccountNav() {
     );
   }
 
-  return <UserMenu name={user.name} />;
+  return <UserMenu name={user.name} avatarUrl={user.avatarUrl} />;
 }
 
 export function Header() {

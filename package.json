@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:publication": "node scripts/test-program-publication.mjs"
+    "test:publication": "node scripts/test-program-publication.mjs",
+    "test:content": "node scripts/test-content-control.mjs",
+    "test:account": "node scripts/test-account-actions.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

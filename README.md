@@ -29,7 +29,7 @@ El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0008 aplic
 - **Descubrir:** navbar con categorías, hero rotativo, filas con tooltip "¿Por qué ves esto?", grilla "Por menos de $100" y página `/ofertas` por categoría.
 - **Recomendaciones:** onboarding de intereses (`/bienvenida`, editable desde Mi cuenta), filas "Para ti" y "Porque te interesa X", y con el historial de vistas "Vistos recientemente", "Porque viste X" e intereses deducidos de lo visto.
 - **Búsqueda:** `/buscar`, en vivo y sin importar acentos (`src/lib/search.ts`).
-- **Mi cuenta (`/dashboard`):** perfil, intereses, programas a los que te uniste, vistos recientemente, programas publicados y ajustes.
+- **Mi cuenta (`/dashboard`):** perfil, programas a los que te uniste, vistos recientemente y programas propios. Configuración tiene su propia página.
 - **Móvil:** experiencia tipo app con header compacto, barra de pestañas inferior, hoja de detalle y manifiesto para instalarla. Cada página oculta la barra con `<NoTabBar />` o muestra el footer con `<ShowFooterOnMobile />`.
 - **Programas como cursos:** el creador sube su trailer en `/crear` y gestiona las clases en `/programa/<slug>/clases` (subir video, ordenar, editar, marcar vista previa). Quien se une va al aula `/aprender/<slug>`: reproductor, lista de clases, siguiente clase al terminar y progreso. La página del programa muestra el temario con candados.
 - **Videos:** suben directo del navegador a Supabase Storage con un permiso firmado (`src/app/actions/upload.ts`, `src/components/VideoUpload.tsx`). Trailers en el bucket público `trailers`; clases en el bucket privado `lessons`, servidas con enlaces firmados de 3 horas solo a inscritos, al creador y, en vista previa, a cualquiera. Límite del plan gratuito de Supabase: 50 MB por archivo.
@@ -47,9 +47,20 @@ El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0008 aplic
 - **Activada el 2026-10-30:** `supabase/migrations/0008_program_publication.sql` aplicada en el proyecto Lernze con autorización del usuario. Publicar y retirar ya están disponibles. Se verificaron las funciones, políticas y triggers; los 17 programas conservaron su estado y sus precios. La migración admite el nombre histórico sin tilde de la política de catálogo.
 - Las inscripciones y los ingresos siguen siendo simulados. No se implementaron cobros ni funciones de comunidad en este bloque.
 
+### Control del contenido y configuración
+
+- Portadas del trailer y de cada clase: ilustración automática, fotograma del video o imagen propia. Conservan la composición de Lernze, con título, color, encuadre y vista previa horizontal/vertical. Los fotogramas externos requieren que el servidor del video permita CORS; siempre queda la opción de subir una imagen.
+- Cancelar creación no crea un programa; cancelar una edición conserva lo guardado. Se limpian las subidas nuevas sin guardar. Cada clase permite reemplazar o quitar su video; un programa publicado mantiene las protecciones de contenido de 0008.
+- Eliminar programa pide confirmación explícita y advierte que los alumnos perderán acceso. Elimina clases, inscripciones y progreso por cascada, y después limpia los archivos propios sin referencias. Retirar del catálogo sigue conservando el acceso de alumnos. Los enlaces externos no se eliminan del proveedor original.
+- El menú ofrece Mi cuenta → Configuración → Crear programa. Se quitó el bloque Cuenta del dashboard; los enlaces legales permanecen en el footer, visible también en Configuración móvil.
+- Configuración (/configuracion): subir/quitar foto, nombre público en todos los programas y búsqueda, temas del feed, cambio de correo con confirmación de Supabase y cambio de contraseña con verificación. No se modificaron correos ni contraseñas reales durante las pruebas.
+- **Pendientes de ejecución manual en producción:** 0009_content_control_and_covers.sql y después 0010_account_settings.sql. No se han aplicado. Hasta activarlas, la web permite los flujos existentes y deshabilita imágenes de portada, personalización de clases, borrado de programas y edición del perfil que requieran esos permisos. Correo y contraseña usan Supabase Auth sin cambios de esquema.
+- Las fotos y portadas son públicas; los videos de clases conservan sus permisos privados. Los archivos usan nombres únicos y las políticas impiden usar imágenes ajenas o borrar imágenes todavía referenciadas.
+- Si falla la limpieza de Storage después de guardar/eliminar, se registra el error en el servidor. No hay cola de reintentos de archivos huérfanos. Al cerrar la pestaña sin usar Cancelar, una subida sin guardar puede quedar sin referencia.
+
 ### Pruebas
 
-`npm run test:publication` aplica todas las migraciones a PostgreSQL efímero con PGlite y comprueba borradores privados, propiedad, videos, publicación, retirada, progreso y acceso de alumnos. No lee `.env.local` ni se conecta a Supabase. Después: `npm run lint`, `npx tsc --noEmit` y `npm run build`.
+`npm run test:publication` aplica todas las migraciones a PostgreSQL efímero con PGlite y comprueba borradores privados, propiedad, videos, publicación, retirada, progreso y acceso de alumnos. No lee `.env.local` ni se conecta a Supabase. `npm run test:content` comprueba portadas, propiedad, borrado y configuración en PostgreSQL efímero. `npm run test:account` ejecuta las acciones reales de correo y contraseña con el límite de Supabase simulado (sin envíos ni cambios reales). Después: `npm run lint`, `npx tsc --noEmit` y `npm run build`.
 
 ## Vocabulario
 
