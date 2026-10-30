@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { LessonCover } from "@/components/LessonCover";
 import { Suspense } from "react";
 import { getAccessibleProgram } from "@/lib/program-management";
 import { Stage } from "@/components/Stage";
@@ -197,6 +198,7 @@ async function CourseDetail({
                   const inner = (
                     <>
                       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-2 text-sm font-bold">{i + 1}</span>
+                      {l.cover && <span className="hidden w-24 shrink-0 overflow-hidden rounded-lg sm:block"><LessonCover lesson={l} art={course.art} /></span>}
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-semibold">{l.title}</span>
                         {l.isPreview && !hasAccess && <span className="text-xs font-semibold text-ai">Vista previa gratis</span>}

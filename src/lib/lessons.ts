@@ -1,6 +1,8 @@
 import { isSupabaseConfigured } from "./supabase/config";
 import { createSessionClient } from "./supabase/server";
-import type { Lesson, LessonInput } from "./types";
+import { sanitizeCover } from "./covers";
+import { cleanupUnusedMedia, type MediaAsset } from "./media-management";
+import type { CoverConfig, Lesson, LessonInput } from "./types";
 
 /**
  * Clases, progreso y videos privados. Todo pasa por el cliente con la sesión del usuario:
@@ -17,6 +19,7 @@ type LessonRow = {
   video_path: string | null;
   duration_seconds: number;
   is_preview: boolean;
+  cover?: CoverConfig | null;
 };
 
 const toLesson = (r: LessonRow): Lesson => ({
@@ -28,6 +31,7 @@ const toLesson = (r: LessonRow): Lesson => ({
   videoPath: r.video_path,
   durationSeconds: r.duration_seconds,
   isPreview: r.is_preview,
+  cover: sanitizeCover(r.cover),
 });
 
 /** false si la tabla de clases todavía no existe (migración 0007 sin aplicar). */
@@ -127,6 +131,7 @@ export async function addLesson(courseId: string, input: LessonInput): Promise<v
     video_path: input.videoPath,
     duration_seconds: input.durationSeconds,
     is_preview: input.isPreview,
+    ...(input.cover !== undefined ? { cover: input.cover } : {}),
   });
   if (error) throw new Error(`No se pudo agregar la clase: ${error.message}`);
 }
@@ -139,6 +144,7 @@ export async function updateLesson(lessonId: string, input: Partial<LessonInput>
   if (input.videoPath !== undefined) patch.video_path = input.videoPath;
   if (input.durationSeconds !== undefined) patch.duration_seconds = input.durationSeconds;
   if (input.isPreview !== undefined) patch.is_preview = input.isPreview;
+  if (input.cover !== undefined) patch.cover = input.cover;
   const { error } = await supabase.from("lessons").update(patch).eq("id", lessonId);
   if (error) throw new Error(`No se pudo guardar la clase: ${error.message}`);
 }
@@ -147,7 +153,11 @@ export async function deleteLesson(lesson: Lesson): Promise<void> {
   const supabase = await createSessionClient();
   const { error } = await supabase.from("lessons").delete().eq("id", lesson.id);
   if (error) throw new Error(`No se pudo borrar la clase: ${error.message}`);
-  if (lesson.videoPath) await supabase.storage.from("lessons").remove([lesson.videoPath]);
+  const user = await supabase.auth.getUser();
+  const assets: MediaAsset[] = [];
+  if (lesson.videoPath) assets.push({ bucket: "lessons", path: lesson.videoPath });
+  if (lesson.cover?.path) assets.push({ bucket: "covers", path: lesson.cover.path });
+  if (user.data.user) { try { await cleanupUnusedMedia(user.data.user.id, assets); } catch (e) { console.error("[media cleanup]", (e as Error).message); } }
 }
 
 /** Intercambia la posición de una clase con la vecina de arriba o de abajo. */

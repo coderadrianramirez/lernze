@@ -1,3 +1,4 @@
+import { sanitizeCover } from "./covers";
 import { isSupabaseConfigured } from "./supabase/config";
 import { createSessionClient } from "./supabase/server";
 import type { Lesson, SaleOrigin } from "./types";
@@ -37,7 +38,7 @@ export async function lessonsByCourse(courseIds: string[]): Promise<Record<strin
   const supabase = await createSessionClient();
   const { data, error } = await supabase
     .from("lessons")
-    .select("id, course_id, position, title, description, video_path, duration_seconds, is_preview")
+    .select("*")
     .in("course_id", courseIds)
     .order("position")
     .order("created_at");
@@ -51,6 +52,7 @@ export async function lessonsByCourse(courseIds: string[]): Promise<Record<strin
     video_path: string | null;
     duration_seconds: number;
     is_preview: boolean;
+    cover?: unknown;
   }[]) {
     (out[r.course_id] ??= []).push({
       id: r.id,
@@ -61,6 +63,7 @@ export async function lessonsByCourse(courseIds: string[]): Promise<Record<strin
       videoPath: r.video_path,
       durationSeconds: r.duration_seconds,
       isPreview: r.is_preview,
+      cover: sanitizeCover(r.cover),
     });
   }
   return out;

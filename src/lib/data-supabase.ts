@@ -1,3 +1,4 @@
+import { withCover } from "./covers";
 import { defaultArt, defaultScenes, sanitizeArt } from "./art";
 import { commissionCents, formatPrice } from "./pricing";
 import { createPublicReadClient, createSessionClient } from "./supabase/server";
@@ -84,7 +85,7 @@ export async function createCourse(input: NewCourseInput, userId: string): Promi
         trailer_source: input.trailerUrl ? "creator" : "ai",
         trailer_url: input.trailerUrl,
         trailer_seconds: input.trailerSeconds ?? 0,
-        art: defaultArt(input.title, input.category, slug),
+        art: withCover(defaultArt(input.title, input.category, slug), input.title, input.cover),
         scenes: defaultScenes(input.title, input.description, input.creatorName, formatPrice(input.priceCents)),
       })
       .select("*")

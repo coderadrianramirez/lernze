@@ -5,6 +5,7 @@ import { NoTabBar } from "@/components/MobileTabBar";
 import { getCurrentUser } from "@/lib/auth";
 import { NOUN } from "@/lib/copy";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { contentToolsReady } from "@/lib/media-management";
 import { CreateCourseForm } from "./CreateCourseForm";
 
 export const metadata: Metadata = { title: `Crear ${NOUN.one}` };
@@ -19,7 +20,9 @@ export default function CreatePage() {
       <p className="mt-2 mb-7 text-muted">
         {`Empieza con lo esencial. Después añade tus clases y revisa todo antes de publicar.`}
       </p>
-      <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface" />}>
+      <Suspense
+        fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface" />}
+      >
         <Gate />
       </Suspense>
     </main>
@@ -29,5 +32,13 @@ export default function CreatePage() {
 async function Gate() {
   const user = await getCurrentUser();
   if (!user) redirect("/entrar?next=/crear");
-  return <CreateCourseForm defaultName={user.name} canUpload={isSupabaseConfigured && !user.demo} />;
+  return (
+    <CreateCourseForm
+      defaultName={user.name}
+      canUpload={isSupabaseConfigured && !user.demo}
+      contentReady={
+        isSupabaseConfigured && !user.demo && (await contentToolsReady())
+      }
+    />
+  );
 }

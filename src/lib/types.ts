@@ -11,7 +11,10 @@ export type PropKind = "doc" | "bubble" | "scissors" | "phone" | "house" | "bott
 export type BustKind = "long" | "short" | "bun" | "curly" | "beard";
 
 /** Datos con los que se dibuja la portada ilustrada de un programa. */
+export type CoverConfig = { path: string | null; title: string; x: number; y: number; zoom: number; tone: "amber" | "teal" | "rose" };
+
 export type ArtConfig = {
+  cover?: CoverConfig | null;
   /** Líneas del título tal como se muestran (máximo 3). */
   lines: string[];
   /** Índice de la línea resaltada con el color de brillo. */
@@ -59,6 +62,7 @@ export type Lesson = {
   videoPath: string | null;
   durationSeconds: number;
   isPreview: boolean;
+  cover?: CoverConfig | null;
 };
 
 export type LessonInput = {
@@ -67,6 +71,7 @@ export type LessonInput = {
   videoPath: string | null;
   durationSeconds: number;
   isPreview: boolean;
+  cover?: CoverConfig | null;
 };
 
 export type NewCourseInput = {
@@ -78,6 +83,7 @@ export type NewCourseInput = {
   trailerUrl: string | null;
   /** Duración del video subido, en segundos. 0 si no se conoce. */
   trailerSeconds?: number;
+  cover?: CoverConfig | null;
 };
 
 export type Enrollment = {

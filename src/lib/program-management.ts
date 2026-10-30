@@ -1,7 +1,8 @@
 import { createSessionClient } from "./supabase/server";
 import { isSupabaseConfigured } from "./supabase/config";
 import { toCourse } from "./data-supabase";
-import { defaultArt, defaultScenes } from "./art";
+import { withCover } from "./covers";
+import { defaultScenes } from "./art";
 import { formatPrice } from "./pricing";
 import type { Course, NewCourseInput } from "./types";
 
@@ -58,13 +59,7 @@ export async function updateProgram(
       trailer_url: input.trailerUrl,
       trailer_seconds: input.trailerSeconds,
       trailer_source: input.trailerUrl ? "creator" : "ai",
-      art:
-        input.title === course.title
-          ? course.art
-          : {
-              ...course.art,
-              lines: defaultArt(input.title, input.category, course.slug).lines,
-            },
+      art: withCover(course.art, input.title, input.cover),
       scenes: defaultScenes(
         input.title,
         input.description,

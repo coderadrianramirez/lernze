@@ -1,3 +1,5 @@
+import { contentToolsReady } from "@/lib/media-management";
+import { DeleteProgram } from "./DeleteProgram";
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { NoTabBar } from "@/components/MobileTabBar";
@@ -32,6 +34,7 @@ async function Editor({
     redirect(`/entrar?next=${encodeURIComponent(`/programa/${slug}/editar`)}`);
   const course = await getOwnedProgram(slug, user.id);
   if (!course) notFound();
+  const contentReady = await contentToolsReady();
   return (
     <>
       <ProgramNav course={course} step="editar" />
@@ -46,7 +49,14 @@ async function Editor({
         key={course.id}
         course={course}
         defaultName={course.creatorName}
+        contentReady={contentReady}
         canUpload
+      />
+      <DeleteProgram
+        slug={slug}
+        title={course.title}
+        members={course.members}
+        enabled={contentReady}
       />
     </>
   );

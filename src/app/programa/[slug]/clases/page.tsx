@@ -1,3 +1,4 @@
+import { contentToolsReady } from "@/lib/media-management";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -67,6 +68,8 @@ async function Editor({
         </p>
       ) : (
         <LessonEditor
+          contentReady={await contentToolsReady()}
+          art={course.art}
           slug={slug}
           courseId={course.id}
           lessons={lessons}

@@ -1,5 +1,6 @@
 "use server";
 
+import { cleanupFormMedia, validateCoverOwner } from "@/lib/media-management";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { createCourse } from "@/lib/data";
@@ -19,6 +20,7 @@ export async function createCourseAction(
     };
   const { input, errors } = readProgram(formData);
   if (Object.keys(errors).length) return { errors };
+  try { await validateCoverOwner(input.cover, user.id); } catch (e) { return { errors: { cover: (e as Error).message } }; }
   let slug: string;
   try {
     slug = (await createCourse(input, user.id)).slug;
@@ -29,5 +31,6 @@ export async function createCourseAction(
     };
   }
   revalidateProgram(slug);
+  await cleanupFormMedia(user.id, formData);
   redirect(`/programa/${slug}/clases?creado=1`);
 }

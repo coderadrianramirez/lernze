@@ -1,5 +1,7 @@
 import type { ArtConfig, BustKind, Category, PropKind } from "./types";
 
+import { sanitizeCover } from "./cover-config";
+
 const PROPS: PropKind[] = ["doc", "bubble", "scissors", "phone", "house", "bottle", "percent", "chip", "case"];
 const BUSTS: BustKind[] = ["long", "short", "bun", "curly", "beard"];
 const HEX = /^#[0-9a-fA-F]{6}$/;
@@ -18,6 +20,7 @@ export function sanitizeArt(raw: unknown, fallback: ArtConfig): ArtConfig {
     : [];
   const hl = typeof r.hl === "number" && r.hl >= 0 && r.hl < (lines.length || fallback.lines.length) ? Math.floor(r.hl) : fallback.hl;
   return {
+    cover: sanitizeCover(r.cover),
     lines: lines.length ? lines : fallback.lines,
     hl,
     prop: PROPS.includes(r.prop as PropKind) ? (r.prop as PropKind) : fallback.prop,

@@ -1,3 +1,5 @@
+import { supabaseUrl } from "./supabase/config";
+import { parseCover } from "./covers";
 import {
   CATEGORIES,
   type Course,
@@ -12,7 +14,8 @@ export type ProgramErrors = Partial<
     | "price"
     | "category"
     | "trailerUrl"
-    | "creatorName",
+    | "creatorName"
+    | "cover",
     string
   >
 >;
@@ -40,6 +43,12 @@ export function readProgram(formData: FormData): {
     Math.min(180, Math.round(Number(formData.get("trailerSeconds")) || 0)),
   );
   const errors: ProgramErrors = {};
+  let cover: NewCourseInput["cover"];
+  try {
+    cover = parseCover(formData.get("cover"));
+  } catch {
+    errors.cover = "No pudimos leer la portada. Vuelve a seleccionarla.";
+  }
   if (title.length < 4 || title.length > 120)
     errors.title = "Escribe un título de entre 4 y 120 caracteres.";
   if (description.length > 2000)
@@ -53,7 +62,14 @@ export function readProgram(formData: FormData): {
       "Escribe un precio entre 0 y 5.000 dólares. Usa 0 si es gratis.";
   if (trailerUrl) {
     try {
-      if (new URL(trailerUrl).protocol !== "https:") throw new Error();
+      const url = new URL(trailerUrl);
+      const localStorage =
+        process.env.NODE_ENV === "development" &&
+        ["localhost", "127.0.0.1"].includes(url.hostname) &&
+        trailerUrl.startsWith(
+          supabaseUrl + "/storage/v1/object/public/trailers/",
+        );
+      if (url.protocol !== "https:" && !localStorage) throw new Error();
     } catch {
       errors.trailerUrl = "Usa un enlace HTTPS directo a un video MP4 o WebM.";
     }
@@ -67,6 +83,7 @@ export function readProgram(formData: FormData): {
       priceCents: Math.round(price * 100),
       trailerUrl,
       trailerSeconds,
+      cover,
     },
     errors,
   };

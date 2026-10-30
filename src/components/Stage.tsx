@@ -1,9 +1,10 @@
 import type { CSSProperties, ReactNode } from "react";
+import { coverImageUrl } from "@/lib/covers";
 import { artSvg } from "@/lib/art";
 import type { Course } from "@/lib/types";
 
 type Props = {
-  course: Course;
+  course: Pick<Course, "id" | "art" | "trailerSource">;
   /** h = 16:9 (billboard, tarjetas horizontales, tarjeta ampliada). v = recorte central para el póster 2:3. */
   mode?: "h" | "v";
   lockup?: boolean;
@@ -26,6 +27,10 @@ export function Stage({ course, mode = "h", lockup = true, badges = true, playin
       data-id={course.id}
     >
       <div className="lz-art" dangerouslySetInnerHTML={{ __html: artSvg(art, mode, course.id) }} />
+      {coverImageUrl(art.cover?.path) && (
+        // eslint-disable-next-line @next/next/no-img-element -- imagen dinámica de Supabase, con encuadre del creador
+        <img src={coverImageUrl(art.cover?.path)} alt="" className="lz-cover-image" style={{ objectPosition: `${art.cover?.x ?? 50}% ${art.cover?.y ?? 50}%`, transform: `scale(${art.cover?.zoom ?? 1})` }} />
+      )}
       {under}
       <div className="lz-sweep" />
       <div className="lz-shade" />

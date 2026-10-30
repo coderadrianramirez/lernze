@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -16,9 +17,11 @@ import {
   lessonVideoUrl,
   listLessons,
 } from "@/lib/lessons";
+import { LessonCover } from "@/components/LessonCover";
 import { LessonPlayer } from "./LessonPlayer";
 
 export async function generateMetadata({ params }: PageProps<"/aprender/[slug]">): Promise<Metadata> {
+  await connection();
   const { slug } = await params;
   const course = await getCourseBySlug(slug);
   return { title: course ? `Clases · ${course.title}` : "Clases" };
@@ -43,6 +46,7 @@ async function Classroom({
   searchParams: PageProps<"/aprender/[slug]">["searchParams"];
 }) {
   const { slug } = await params;
+  await connection();
   const sp = await searchParams;
   const [course, user] = await Promise.all([getAccessibleProgram(slug), getCurrentUser()]);
   if (!course) notFound();
@@ -114,6 +118,7 @@ async function Classroom({
             {current && (
               <>
                 <LessonPlayer
+                  poster={<LessonCover lesson={current} art={course.art} />}
                   key={current.id}
                   slug={slug}
                   lessonId={current.id}
