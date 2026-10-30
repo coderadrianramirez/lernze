@@ -10,7 +10,7 @@ export async function createTestDb({ legacyPolicyNames = false, maxMigration = I
     create role anon nologin;
     create role authenticated nologin;
     create schema auth;
-    create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb);
+    create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb, encrypted_password text);
     create function auth.uid() returns uuid language sql stable as $$
       select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid;
     $$;
@@ -34,7 +34,7 @@ export async function createTestDb({ legacyPolicyNames = false, maxMigration = I
   await db.exec(`
     grant usage on schema public, auth, storage to anon, authenticated;
     grant select, insert, update, delete on all tables in schema public, storage to anon, authenticated;
-    insert into auth.users values
+    insert into auth.users (id,email,raw_user_meta_data) values
       ('11111111-1111-4111-8111-111111111111', 'creador@lernze.test', '{"display_name":"Ana Creadora"}'),
       ('22222222-2222-4222-8222-222222222222', 'alumno@lernze.test', '{"display_name":"Luis Alumno"}'),
       ('33333333-3333-4333-8333-333333333333', 'otro@lernze.test', '{"display_name":"Otra Persona"}');
