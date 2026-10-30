@@ -100,3 +100,5 @@ No se agregaron notificaciones, pagos ni eliminación de cuenta en Configuració
 - [x] Inicio, categorías, búsqueda, tarjetas y páginas de programa comparten las portadas nativas.
 - [x] 17 clips MP4 de 14 segundos con movimiento suave. Reproducción limpia, sin frases ni efectos superpuestos. Sin voz ni animación facial.
 - [x] Las portadas y trailers nuevos del creador tienen prioridad; no se modificaron registros de Supabase.
+
+- [x] Control de audio de trailers: activar/silenciar, ajustar volumen y sincronizar con el reproductor nativo, también en móvil.

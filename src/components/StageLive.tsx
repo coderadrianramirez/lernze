@@ -81,6 +81,8 @@ export function StageLive({
   const [videoError, setVideoError] = useState(false);
   const hasVideo = Boolean(trailerUrl) && !videoError;
   const [videoPlaying, setVideoPlaying] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const [volume, setVolume] = useState(1);
   const [scene, setScene] = useState<number | null>(null);
   const playing = hasVideo ? videoPlaying : active;
   const shownScene = active && !hasVideo ? scene : null;
@@ -148,7 +150,11 @@ export function StageLive({
                 ? { objectPosition: `${generated.x}% ${generated.y}%` }
                 : undefined
             }
-            muted
+            muted={muted}
+            onVolumeChange={(event) => {
+              setMuted(event.currentTarget.muted);
+              setVolume(event.currentTarget.volume);
+            }}
             loop
             playsInline
             preload={controls && active ? "auto" : "none"}
@@ -165,27 +171,81 @@ export function StageLive({
         ) : null
       }
       over={
-        !hasVideo && <>
-          {!onScene && (
-            <div className="lz-caps" aria-hidden="true">
-              {shownScene !== null && (
-                <Scene
-                  key={shownScene}
-                  course={course}
-                  i={shownScene}
+        <>
+          {hasVideo && (videoPlaying || controls) && (
+            <div
+              className={`lz-audio ${!muted && volume > 0 ? "is-audible" : ""}`}
+              role="group"
+              aria-label="Audio del trailer"
+            >
+              <button
+                type="button"
+                aria-label={muted || volume === 0 ? "Activar audio" : "Silenciar audio"}
+                title={muted || volume === 0 ? "Activar audio" : "Silenciar audio"}
+                aria-pressed={!muted && volume > 0}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  const video = videoRef.current;
+                  if (!video) return;
+                  if (video.muted || video.volume === 0) {
+                    if (video.volume === 0) video.volume = 0.6;
+                    video.muted = false;
+                  } else {
+                    video.muted = true;
+                  }
+                }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M11 5 6 9H3v6h3l5 4V5Z" />
+                  {muted || volume === 0
+                    ? <path d="m16 9 6 6m0-6-6 6" />
+                    : <><path d="M15 8a6 6 0 0 1 0 8" />{volume > 0.5 && <path d="M18 5a10 10 0 0 1 0 14" />}</>}
+                </svg>
+              </button>
+              <div className="lz-audio-volume">
+                <input
+                  type="range"
+                  aria-label="Volumen del trailer"
+                  aria-valuetext={`${Math.round(volume * 100)} %`}
+                  min="0"
+                  max="100"
+                  step="1"
+                  value={Math.round(volume * 100)}
+                  onChange={(event) => {
+                    const video = videoRef.current;
+                    if (!video) return;
+                    const next = Number(event.target.value) / 100;
+                    video.volume = next;
+                    video.muted = next === 0;
+                  }}
                 />
-              )}
+              </div>
             </div>
           )}
-          <div className="lz-bar" aria-hidden="true">
-            <i
-              style={
-                active
-                  ? { animation: `lzProg ${total}s linear infinite` }
-                  : undefined
-              }
-            />
-          </div>
+          {!hasVideo && (
+            <>
+              {!onScene && (
+                <div className="lz-caps" aria-hidden="true">
+                  {shownScene !== null && (
+                    <Scene
+                      key={shownScene}
+                      course={course}
+                      i={shownScene}
+                    />
+                  )}
+                </div>
+              )}
+              <div className="lz-bar" aria-hidden="true">
+                <i
+                  style={
+                    active
+                      ? { animation: `lzProg ${total}s linear infinite` }
+                      : undefined
+                  }
+                />
+              </div>
+            </>
+          )}
         </>
       }
     />

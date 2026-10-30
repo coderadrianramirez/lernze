@@ -1087,3 +1087,44 @@ button.lz-top-tile,
 .lz-video-stage > .lz-shade,
 .lz-video-stage > .lz-lockup,
 .lz-video-stage > .lz-badges { display: none; }
+
+/* Audio del trailer: área táctil amplia, icono discreto y volumen al interactuar. */
+.lz-audio {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  max-width: calc(100% - 24px);
+  border: 1px solid rgba(255, 255, 255, .35);
+  border-radius: 999px;
+  background: rgba(13, 14, 20, .82);
+  color: #fff;
+}
+.lz-audio button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+.lz-audio button:focus-visible,
+.lz-audio input:focus-visible { outline: 2px solid var(--lz-accent); outline-offset: 2px; }
+.lz-audio-volume {
+  display: flex;
+  align-items: center;
+  width: 0;
+  overflow: hidden;
+  visibility: hidden;
+}
+.lz-audio:hover .lz-audio-volume,
+.lz-audio:focus-within .lz-audio-volume,
+.lz-audio.is-audible .lz-audio-volume { width: 104px; padding-right: 14px; visibility: visible; }
+.lz-audio input { width: 90px; height: 44px; margin: 0; accent-color: var(--lz-accent); cursor: pointer; }

@@ -120,3 +120,5 @@ Suscripción de agentes: $49 al mes, hasta 20 clips.
 - La selección en `src/lib/catalog-media.ts` está limitada a los 17 IDs exactos del catálogo consultado. No depende de `demo` (estos registros históricos no tienen esa marca). Los programas nuevos y las clases conservan su comportamiento.
 - Una portada propia o una ilustración elegida expresamente tiene prioridad. Un nuevo trailer subido también tiene prioridad sobre la muestra. Los datos originales de Supabase se mantienen para la edición, sin mutaciones ni nuevas migraciones.
 - Para regenerar los clips: `FFMPEG=/ruta/al/ejecutable node scripts/render-catalog-trailers.mjs`. El codificador es externo al proyecto; no se añadió dependencia de FFmpeg a la aplicación. `npm run test:catalog` comprueba los 34 archivos, reproducción progresiva y prioridad del contenido del creador.
+
+- Audio de trailers: botón accesible para activar/silenciar y deslizador de volumen en Inicio, tarjetas ampliadas, detalle y página del programa. Se sincroniza con los controles nativos y comienza silenciado. Los 17 clips actuales no tienen pista de audio.
