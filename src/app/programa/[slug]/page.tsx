@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { getAccessibleProgram } from "@/lib/program-management";
 import { Stage } from "@/components/Stage";
 import { StageLive } from "@/components/StageLive";
 import { NOUN, cap, memberCount, programPath } from "@/lib/copy";
@@ -57,7 +58,7 @@ async function CourseDetail({
 }) {
   const { slug } = await params;
   const sp = await searchParams;
-  const [course, all, user] = await Promise.all([getCourseBySlug(slug), listCourses(), getCurrentUser()]);
+  const [course, all, user] = await Promise.all([getAccessibleProgram(slug), listCourses(), getCurrentUser()]);
   if (!course) notFound();
 
   const signedIn = Boolean(user && !user.demo);
@@ -72,7 +73,7 @@ async function CourseDetail({
   const classroom = `/aprender/${course.slug}`;
 
   const origin = parseOrigin(sp.src);
-  const done = sp.ok === "1";
+
   const price = formatPrice(course.priceCents, course.currency);
   const initials = course.creatorName
     .replace(/^(Prof\.|Dr\.|Dra\.|Lic\.)\s*/i, "")
@@ -89,7 +90,7 @@ async function CourseDetail({
 
   const ctaCls = `flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent font-bold text-accent-ink shadow-[0_10px_34px_-10px_var(--color-accent)] transition hover:brightness-110 active:scale-[0.98]`;
   const cta = (className: string) =>
-    hasAccess || done ? (
+    !course.published && !hasAccess ? <p className="text-sm text-muted">Este programa no admite nuevas inscripciones.</p> : hasAccess ? (
       <Link href={classroom} className={`${ctaCls} ${className}`}>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor" aria-hidden>
           <path d="M3 2l9 5-9 5V2z" />
@@ -110,6 +111,7 @@ async function CourseDetail({
 
   return (
     <>
+      {!course.published && <div role="status" className="mb-4 rounded-xl border border-accent/30 bg-accent/10 p-4 text-sm"><b>{isOwner ? "Vista previa privada." : "Fuera del catálogo."}</b> {isOwner ? "Solo tú y tus alumnos pueden acceder. No se aceptan nuevas inscripciones." : "Conservas el acceso a tus clases."}</div>}
       {/* ruta */}
       <TrackView courseId={course.id} />
       <Link
@@ -134,11 +136,11 @@ async function CourseDetail({
           <p className="min-w-0 flex-1 text-sm">
             <b>Es tu {NOUN.one}.</b>{" "}
             <span className="text-muted">
-              {lessons.length ? `${lessons.length} ${lessons.length === 1 ? "clase publicada" : "clases publicadas"}.` : "Todavía no tiene clases."}
+              {lessons.length ? `${lessons.length} ${lessons.length === 1 ? "clase" : "clases"}.` : "Todavía no tiene clases."}
             </span>
           </p>
-          <Link href={`/programa/${course.slug}/clases`} className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-ink">
-            Gestionar clases
+          <Link href={`/programa/${course.slug}/editar`} className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-accent-ink">
+            Gestionar programa
           </Link>
         </div>
       )}

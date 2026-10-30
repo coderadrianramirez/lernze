@@ -1,15 +1,15 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { getAccessibleProgram } from "@/lib/program-management";
 import { getCurrentUser } from "@/lib/auth";
-import { getCourseBySlug } from "@/lib/data";
 import { getOwnCourseId, isEnrolled, listLessons, setLessonDone } from "@/lib/lessons";
 
 /** Marca o desmarca una clase como completada. Solo para quien tiene acceso al programa. */
 export async function setDoneAction(slug: string, lessonId: string, done: boolean): Promise<{ error?: string }> {
   const user = await getCurrentUser();
   if (!user || user.demo) return { error: "Inicia sesión para guardar tu progreso." };
-  const course = await getCourseBySlug(slug);
+  const course = await getAccessibleProgram(slug);
   if (!course) return { error: "Ese programa no existe." };
   const [enrolled, ownId, lessons] = await Promise.all([
     isEnrolled(user.id, course.id),

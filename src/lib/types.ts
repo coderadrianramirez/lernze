@@ -46,6 +46,7 @@ export type Course = {
   scenes: string[];
   /** Programa de ejemplo, cargado para mostrar el diseño. */
   demo: boolean;
+  published: boolean;
 };
 
 /** Una clase del programa. El video vive en el bucket privado "lessons". */

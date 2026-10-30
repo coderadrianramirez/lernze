@@ -23,11 +23,13 @@ function LessonFields({
   lesson,
   video,
   setVideo,
+  onUploadingChange,
 }: {
   courseId: string;
   lesson?: Lesson;
   video: UploadedVideo | null;
   setVideo: (v: UploadedVideo | null) => void;
+  onUploadingChange: (value: boolean) => void;
 }) {
   const id = lesson?.id ?? "new";
   return (
@@ -45,7 +47,7 @@ function LessonFields({
         {lesson?.videoPath && !video ? (
           <p className="mb-2 text-[13px] text-muted">Esta clase ya tiene video. Sube otro solo si quieres reemplazarlo.</p>
         ) : null}
-        <VideoUpload kind="lesson" courseId={courseId} maxSeconds={60 * 60} label="Sube el video de la clase" value={video} onChange={setVideo} />
+        <VideoUpload kind="lesson" courseId={courseId} maxSeconds={60 * 60} label="Sube el video de la clase" value={video} onChange={setVideo} onUploadingChange={onUploadingChange} />
         <input type="hidden" name="videoPath" value={video?.path ?? lesson?.videoPath ?? ""} />
         <input type="hidden" name="durationSeconds" value={video?.seconds ?? lesson?.durationSeconds ?? 0} />
       </div>
@@ -60,7 +62,7 @@ function LessonFields({
   );
 }
 
-function NewLesson({ slug, courseId, first }: { slug: string; courseId: string; first: boolean }) {
+function NewLesson({ slug, courseId, first, published }: { slug: string; courseId: string; first: boolean; published: boolean }) {
   const [state, action, pending] = useActionState<LessonFormState, FormData>(addLessonAction.bind(null, slug), {});
   const [open, setOpen] = useState(first);
   // La clave cambia al guardar con éxito: el formulario y su video se vacían solos.
@@ -69,6 +71,7 @@ function NewLesson({ slug, courseId, first }: { slug: string; courseId: string; 
       key={state.key ?? 0}
       courseId={courseId}
       first={first}
+      published={published}
       open={open}
       setOpen={setOpen}
       action={action}
@@ -81,6 +84,7 @@ function NewLesson({ slug, courseId, first }: { slug: string; courseId: string; 
 function NewLessonForm({
   courseId,
   first,
+  published,
   open,
   setOpen,
   action,
@@ -89,6 +93,7 @@ function NewLessonForm({
 }: {
   courseId: string;
   first: boolean;
+  published: boolean;
   open: boolean;
   setOpen: (v: boolean) => void;
   action: (fd: FormData) => void;
@@ -96,6 +101,7 @@ function NewLessonForm({
   error?: string;
 }) {
   const [video, setVideo] = useState<UploadedVideo | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   if (!open) {
     return (
@@ -112,10 +118,11 @@ function NewLessonForm({
   return (
     <form action={action} className="rounded-2xl border border-line bg-surface p-4 sm:p-5">
       <h2 className="mb-4 font-display text-lg font-bold">{first ? "Tu primera clase" : "Nueva clase"}</h2>
-      <LessonFields courseId={courseId} video={video} setVideo={setVideo} />
+      {published && <p className="mb-4 text-sm text-muted">Tu programa está publicado. Sube el video para que esta clase esté lista para tus alumnos al guardarla.</p>}
+      <LessonFields courseId={courseId} video={video} setVideo={setVideo} onUploadingChange={setUploading} />
       {error && <p role="alert" className="mt-3 text-[13px] text-bad">{error}</p>}
       <div className="mt-5 flex flex-col gap-2 sm:flex-row">
-        <button disabled={pending} className="cursor-pointer rounded-xl bg-accent px-5 py-3 font-bold text-accent-ink disabled:opacity-60">
+        <button disabled={pending || uploading || (published && !video)} className="cursor-pointer rounded-xl bg-accent px-5 py-3 font-bold text-accent-ink disabled:opacity-60">
           {pending ? "Guardando…" : "Guardar clase"}
         </button>
         {!first && (
@@ -132,6 +139,7 @@ function LessonRow({ slug, courseId, lesson, index, total }: { slug: string; cou
   const router = useRouter();
   const [editing, setEditing] = useState(false);
   const [video, setVideo] = useState<UploadedVideo | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [pending, start] = useTransition();
 
@@ -184,9 +192,9 @@ function LessonRow({ slug, courseId, lesson, index, total }: { slug: string; cou
           }
           className="border-t border-line p-4 sm:p-5"
         >
-          <LessonFields courseId={courseId} lesson={lesson} video={video} setVideo={setVideo} />
+          <LessonFields courseId={courseId} lesson={lesson} video={video} setVideo={setVideo} onUploadingChange={setUploading} />
           <div className="mt-5 flex flex-wrap items-center gap-2">
-            <button disabled={pending} className="cursor-pointer rounded-xl bg-accent px-5 py-3 font-bold text-accent-ink disabled:opacity-60">
+            <button disabled={pending || uploading} className="cursor-pointer rounded-xl bg-accent px-5 py-3 font-bold text-accent-ink disabled:opacity-60">
               Guardar cambios
             </button>
             <button type="button" onClick={() => setEditing(false)} className="cursor-pointer rounded-xl px-4 py-3 text-sm text-muted hover:text-fg">
@@ -209,7 +217,7 @@ function LessonRow({ slug, courseId, lesson, index, total }: { slug: string; cou
   );
 }
 
-export function LessonEditor({ slug, courseId, lessons }: { slug: string; courseId: string; lessons: Lesson[] }) {
+export function LessonEditor({ slug, courseId, lessons, published }: { slug: string; courseId: string; lessons: Lesson[]; published: boolean }) {
   return (
     <div className="grid gap-3">
       {lessons.length > 0 && (
@@ -219,7 +227,7 @@ export function LessonEditor({ slug, courseId, lessons }: { slug: string; course
           ))}
         </ol>
       )}
-      <NewLesson slug={slug} courseId={courseId} first={lessons.length === 0} />
+      <NewLesson slug={slug} courseId={courseId} first={lessons.length === 0} published={published} />
     </div>
   );
 }

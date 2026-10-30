@@ -58,3 +58,13 @@
 - Todo está pensado desktop-first
 - El feed de trailers en mobile es el caso de uso más importante
 - Responsive pendiente de trabajar en profundidad
+
+## Gestión de programas — 2026-10-30
+
+- [x] Crear borradores privados antes de cargar las clases.
+- [x] Editar información, precio y trailer conservando el enlace del programa.
+- [x] Recorrido Información → Clases → Publicación con requisitos y vista previa.
+- [x] Validar publicación y proteger contenido publicado desde la base.
+- [x] Retirar y volver a publicar conservando acceso de alumnos.
+- [x] Pruebas locales de migraciones y permisos sin modificar producción.
+- [ ] Aplicar manualmente la migración 0008 en Supabase para activar publicación y retirada.

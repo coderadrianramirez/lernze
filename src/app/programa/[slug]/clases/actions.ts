@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidateProgram } from "@/lib/revalidate-program";
 import { getCurrentUser } from "@/lib/auth";
 import { addLesson, deleteLesson, getOwnCourseId, listLessons, moveLesson, updateLesson } from "@/lib/lessons";
 
@@ -33,7 +33,7 @@ export async function addLessonAction(slug: string, _prev: LessonFormState, form
   } catch (e) {
     return { error: (e as Error).message };
   }
-  revalidatePath(`/programa/${slug}`, "layout");
+  revalidateProgram(slug);
   return { ok: true, key: Date.now() };
 }
 
@@ -49,7 +49,7 @@ export async function updateLessonAction(slug: string, lessonId: string, formDat
   } catch (e) {
     return { error: (e as Error).message };
   }
-  revalidatePath(`/programa/${slug}`, "layout");
+  revalidateProgram(slug);
   return { ok: true };
 }
 
@@ -63,13 +63,16 @@ export async function deleteLessonAction(slug: string, lessonId: string): Promis
   } catch (e) {
     return { error: (e as Error).message };
   }
-  revalidatePath(`/programa/${slug}`, "layout");
+  revalidateProgram(slug);
   return { ok: true };
 }
 
-export async function moveLessonAction(slug: string, lessonId: string, dir: -1 | 1): Promise<void> {
+export async function moveLessonAction(slug: string, lessonId: string, dir: -1 | 1): Promise<LessonFormState> {
   const courseId = await ownCourse(slug);
-  if (!courseId) return;
-  await moveLesson(await listLessons(courseId), lessonId, dir);
-  revalidatePath(`/programa/${slug}`, "layout");
+  if (!courseId) return { error: "Solo el creador puede ordenar las clases." };
+  if (dir !== -1 && dir !== 1) return { error: "Elige una dirección válida." };
+  try { await moveLesson(await listLessons(courseId), lessonId, dir); }
+  catch { return { error: "No pudimos ordenar las clases. Inténtalo de nuevo." }; }
+  revalidateProgram(slug);
+  return { ok: true };
 }

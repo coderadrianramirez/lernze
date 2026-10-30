@@ -158,8 +158,10 @@ export async function moveLesson(lessons: Lesson[], lessonId: string, dir: -1 | 
   const supabase = await createSessionClient();
   const a = lessons[i];
   const b = lessons[j];
-  await supabase.from("lessons").update({ position: j }).eq("id", a.id);
-  await supabase.from("lessons").update({ position: i }).eq("id", b.id);
+  const { error: firstError } = await supabase.from("lessons").update({ position: j }).eq("id", a.id);
+  if (firstError) throw new Error("No pudimos ordenar las clases. Inténtalo de nuevo.");
+  const { error: secondError } = await supabase.from("lessons").update({ position: i }).eq("id", b.id);
+  if (secondError) throw new Error("No pudimos ordenar las clases. Inténtalo de nuevo.");
   // Normaliza el resto por si había huecos o empates.
   await Promise.all(
     lessons.map((l, k) => (k !== i && k !== j && l.position !== k ? supabase.from("lessons").update({ position: k }).eq("id", l.id) : null)),

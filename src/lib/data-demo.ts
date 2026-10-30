@@ -14,11 +14,11 @@ const g = globalThis as unknown as { __lernze?: Store };
 const store: Store = (g.__lernze ??= { courses: [...DEMO_PROGRAMS], enrollments: [] });
 
 export async function listCourses(): Promise<Course[]> {
-  return store.courses;
+  return store.courses.filter((c) => c.published);
 }
 
 export async function getCourseBySlug(slug: string): Promise<Course | null> {
-  return store.courses.find((c) => c.slug === slug) ?? null;
+  return store.courses.find((c) => c.slug === slug && c.published) ?? null;
 }
 
 export async function createCourse(input: NewCourseInput): Promise<Course> {
@@ -44,6 +44,7 @@ export async function createCourse(input: NewCourseInput): Promise<Course> {
     art: defaultArt(input.title, input.category, slug),
     scenes: defaultScenes(input.title, input.description, input.creatorName, formatPrice(input.priceCents)),
     demo: false,
+    published: false,
   };
   store.courses.unshift(course);
   return course;

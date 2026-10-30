@@ -14,10 +14,10 @@ export default function CreatePage() {
     <main className="mx-auto max-w-[720px] px-4 pt-6 pb-12">
       <NoTabBar />
       <h1 className="font-display text-[clamp(28px,4vw,38px)] leading-[1.05] font-extrabold tracking-tight">
-        Publica tu {NOUN.one}
+        Crea tu {NOUN.one}
       </h1>
       <p className="mt-2 mb-7 text-muted">
-        {`Aparece en el Discover ante quien tenga interés en tu tema. Después de publicarlo agregas las clases.`}
+        {`Empieza con lo esencial. Después añade tus clases y revisa todo antes de publicar.`}
       </p>
       <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-surface" />}>
         <Gate />

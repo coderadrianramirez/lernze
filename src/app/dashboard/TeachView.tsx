@@ -34,14 +34,13 @@ export function TeachView({
       hint: delta === 0 ? "igual que el mes anterior" : `${delta > 0 ? "+" : ""}${delta} vs. mes anterior`,
       tone: delta > 0 ? "text-good" : delta < 0 ? "text-bad" : "text-muted",
     },
-    { k: "Clases publicadas", v: String(allLessons.length), hint: formatDuration(allLessons.reduce((s, l) => s + l.durationSeconds, 0)) || "sin videos aún" },
+    { k: "Clases creadas", v: String(allLessons.length), hint: formatDuration(allLessons.reduce((s, l) => s + l.durationSeconds, 0)) || "sin videos aún" },
   ];
 
   const steps = [
-    { t: `Publica tu ${NOUN.one}`, done: courses.length > 0, href: "/crear" },
-    { t: "Sube un trailer en video", done: courses.some((c) => c.trailerUrl), href: "/crear" },
+    { t: `Crea tu ${NOUN.one}`, done: courses.length > 0, href: `/programa/${courses[0].slug}/editar` },
     { t: "Agrega tus clases", done: allLessons.length > 0, href: `/programa/${courses[0].slug}/clases` },
-    { t: "Marca una clase como vista previa", done: allLessons.some((l) => l.isPreview), href: `/programa/${courses[0].slug}/clases` },
+    { t: "Revisa y publica", done: courses.some((c) => c.published), href: `/programa/${courses[0].slug}/publicar` },
     { t: "Consigue tu primer alumno", done: sales.length > 0, href: programPath(courses[0].slug) },
   ];
   const doneSteps = steps.filter((s) => s.done).length;
@@ -112,14 +111,15 @@ export function TeachView({
             const ls = lessons[c.id] ?? [];
             const cs = sales.filter((s) => s.courseId === c.id);
             const cNet = cs.reduce((s, x) => s + x.grossCents - x.commissionCents, 0);
-            const warn = !ls.length ? "Sin clases" : ls.some((l) => !l.videoPath) ? "Hay clases sin video" : !c.trailerUrl ? "Sin trailer en video" : null;
+            const warn = !ls.length ? "Sin clases" : ls.some((l) => !l.videoPath) ? "Hay clases sin video" : null;
             return (
               <li key={c.id} className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-3 sm:flex-row sm:items-center">
                 <div className="lz-thumb w-full shrink-0 sm:w-[168px]">
                   <Stage course={c} lockup={false} badges={false} />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-semibold">{c.title}</p>
+                  <span className={`mb-2 inline-block rounded-full px-2.5 py-1 text-[11px] font-semibold ${c.published ? "bg-good/10 text-good" : "bg-accent/10 text-accent"}`}>{c.published ? "Publicado" : "Borrador"}</span>
+                  <p className="break-words font-semibold">{c.title}</p>
                   <p className="mt-0.5 text-xs text-muted">
                     {c.category} · {formatPrice(c.priceCents, c.currency)}
                   </p>
@@ -140,11 +140,11 @@ export function TeachView({
                   </div>
                 </dl>
                 <div className="flex gap-2 sm:flex-col">
-                  <Link href={`/programa/${c.slug}/clases`} className="flex-1 rounded-lg bg-accent px-3 py-2 text-center text-sm font-bold text-accent-ink">
-                    Clases
+                  <Link href={`/programa/${c.slug}/editar`} className="flex-1 rounded-lg bg-accent px-3 py-2 text-center text-sm font-bold text-accent-ink">
+                    Gestionar
                   </Link>
-                  <Link href={programPath(c.slug)} className="flex-1 rounded-lg border border-line px-3 py-2 text-center text-sm font-semibold hover:border-fg/30">
-                    Ver
+                  <Link href={`/programa/${c.slug}/publicar`} className="flex-1 rounded-lg border border-line px-3 py-2 text-center text-sm font-semibold hover:border-fg/30">
+                    Publicación
                   </Link>
                 </div>
               </li>
@@ -177,9 +177,9 @@ export function TeachView({
 
 function TeachInvite() {
   const steps = [
-    { t: "Publica tu programa", d: "Título, precio y un trailer corto." },
+    { t: "Crea tu borrador", d: "Título, precio y una descripción clara." },
     { t: "Sube tus clases", d: "Videos privados que solo ven tus alumnos." },
-    { t: "Lernze te muestra", d: "Tu trailer aparece en el Discover." },
+    { t: "Revisa y publica", d: "Cuando esté listo, aparece en el Discover." },
   ];
   return (
     <section className="lz-news mt-6 rounded-2xl border border-line p-6 sm:p-8">

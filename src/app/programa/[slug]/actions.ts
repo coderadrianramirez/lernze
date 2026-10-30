@@ -22,7 +22,7 @@ export async function enrollAction(formData: FormData) {
   const slug = String(formData.get("slug") ?? "");
   const origin = parseOrigin(String(formData.get("origin") ?? ""));
   const course = await getCourseBySlug(slug);
-  if (!course) redirect("/");
+  if (!course || !course.published) redirect("/");
 
   const user = await getCurrentUser();
   if (!user) redirect(`/registro?next=${encodeURIComponent(`${programPath(course.slug)}?src=${origin}`)}`);

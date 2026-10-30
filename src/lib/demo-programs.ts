@@ -5,7 +5,7 @@ import type { Course } from "./types";
  * (scripts/make-seed-sql.mjs) y los videos de prueba (scripts/render-trailers.mjs).
  * Personas, cifras y testimonios son inventados.
  */
-type Seed = Omit<Course, "id" | "demo" | "trailerUrl" | "trailerSeconds" | "currency">;
+type Seed = Omit<Course, "id" | "demo" | "trailerUrl" | "trailerSeconds" | "currency" | "published">;
 
 const SEEDS: Seed[] = [
   {
@@ -137,4 +137,5 @@ export const DEMO_PROGRAMS: Course[] = SEEDS.map((s) => ({
   trailerUrl: null,
   trailerSeconds: DEMO_TRAILER_SECONDS,
   demo: true,
+  published: true,
 }));

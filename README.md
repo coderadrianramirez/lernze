@@ -38,6 +38,19 @@ El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0007 aplic
 - **Modo demo:** sin variables de Supabase los datos viven en memoria (`src/lib/data-demo.ts`) y no hay cuentas. No hay cobros reales en ningún modo.
 - **Esquema:** `supabase/migrations/` (perfiles, programas, inscripciones con RLS y contador de miembros). Con las variables puestas, `src/lib/data.ts` usa la base real.
 
+## Borradores, edición y publicación
+
+- Un programa nuevo se guarda como borrador privado. En Mi cuenta → Enseñar → Gestionar, el creador recorre Información → Clases → Publicación.
+- Puede editar título, descripción, nombre público, categoría, precio y trailer. Cambiar el título conserva el enlace y la ilustración.
+- Para publicar: descripción de al menos 20 caracteres, una clase como mínimo y videos subidos para todas las clases. El trailer propio es opcional: puede usar la animación.
+- Retirar del catálogo impide nuevas inscripciones y oculta las vistas previas públicas; los alumnos existentes conservan sus clases y progreso. Se puede volver a publicar. Las clases de un programa publicado deben tener video y no se puede borrar la última.
+- **Activación pendiente:** ejecutar manualmente `supabase/migrations/0008_program_publication.sql` en Supabase. El agente no la ejecuta en producción. La migración no retira ni cambia los programas existentes. Hasta aplicarla, la interfaz permite preparar y editar borradores, pero bloquea publicar o retirar para proteger el acceso de alumnos.
+- Las inscripciones y los ingresos siguen siendo simulados. No se implementaron cobros ni funciones de comunidad en este bloque.
+
+### Pruebas
+
+`npm run test:publication` aplica todas las migraciones a PostgreSQL efímero con PGlite y comprueba borradores privados, propiedad, videos, publicación, retirada, progreso y acceso de alumnos. No lee `.env.local` ni se conecta a Supabase. Después: `npm run lint`, `npx tsc --noEmit` y `npm run build`.
+
 ## Vocabulario
 
 La interfaz llama **programa** a lo que vende un creador y **clases** a sus lecciones. La palabra vive en `src/lib/copy.ts`; el código y la base de datos siguen usando `course`. La ruta pública es `/programa/[slug]`.

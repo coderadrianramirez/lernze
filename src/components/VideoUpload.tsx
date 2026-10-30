@@ -16,6 +16,7 @@ type Props = {
   hint?: string;
   value: UploadedVideo | null;
   onChange: (v: UploadedVideo | null) => void;
+  onUploadingChange?: (uploading: boolean) => void;
 };
 
 /** Lee la duración del video en el navegador, antes de subirlo. */
@@ -54,7 +55,7 @@ function put(url: string, file: File, onProgress: (p: number) => void): Promise<
 
 const fmt = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
-export function VideoUpload({ kind, courseId, maxSeconds, label = "Video", hint, value, onChange }: Props) {
+export function VideoUpload({ kind, courseId, maxSeconds, label = "Video", hint, value, onChange, onUploadingChange }: Props) {
   const input = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [error, setError] = useState("");
@@ -71,16 +72,23 @@ export function VideoUpload({ kind, courseId, maxSeconds, label = "Video", hint,
       setError("El video pesa más de 50 MB. Acórtalo o expórtalo en menor calidad.");
       return;
     }
+    setProgress(0);
+    onUploadingChange?.(true);
     const seconds = await readDuration(file);
     if (seconds > maxSeconds) {
+      setProgress(null);
+      onUploadingChange?.(false);
       setError(`El video dura ${fmt(seconds)}. El máximo es ${fmt(maxSeconds)}.`);
       return;
     }
 
     setProgress(0);
-    const ticket = await createUploadAction(kind, file.type, courseId);
+    let ticket;
+    try { ticket = await createUploadAction(kind, file.type, courseId); }
+    catch { setProgress(null); onUploadingChange?.(false); setError("No pudimos iniciar la subida. Inténtalo de nuevo."); return; }
     if (!ticket.ok) {
       setProgress(null);
+      onUploadingChange?.(false);
       setError(ticket.error);
       return;
     }
@@ -88,12 +96,14 @@ export function VideoUpload({ kind, courseId, maxSeconds, label = "Video", hint,
       await put(ticket.signedUrl, file, setProgress);
     } catch {
       setProgress(null);
+      onUploadingChange?.(false);
       setError("Se cortó la subida. Revisa tu conexión e inténtalo de nuevo.");
       return;
     }
     setProgress(null);
     if (preview) URL.revokeObjectURL(preview);
     setPreview(URL.createObjectURL(file));
+    onUploadingChange?.(false);
     onChange({ path: ticket.path, url: ticket.publicUrl, seconds, name: file.name });
   }
 
@@ -133,10 +143,10 @@ export function VideoUpload({ kind, courseId, maxSeconds, label = "Video", hint,
               <p className="truncate text-sm font-semibold">{value.name}</p>
               <p className="text-xs text-muted">Subido · {fmt(value.seconds)}</p>
             </div>
-            <button type="button" onClick={() => input.current?.click()} className="cursor-pointer px-2 py-1 text-sm font-semibold text-accent">
+            <button type="button" disabled={uploading} onClick={() => input.current?.click()} className="cursor-pointer px-2 py-1 text-sm font-semibold text-accent">
               Cambiar
             </button>
-            <button type="button" onClick={clear} className="cursor-pointer px-2 py-1 text-sm text-muted hover:text-fg">
+            <button type="button" disabled={uploading} onClick={clear} className="cursor-pointer px-2 py-1 text-sm text-muted hover:text-fg">
               Quitar
             </button>
           </div>

@@ -21,9 +21,10 @@ type CourseRow = {
   art: unknown;
   scenes: string[] | null;
   demo: boolean;
+  published: boolean;
 };
 
-function toCourse(row: CourseRow): Course {
+export function toCourse(row: CourseRow): Course {
   return {
     id: row.id,
     slug: row.slug,
@@ -41,6 +42,7 @@ function toCourse(row: CourseRow): Course {
     art: sanitizeArt(row.art, defaultArt(row.title, row.category, row.slug)),
     scenes: row.scenes && row.scenes.length ? row.scenes : defaultScenes(row.title, row.description, row.creator_name, formatPrice(row.price_cents, row.currency)),
     demo: row.demo,
+    published: row.published,
   };
 }
 
@@ -72,6 +74,7 @@ export async function createCourse(input: NewCourseInput, userId: string): Promi
       .from("courses")
       .insert({
         slug,
+        published: false,
         title: input.title,
         description: input.description,
         creator_id: userId,

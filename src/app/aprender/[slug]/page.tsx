@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { NoTabBar } from "@/components/MobileTabBar";
+import { getAccessibleProgram } from "@/lib/program-management";
 import { getCurrentUser } from "@/lib/auth";
 import { NOUN, programPath } from "@/lib/copy";
 import { getCourseBySlug } from "@/lib/data";
@@ -43,7 +44,7 @@ async function Classroom({
 }) {
   const { slug } = await params;
   const sp = await searchParams;
-  const [course, user] = await Promise.all([getCourseBySlug(slug), getCurrentUser()]);
+  const [course, user] = await Promise.all([getAccessibleProgram(slug), getCurrentUser()]);
   if (!course) notFound();
 
   const signedIn = Boolean(user && !user.demo);
