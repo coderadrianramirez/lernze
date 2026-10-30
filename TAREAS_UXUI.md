@@ -77,7 +77,7 @@
 - [x] Configuración separada del dashboard, accesible desde el desplegable.
 - [x] Foto propia o inicial, nombre público sincronizado en los programas, temas del feed, correo y contraseña.
 - [x] Pruebas locales de permisos, acciones de cuenta y navegador (escritorio y 375 px), sin modificar producción.
-- [ ] Ejecutar manualmente migración 0009 y luego 0010 en Supabase para activar los permisos y columnas nuevos.
+- [x] Migraciones 0009 y 0010 aplicadas en Supabase el 2026-10-30 con autorización expresa: activación verificada y datos existentes conservados.
 - [ ] Verificar entregas de correos de confirmación en el dominio publicado con una cuenta de prueba autorizada; no se enviaron mensajes reales.
 
 No se agregaron notificaciones, pagos ni eliminación de cuenta en Configuración. No hay reintento automático si falla la limpieza de archivos de Storage.

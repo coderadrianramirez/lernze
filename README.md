@@ -13,7 +13,7 @@ npm run dev
 
 ## Conectar Supabase
 
-El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0008 aplicadas, y `.env.local` apunta a él. Para otro entorno, estos son los pasos:
+El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0010 aplicadas, y `.env.local` apunta a él. Para otro entorno, estos son los pasos:
 
 1. En supabase.com crea un proyecto (el plan gratuito basta) y espera a que termine de crearse.
 2. **SQL Editor**: ejecuta en orden los archivos de `supabase/migrations/`.
@@ -54,7 +54,7 @@ El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0008 aplic
 - Eliminar programa pide confirmación explícita y advierte que los alumnos perderán acceso. Elimina clases, inscripciones y progreso por cascada, y después limpia los archivos propios sin referencias. Retirar del catálogo sigue conservando el acceso de alumnos. Los enlaces externos no se eliminan del proveedor original.
 - El menú ofrece Mi cuenta → Configuración → Crear programa. Se quitó el bloque Cuenta del dashboard; los enlaces legales permanecen en el footer, visible también en Configuración móvil.
 - Configuración (/configuracion): subir/quitar foto, nombre público en todos los programas y búsqueda, temas del feed, cambio de correo con confirmación de Supabase y cambio de contraseña con verificación. No se modificaron correos ni contraseñas reales durante las pruebas.
-- **Pendientes de ejecución manual en producción:** 0009_content_control_and_covers.sql y después 0010_account_settings.sql. No se han aplicado. Hasta activarlas, la web permite los flujos existentes y deshabilita imágenes de portada, personalización de clases, borrado de programas y edición del perfil que requieran esos permisos. Correo y contraseña usan Supabase Auth sin cambios de esquema.
+- **Activadas el 2026-10-30 con autorización del usuario:** 0009_content_control_and_covers.sql y 0010_account_settings.sql, ejecutadas juntas en una transacción en el proyecto Lernze. Se comprobaron columnas, buckets, tres triggers, siete políticas y permisos. Los 18 programas existentes, las clases y los perfiles conservaron sus datos (comparación de huellas antes/después). Foto y nombre se verificaron habilitados en la web publicada. Correo y contraseña usan Supabase Auth sin cambios de esquema.
 - Las fotos y portadas son públicas; los videos de clases conservan sus permisos privados. Los archivos usan nombres únicos y las políticas impiden usar imágenes ajenas o borrar imágenes todavía referenciadas.
 - Si falla la limpieza de Storage después de guardar/eliminar, se registra el error en el servidor. No hay cola de reintentos de archivos huérfanos. Al cerrar la pestaña sin usar Cancelar, una subida sin guardar puede quedar sin referencia.
 
