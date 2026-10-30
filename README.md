@@ -13,7 +13,7 @@ npm run dev
 
 ## Conectar Supabase
 
-El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0010 aplicadas, y `.env.local` apunta a él. Para otro entorno, estos son los pasos:
+El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0011 aplicadas, y `.env.local` apunta a él. Para otro entorno, estos son los pasos:
 
 1. En supabase.com crea un proyecto (el plan gratuito basta) y espera a que termine de crearse.
 2. **SQL Editor**: ejecuta en orden los archivos de `supabase/migrations/`.
@@ -53,7 +53,7 @@ El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0010 aplic
 - Cancelar creación no crea un programa; cancelar una edición conserva lo guardado. Se limpian las subidas nuevas sin guardar. Cada clase permite reemplazar o quitar su video; un programa publicado mantiene las protecciones de contenido de 0008.
 - Eliminar programa pide confirmación explícita y advierte que los alumnos perderán acceso. Elimina clases, inscripciones y progreso por cascada, y después limpia los archivos propios sin referencias. Retirar del catálogo sigue conservando el acceso de alumnos. Los enlaces externos no se eliminan del proveedor original.
 - El menú ofrece Mi cuenta → Configuración → Crear programa. Se quitó el bloque Cuenta del dashboard; los enlaces legales permanecen en el footer, visible también en Configuración móvil.
-- Configuración (/configuracion): subir/quitar foto, nombre público en todos los programas y búsqueda, temas del feed, cambio de correo con confirmación de Supabase y cambio de contraseña con verificación. No se modificaron correos ni contraseñas reales durante las pruebas.
+- Configuración (/configuracion): subir/quitar foto, nombre público en todos los programas y búsqueda, intereses, cambio de correo con confirmación de Supabase y cambio de contraseña con verificación. No se modificaron correos ni contraseñas reales durante las pruebas.
 - **Activadas el 2026-10-30 con autorización del usuario:** 0009_content_control_and_covers.sql y 0010_account_settings.sql, ejecutadas juntas en una transacción en el proyecto Lernze. Se comprobaron columnas, buckets, tres triggers, siete políticas y permisos. Los 18 programas existentes, las clases y los perfiles conservaron sus datos (comparación de huellas antes/después). Foto y nombre se verificaron habilitados en la web publicada. Correo y contraseña usan Supabase Auth sin cambios de esquema.
 - Las fotos y portadas son públicas; los videos de clases conservan sus permisos privados. Los archivos usan nombres únicos y las políticas impiden usar imágenes ajenas o borrar imágenes todavía referenciadas.
 - Si falla la limpieza de Storage después de guardar/eliminar, se registra el error en el servidor. No hay cola de reintentos de archivos huérfanos. Al cerrar la pestaña sin usar Cancelar, una subida sin guardar puede quedar sin referencia.
@@ -104,3 +104,11 @@ Suscripción de agentes: $49 al mes, hasta 20 clips.
 4. Videos más largos: Supabase gratis limita a 50 MB por archivo; para clases largas, plan Pro o un servicio de video (Mux, Cloudflare Stream).
 5. Generación del trailer con IA.
 4. Textos legales definitivos y direcciones reales de redes sociales (`SOCIAL` en `src/components/Footer.tsx`).
+
+### Ajustes de acceso y prueba visual (2026-10-30)
+
+- Correo y contraseña se despliegan al pulsar su botón y permiten Cancelar. El login incluye «Olvidé mi contraseña», con enlace de recuperación PKCE y validación de sesión reciente de recuperación en el servidor. Abre el enlace en el mismo navegador.
+- 0011_account_password_status.sql aplicada con autorización: consulta únicamente si la cuenta propia tiene contraseña; no modifica credenciales ni contenido. Permite detectar también cuentas de Google con contraseña añadida.
+- Para cuentas externas, crear una contraseña requiere un enlace de correo verificado. No se cambiaron credenciales ni se enviaron correos reales durante las pruebas. La entrega real de emails depende de la configuración de Supabase/SMTP y las URL de redirección.
+- /vista-previa-portadas muestra tres imágenes generadas como ejemplos, con los títulos nativos de Lernze y recorte vertical. No reemplaza las portadas del catálogo publicado.
+- Intereses permite consultar los temas iniciales. Las recomendaciones conservan las señales de vistas existentes; combinar creadores, búsquedas y temas acumulados sigue pendiente.

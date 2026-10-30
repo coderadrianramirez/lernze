@@ -81,3 +81,15 @@
 - [ ] Verificar entregas de correos de confirmación en el dominio publicado con una cuenta de prueba autorizada; no se enviaron mensajes reales.
 
 No se agregaron notificaciones, pagos ni eliminación de cuenta en Configuración. No hay reintento automático si falla la limpieza de archivos de Storage.
+
+
+## Ajustes de configuración: intereses y correo
+
+- [x] Usar «Intereses» y «Ver tus intereses» en Configuración.
+- [x] Mostrar el campo de nuevo correo solo al pulsar «Cambiar correo», con foco inicial y Cancelar.
+- [ ] Evolucionar las recomendaciones para combinar intereses explícitos con señales de vistas, creadores y búsquedas. Actualmente existen intereses elegidos e inferencias desde vistas como alternativa; no hay un modelo combinado de todas esas señales.
+
+- [x] Formularios de correo y contraseña detrás de botones, con Cancelar.
+- [x] Recuperación de contraseña desde el login y creación con enlace verificado para cuentas externas.
+- [x] Migración 0011 aplicada con autorización; verificados permisos de consulta propia.
+- [x] Tres ejemplos de portadas fotográficas con título nativo en /vista-previa-portadas.
