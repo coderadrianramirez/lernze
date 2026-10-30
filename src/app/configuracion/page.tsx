@@ -38,11 +38,12 @@ async function Settings() {
   const user = await getCurrentUser();
   if (!user || user.demo) redirect("/entrar?next=/configuracion");
   const db = await createSessionClient();
-  const [profile, ready, interests, auth] = await Promise.all([
+  const [profile, ready, interests, auth, passwordStatus] = await Promise.all([
     db.from("profiles").select("*").eq("id", user.id).single(),
     db.rpc("account_settings_ready"),
     getUserInterests(user.id),
     db.auth.getUser(),
+    db.rpc("account_has_password"),
   ]);
   return (
     <SettingsForms
@@ -52,7 +53,9 @@ async function Settings() {
       interests={interests ?? []}
       pendingEmail={auth.data.user?.new_email ?? null}
       hasPassword={
-        !!auth.data.user?.identities?.some((i) => i.provider === "email")
+        !passwordStatus.error && typeof passwordStatus.data === "boolean"
+          ? passwordStatus.data
+          : null
       }
     />
   );

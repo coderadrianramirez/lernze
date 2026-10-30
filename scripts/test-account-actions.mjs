@@ -29,6 +29,7 @@ const user = {
   demo: false,
 };
 const db = {
+  rpc: async () => ({data: hasPassword, error:null}),
   auth: {
     getUser: async () => ({
       data: {
@@ -212,7 +213,7 @@ check(
       form({ password: "NuevaClave123!", confirmPassword: "NuevaClave123!" }),
     )
   ).error,
-  "Una cuenta externa necesita el código antes de añadir contraseña",
+  "Una cuenta externa necesita un enlace verificado antes de añadir contraseña",
 );
 check(
   (await actions.sendPasswordCodeAction()).notice,
@@ -228,13 +229,14 @@ check(
         nonce: "123456",
       }),
     )
-  ).saved,
-  "La cuenta externa envía el código a Supabase al crear contraseña",
+  ).error,
+  "La cuenta externa usa el enlace verificado para crear contraseña",
 );
 check(
-  calls.at(-1).attrs.nonce === "123456",
-  "El código no se omite en la llamada de autenticación",
+  !calls.some(c => typeof c === "object"),
+  "Un código aislado no permite crear una contraseña sin recuperación",
 );
+hasPassword = true;
 updateError = { code: "same_password" };
 check(
   (
@@ -243,6 +245,7 @@ check(
       form({
         password: "NuevaClave123!",
         confirmPassword: "NuevaClave123!",
+        currentPassword: "Anterior123!",
         nonce: "123456",
       }),
     )

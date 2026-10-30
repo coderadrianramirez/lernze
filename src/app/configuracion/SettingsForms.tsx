@@ -1,23 +1,15 @@
 "use client";
-import Link from "next/link";
-import {
-  startTransition,
-  useActionState,
-  useRef,
-  useState,
-  useEffect,
-} from "react";
+import { PasswordSettings } from "./PasswordSettings";
+import { EmailSettings } from "./EmailSettings";
+import { startTransition, useActionState, useRef, useState } from "react";
 import { Avatar } from "@/components/Avatar";
 import type { CurrentUser } from "@/lib/auth";
 import { avatarUrl } from "@/lib/profile";
 import { imageBlob } from "@/lib/browser-image";
 import {
-  changeEmailAction,
-  changePasswordAction,
   createPhotoUploadAction,
   discardPhotosAction,
   saveProfileAction,
-  sendPasswordCodeAction,
   type SettingsState,
 } from "./actions";
 
@@ -56,31 +48,16 @@ export function SettingsForms({
   ready: boolean;
   interests: string[];
   pendingEmail: string | null;
-  hasPassword: boolean;
+  hasPassword: boolean | null;
 }) {
   const [profile, saveProfile, profilePending] = useActionState(
     saveProfileAction,
     {},
   );
-  const [emailState, saveEmail, emailPending] = useActionState(
-    changeEmailAction,
-    {},
-  );
-  const [passwordState, savePassword, passwordPending] = useActionState(
-    changePasswordAction,
-    {},
-  );
   const [name, setName] = useState(user.name);
   const [photo, setPhoto] = useState(avatarPath);
-  const [email, setEmail] = useState("");
   const [uploading, setUploading] = useState(false);
   const [photoError, setPhotoError] = useState("");
-  const [codeState, setCodeState] = useState<SettingsState>({});
-  const [sending, setSending] = useState(false);
-  const passwordForm = useRef<HTMLFormElement>(null);
-  useEffect(() => {
-    if (passwordState.saved) passwordForm.current?.reset();
-  }, [passwordState]);
   const files = useRef<string[]>([]);
   const input = useRef<HTMLInputElement>(null);
   async function upload(file: File | undefined) {
@@ -228,163 +205,36 @@ export function SettingsForms({
         <Message state={profile} />
       </form>
       <section className={panel}>
-        <h2 className="font-display text-xl font-bold">Temas de tu feed</h2>
+        <h2 className="font-display text-xl font-bold">Intereses</h2>
         <p className="mt-2 text-sm text-muted">
           {interests.length
             ? interests.join(" · ")
-            : "Aún no elegiste tus temas."}
+            : "Explora programas para descubrir lo que te interesa."}
         </p>
-        <Link
-          href="/bienvenida?next=/configuracion"
-          className="mt-4 inline-block rounded-xl border border-line px-4 py-3 text-sm font-semibold"
-        >
-          Cambiar temas →
-        </Link>
-      </section>
-      <form
-        className={panel}
-        onSubmit={(e) => {
-          e.preventDefault();
-          const fd = new FormData(e.currentTarget);
-          startTransition(() => saveEmail(fd));
-        }}
-      >
-        <h2 className="font-display text-xl font-bold">Correo electrónico</h2>
-        <p className="mt-2 break-all text-sm text-muted">
-          Correo actual: <span className="text-fg">{user.email}</span>
-        </p>
-        {pendingEmail && (
-          <p className="mt-2 break-all text-xs text-accent">
-            Pendiente de confirmación: {pendingEmail}
-          </p>
-        )}
-        <label className="mt-5 block text-sm font-medium" htmlFor="new-email">
-          Nuevo correo
-          <input
-            type="email"
-            autoComplete="email"
-            id="new-email"
-            name="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            className={field}
-          />
-        </label>
-        <p className="mt-2 text-xs text-muted">
-          Te indicaremos cómo confirmar el cambio antes de usar el nuevo correo.
-        </p>
-        <button disabled={emailPending} className={button + " mt-5"}>
-          {emailPending ? "Solicitando…" : "Solicitar cambio de correo"}
-        </button>
-        <Message state={emailState} />
-      </form>
-      <form
-        ref={passwordForm}
-        className={panel}
-        onSubmit={(e) => {
-          e.preventDefault();
-          const form = e.currentTarget;
-          const fd = new FormData(form);
-          startTransition(async () => {
-            await savePassword(fd);
-          });
-        }}
-      >
-        <h2 className="font-display text-xl font-bold">
-          {hasPassword ? "Cambiar contraseña" : "Crear contraseña"}
-        </h2>
-        {!hasPassword && (
-          <p className="mt-2 text-sm text-muted">
-            Tu cuenta usa un acceso externo. Solicita un código por correo para
-            añadir una contraseña.
-          </p>
-        )}
-        {hasPassword && (
-          <label
-            className="mt-5 block text-sm font-medium"
-            htmlFor="current-password"
-          >
-            Contraseña actual
-            <input
-              id="current-password"
-              type="password"
-              name="currentPassword"
-              autoComplete="current-password"
-              required
-              className={field}
-            />
-          </label>
-        )}
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <label className="text-sm font-medium" htmlFor="new-password">
-            Nueva contraseña
-            <input
-              id="new-password"
-              type="password"
-              name="password"
-              autoComplete="new-password"
-              minLength={8}
-              maxLength={128}
-              required
-              className={field}
-            />
-          </label>
-          <label className="text-sm font-medium" htmlFor="confirm-password">
-            Repite la nueva contraseña
-            <input
-              id="confirm-password"
-              type="password"
-              name="confirmPassword"
-              autoComplete="new-password"
-              required
-              className={field}
-            />
-          </label>
-        </div>
-        <p className="mt-2 text-xs text-muted">Usa al menos 8 caracteres.</p>
-        <details
-          className="mt-4 rounded-xl border border-line p-3"
-          open={!hasPassword}
-        >
-          <summary className="cursor-pointer text-sm text-muted">
-            Verificación por correo {hasPassword ? "(si se solicita)" : ""}
+        <details className="mt-4">
+          <summary className="w-fit cursor-pointer rounded-xl border border-line px-4 py-3 text-sm font-semibold">
+            Ver tus intereses
           </summary>
-          <button
-            type="button"
-            disabled={sending || passwordPending}
-            onClick={() => {
-              setSending(true);
-              void sendPasswordCodeAction()
-                .then(setCodeState)
-                .finally(() => setSending(false));
-            }}
-            className="mt-3 cursor-pointer text-sm font-semibold text-accent"
-          >
-            {sending ? "Enviando…" : "Enviar código a mi correo"}
-          </button>
-          <label className="mt-3 block text-sm" htmlFor="password-code">
-            Código de verificación
-            <input
-              id="password-code"
-              name="nonce"
-              autoComplete="one-time-code"
-              inputMode="numeric"
-              maxLength={12}
-              className={field}
-            />
-          </label>
-          <Message state={codeState} />
+          <div className="mt-4 border-t border-line pt-4">
+            <p className="text-sm text-muted">
+              Estos son los temas que elegiste al comenzar. Tu actividad también
+              ayuda a descubrir programas relacionados con lo que has visto.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {interests.map((interest) => (
+                <span
+                  key={interest}
+                  className="rounded-full border border-line px-3 py-1.5 text-xs"
+                >
+                  {interest}
+                </span>
+              ))}
+            </div>
+          </div>
         </details>
-        <button disabled={passwordPending} className={button + " mt-5"}>
-          {passwordPending
-            ? "Guardando…"
-            : hasPassword
-              ? "Actualizar contraseña"
-              : "Crear contraseña"}
-        </button>
-        <Message state={passwordState} />
-      </form>
+      </section>
+      <EmailSettings email={user.email} pendingEmail={pendingEmail} />
+      <PasswordSettings hasPassword={hasPassword} email={user.email} />
     </div>
   );
 }

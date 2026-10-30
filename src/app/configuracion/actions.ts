@@ -184,22 +184,25 @@ export async function changePasswordAction(
       return { error: "Usa una contraseña de entre 8 y 128 caracteres." };
     if (password !== form.get("confirmPassword"))
       return { error: "Las contraseñas nuevas no coinciden." };
-    const auth = await db.auth.getUser();
-    const hasPassword = auth.data.user?.identities?.some(
-      (i) => i.provider === "email",
-    );
-    if (hasPassword) {
+    const passwordStatus = await db.rpc("account_has_password");
+    if (passwordStatus.error || typeof passwordStatus.data !== "boolean")
+      return {
+        error:
+          "No pudimos comprobar el acceso a tu cuenta. Inténtalo de nuevo.",
+      };
+    const hasPassword = passwordStatus.data;
+    if (!hasPassword)
+      return {
+        error: "Solicita un enlace por correo para crear tu contraseña.",
+      };
+    {
       if (!current) return { error: "Escribe tu contraseña actual." };
       const verified = await db.auth.signInWithPassword({
         email: user.email,
         password: current,
       });
       if (verified.error) return { error: "La contraseña actual no coincide." };
-    } else if (!nonce)
-      return {
-        error:
-          "Solicita el código por correo y escríbelo para crear tu contraseña.",
-      };
+    }
     const { error } = await db.auth.updateUser({
       password,
       ...(current ? { current_password: current } : {}),
