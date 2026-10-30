@@ -1,5 +1,6 @@
 import type { CSSProperties, ReactNode } from "react";
 import { coverImageUrl } from "@/lib/covers";
+import { catalogCover } from "@/lib/catalog-media";
 import { artSvg } from "@/lib/art";
 import type { Course } from "@/lib/types";
 
@@ -18,18 +19,42 @@ type Props = {
 };
 
 /** Portada ilustrada de un programa. Sin estado: se puede dibujar en el servidor. */
-export function Stage({ course, mode = "h", lockup = true, badges = true, playing = false, className = "", under, over }: Props) {
+export function Stage({
+  course,
+  mode = "h",
+  lockup = true,
+  badges = true,
+  playing = false,
+  className = "",
+  under,
+  over,
+}: Props) {
   const { art } = course;
+  const automatic = catalogCover(course);
+  const image = coverImageUrl(art.cover?.path) ?? automatic?.image;
   return (
     <div
       className={`lz-stage ${playing ? "lz-playing" : ""} ${className}`}
       style={{ "--glow": art.glow } as CSSProperties}
       data-id={course.id}
     >
-      <div className="lz-art" dangerouslySetInnerHTML={{ __html: artSvg(art, mode, course.id) }} />
-      {coverImageUrl(art.cover?.path) && (
+      <div
+        className="lz-art"
+        dangerouslySetInnerHTML={{ __html: artSvg(art, mode, course.id) }}
+      />
+      {image && (
         // eslint-disable-next-line @next/next/no-img-element -- imagen dinámica de Supabase, con encuadre del creador
-        <img src={coverImageUrl(art.cover?.path)} alt="" className="lz-cover-image" style={{ objectPosition: `${art.cover?.x ?? 50}% ${art.cover?.y ?? 50}%`, transform: `scale(${art.cover?.zoom ?? 1})` }} />
+        <img
+          src={image}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="lz-cover-image"
+          style={{
+            objectPosition: `${art.cover?.x ?? automatic?.x ?? 50}% ${art.cover?.y ?? automatic?.y ?? 50}%`,
+            transform: `scale(${art.cover?.zoom ?? 1})`,
+          }}
+        />
       )}
       {under}
       <div className="lz-sweep" />
@@ -45,8 +70,12 @@ export function Stage({ course, mode = "h", lockup = true, badges = true, playin
       )}
       {badges && (
         <div className="lz-badges">
-          <span className={`lz-b ${course.trailerSource === "ai" ? "ai" : "cr"}`}>
-            {course.trailerSource === "ai" ? "Trailer IA" : "Trailer del creador"}
+          <span
+            className={`lz-b ${course.trailerSource === "ai" ? "ai" : "cr"}`}
+          >
+            {course.trailerSource === "ai"
+              ? "Trailer IA"
+              : "Trailer del creador"}
           </span>
         </div>
       )}

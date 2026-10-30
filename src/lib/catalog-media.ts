@@ -1,0 +1,301 @@
+import type { Course } from "./types";
+
+/** Únicamente los 17 programas de prueba existentes al preparar estas imágenes.
+ * No se usa el título ni la categoría para asignar fotos a programas nuevos. */
+export const CATALOG_MEDIA = [
+  {
+    id: "b05969f0-fbb8-43ec-ae20-15ba45690f76",
+    slug: "abre-tu-negocio-online",
+    image: "/images/catalog-covers/abre-tu-negocio-online.webp",
+    video: "/videos/catalog-trailers/abre-tu-negocio-online.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Abre tu negocio online",
+      "Elige qué vender",
+      "Monta tu tienda online",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "07e7cd30-bba4-4b82-94cb-92b1ec8bd264",
+    slug: "ingles-para-la-entrevista-de-trabajo",
+    image: "/images/catalog-covers/ingles-para-la-entrevista-de-trabajo.webp",
+    video: "/videos/catalog-trailers/ingles-para-la-entrevista-de-trabajo.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Inglés para la entrevista de trabajo",
+      "Practica preguntas reales",
+      "Prepara tus respuestas en inglés",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "a5d0ce65-87cb-43f3-bc34-ff41051b8e19",
+    slug: "finanzas-personales-paso-a-paso",
+    image: "/images/catalog-covers/finanzas-personales-paso-a-paso.webp",
+    video: "/videos/catalog-trailers/finanzas-personales-paso-a-paso.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Finanzas personales paso a paso",
+      "Organiza tu dinero",
+      "Entiende el ahorro y la inversión",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "52cb3a59-5b46-4952-bfbc-881fac6ad40c",
+    slug: "dropshipping-latinoamerica",
+    image: "/images/catalog-covers/dropshipping-latinoamerica.webp",
+    video: "/videos/catalog-trailers/dropshipping-latinoamerica.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Dropshipping para Latinoamérica",
+      "Encuentra tu producto",
+      "Organiza tu tienda y tus envíos",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "ff17e995-b477-42c8-a00b-85325479fa1a",
+    slug: "freelance-desde-cero",
+    image: "/images/catalog-covers/freelance-desde-cero.webp",
+    video: "/videos/catalog-trailers/freelance-desde-cero.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Freelance desde cero",
+      "Define lo que ofreces",
+      "Prepara tu propuesta y tus precios",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "5bdb33c1-ea90-48b7-b458-56a673935f1a",
+    slug: "vende-en-amazon-fba",
+    image: "/images/catalog-covers/vende-en-amazon-fba.webp",
+    video: "/videos/catalog-trailers/vende-en-amazon-fba.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Vende en Amazon FBA",
+      "Aprende a elegir productos",
+      "Conoce la logística de tu tienda",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "d118e064-bde9-47c6-839c-5b06c69334cb",
+    slug: "tiktok-shop-con-ia",
+    image: "/images/catalog-covers/tiktok-shop-con-ia.webp",
+    video: "/videos/catalog-trailers/tiktok-shop-con-ia.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "TikTok Shop con IA",
+      "Crea videos para tus productos",
+      "Explora herramientas de IA",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "6d9312d9-4561-4e27-b42d-a519e1452ac1",
+    slug: "contenido-con-ia-para-tu-negocio",
+    image: "/images/catalog-covers/contenido-con-ia-para-tu-negocio.webp",
+    video: "/videos/catalog-trailers/contenido-con-ia-para-tu-negocio.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Contenido con IA para tu negocio",
+      "Prepara guiones con IA",
+      "Organiza tu calendario de contenido",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "625b6b70-9bbb-4764-9c7c-237e0bf76e09",
+    slug: "instagram-para-creadores",
+    image: "/images/catalog-covers/instagram-para-creadores.webp",
+    video: "/videos/catalog-trailers/instagram-para-creadores.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Instagram para creadores",
+      "Dale forma a tu contenido",
+      "Conecta con tu audiencia",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "c0bb8a51-1071-4501-a995-a591203abd56",
+    slug: "google-ads-para-pymes",
+    image: "/images/catalog-covers/google-ads-para-pymes.webp",
+    video: "/videos/catalog-trailers/google-ads-para-pymes.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Google Ads para pymes",
+      "Prepara tus primeras campañas",
+      "Aprende a medir los resultados",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "7da4da29-7c8c-4df8-a447-ba0eed839fb1",
+    slug: "ingles-para-cerrar-ventas",
+    image: "/images/catalog-covers/ingles-para-cerrar-ventas.webp",
+    video: "/videos/catalog-trailers/ingles-para-cerrar-ventas.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Inglés para cerrar ventas",
+      "Practica conversaciones de venta",
+      "Explica tu propuesta en inglés",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "88abd5a6-6550-4a48-8abc-3db95383cc5c",
+    slug: "portugues-de-negocios",
+    image: "/images/catalog-covers/portugues-de-negocios.webp",
+    video: "/videos/catalog-trailers/portugues-de-negocios.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Portugués de negocios",
+      "Conversa con tus clientes",
+      "Practica situaciones de negocios",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "0704dba5-682c-459f-ab8c-1a9e1acef921",
+    slug: "barberia-pro",
+    image: "/images/catalog-covers/barberia-pro.webp",
+    video: "/videos/catalog-trailers/barberia-pro.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Barbería pro",
+      "Aprende la técnica del degradado",
+      "Barba y atención al cliente",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "6edae43a-7ff8-4267-9a8c-7a2dda72cc9d",
+    slug: "unas-de-salon-desde-cero",
+    image: "/images/catalog-covers/unas-de-salon-desde-cero.webp",
+    video: "/videos/catalog-trailers/unas-de-salon-desde-cero.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Uñas de salón desde cero",
+      "Prepara tus primeras técnicas",
+      "Organiza tu servicio y tus precios",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "28eaea5f-2141-4b16-9b39-fad29953f20f",
+    slug: "maquillaje-profesional-desde-cero",
+    image: "/images/catalog-covers/maquillaje-profesional-desde-cero.webp",
+    video: "/videos/catalog-trailers/maquillaje-profesional-desde-cero.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Maquillaje profesional desde cero",
+      "Aprende a preparar la piel",
+      "Practica técnicas y acabados",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "0b1ba7e3-25db-42ba-8fac-93d8c45c6fa5",
+    slug: "crypto-para-principiantes",
+    image: "/images/catalog-covers/crypto-para-principiantes.webp",
+    video: "/videos/catalog-trailers/crypto-para-principiantes.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Cripto para principiantes",
+      "Entiende los conceptos básicos",
+      "Conoce los riesgos y la seguridad",
+      "Descubre el programa completo",
+    ],
+  },
+  {
+    id: "78d02fbc-67db-472a-86ae-7c76b13bbd87",
+    slug: "tu-primera-propiedad-de-inversion",
+    image: "/images/catalog-covers/tu-primera-propiedad-de-inversion.webp",
+    video: "/videos/catalog-trailers/tu-primera-propiedad-de-inversion.mp4",
+    sourceTrailerUrl: null,
+    seconds: 14,
+    x: 80,
+    y: 20,
+    captions: [
+      "Tu primera propiedad de inversión",
+      "Aprende a analizar una propiedad",
+      "Conoce opciones de financiamiento",
+      "Descubre el programa completo",
+    ],
+  },
+] as const;
+const byId = new Map<string, (typeof CATALOG_MEDIA)[number]>(
+  CATALOG_MEDIA.flatMap((item) => [
+    [item.id, item],
+    ["demo-" + item.slug, item],
+  ]),
+);
+
+export function catalogCover(course: Pick<Course, "id" | "art">) {
+  // Una portada propia, incluso una ilustración elegida explícitamente, tiene prioridad.
+  return course.art.cover ? undefined : byId.get(course.id);
+}
+
+export function catalogTrailer(
+  course: Pick<Course, "id" | "art" | "trailerUrl">,
+) {
+  const media = catalogCover(course);
+  if (!media) return undefined;
+  // El video original permanece en Supabase. Reemplazarlo desde el editor desactiva esta muestra.
+  return course.trailerUrl === media.sourceTrailerUrl ||
+    (course.id === "demo-" + media.slug && !course.trailerUrl)
+    ? media
+    : undefined;
+}

@@ -6,6 +6,7 @@ import { defaultArt } from "@/lib/art";
 import { COVER_TONES, withCover } from "@/lib/covers";
 import type { ArtConfig, Category, CoverConfig } from "@/lib/types";
 import type { MediaAsset } from "@/lib/media-management";
+import { catalogCover } from "@/lib/catalog-media";
 import { Stage } from "./Stage";
 
 const field =
@@ -27,6 +28,7 @@ export function CoverEditor({
   art,
   videoUrl,
   courseId,
+  automaticCoverId,
   value,
   onChange,
   onBusyChange,
@@ -39,6 +41,7 @@ export function CoverEditor({
   art?: ArtConfig;
   videoUrl?: string | null;
   courseId?: string;
+  automaticCoverId?: string;
   value: CoverConfig | null;
   onChange: (value: CoverConfig | null) => void;
   onBusyChange: (busy: boolean) => void;
@@ -50,7 +53,14 @@ export function CoverEditor({
   const input = useRef<HTMLInputElement>(null);
   const video = useRef<HTMLVideoElement>(null);
   const [mode, setMode] = useState<"illustration" | "image" | "video">(
-    value?.path ? "image" : "illustration",
+    value?.path ||
+      (automaticCoverId &&
+        catalogCover({
+          id: automaticCoverId,
+          art: { ...(art ?? defaultArt(title, category, id)), cover: value },
+        }))
+      ? "image"
+      : "illustration",
   );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -157,7 +167,7 @@ export function CoverEditor({
           >
             <Stage
               course={{
-                id: "cover" + id.replace(/:/g, ""),
+                id: automaticCoverId ?? "cover" + id.replace(/:/g, ""),
                 art: withCover(
                   art ?? defaultArt(title || "Tu contenido", category, id),
                   title || "Tu contenido",

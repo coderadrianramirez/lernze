@@ -354,6 +354,7 @@ export function CreateCourseForm({
         category={(values.category as Category) || undefined}
         art={course?.art}
         courseId={course?.id}
+        automaticCoverId={course?.id}
         value={cover}
         onChange={(value) => {
           setCover(value);
