@@ -11,6 +11,8 @@ type Props = {
   lockup?: boolean;
   badges?: boolean;
   playing?: boolean;
+  /** Video sin capas de portada, incluso al pausar sus controles. */
+  cleanVideo?: boolean;
   className?: string;
   /** Capa bajo la luz y el título: el video del trailer. */
   under?: ReactNode;
@@ -25,6 +27,7 @@ export function Stage({
   lockup = true,
   badges = true,
   playing = false,
+  cleanVideo = false,
   className = "",
   under,
   over,
@@ -34,7 +37,7 @@ export function Stage({
   const image = coverImageUrl(art.cover?.path) ?? automatic?.image;
   return (
     <div
-      className={`lz-stage ${playing ? "lz-playing" : ""} ${className}`}
+      className={`lz-stage ${playing ? "lz-playing" : ""} ${cleanVideo ? "lz-video-stage" : ""} ${className}`}
       style={{ "--glow": art.glow } as CSSProperties}
       data-id={course.id}
     >

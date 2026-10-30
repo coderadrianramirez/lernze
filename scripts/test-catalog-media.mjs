@@ -64,7 +64,6 @@ for (const media of CATALOG_MEDIA) {
   );
   assert.ok(video.length < 2 * 1024 * 1024);
   assert.equal(media.seconds, 14);
-  assert.equal(media.captions.length, 4);
   total += image.length + video.length;
 }
 console.log(

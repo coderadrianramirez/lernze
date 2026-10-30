@@ -12,12 +12,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Abre tu negocio online",
-      "Elige qué vender",
-      "Monta tu tienda online",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "07e7cd30-bba4-4b82-94cb-92b1ec8bd264",
@@ -28,12 +22,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Inglés para la entrevista de trabajo",
-      "Practica preguntas reales",
-      "Prepara tus respuestas en inglés",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "a5d0ce65-87cb-43f3-bc34-ff41051b8e19",
@@ -44,12 +32,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Finanzas personales paso a paso",
-      "Organiza tu dinero",
-      "Entiende el ahorro y la inversión",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "52cb3a59-5b46-4952-bfbc-881fac6ad40c",
@@ -60,12 +42,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Dropshipping para Latinoamérica",
-      "Encuentra tu producto",
-      "Organiza tu tienda y tus envíos",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "ff17e995-b477-42c8-a00b-85325479fa1a",
@@ -76,12 +52,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Freelance desde cero",
-      "Define lo que ofreces",
-      "Prepara tu propuesta y tus precios",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "5bdb33c1-ea90-48b7-b458-56a673935f1a",
@@ -92,12 +62,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Vende en Amazon FBA",
-      "Aprende a elegir productos",
-      "Conoce la logística de tu tienda",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "d118e064-bde9-47c6-839c-5b06c69334cb",
@@ -108,12 +72,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "TikTok Shop con IA",
-      "Crea videos para tus productos",
-      "Explora herramientas de IA",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "6d9312d9-4561-4e27-b42d-a519e1452ac1",
@@ -124,12 +82,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Contenido con IA para tu negocio",
-      "Prepara guiones con IA",
-      "Organiza tu calendario de contenido",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "625b6b70-9bbb-4764-9c7c-237e0bf76e09",
@@ -140,12 +92,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Instagram para creadores",
-      "Dale forma a tu contenido",
-      "Conecta con tu audiencia",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "c0bb8a51-1071-4501-a995-a591203abd56",
@@ -156,12 +102,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Google Ads para pymes",
-      "Prepara tus primeras campañas",
-      "Aprende a medir los resultados",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "7da4da29-7c8c-4df8-a447-ba0eed839fb1",
@@ -172,12 +112,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Inglés para cerrar ventas",
-      "Practica conversaciones de venta",
-      "Explica tu propuesta en inglés",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "88abd5a6-6550-4a48-8abc-3db95383cc5c",
@@ -188,12 +122,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Portugués de negocios",
-      "Conversa con tus clientes",
-      "Practica situaciones de negocios",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "0704dba5-682c-459f-ab8c-1a9e1acef921",
@@ -204,12 +132,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Barbería pro",
-      "Aprende la técnica del degradado",
-      "Barba y atención al cliente",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "6edae43a-7ff8-4267-9a8c-7a2dda72cc9d",
@@ -220,12 +142,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Uñas de salón desde cero",
-      "Prepara tus primeras técnicas",
-      "Organiza tu servicio y tus precios",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "28eaea5f-2141-4b16-9b39-fad29953f20f",
@@ -236,12 +152,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Maquillaje profesional desde cero",
-      "Aprende a preparar la piel",
-      "Practica técnicas y acabados",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "0b1ba7e3-25db-42ba-8fac-93d8c45c6fa5",
@@ -252,12 +162,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Cripto para principiantes",
-      "Entiende los conceptos básicos",
-      "Conoce los riesgos y la seguridad",
-      "Descubre el programa completo",
-    ],
   },
   {
     id: "78d02fbc-67db-472a-86ae-7c76b13bbd87",
@@ -268,12 +172,6 @@ export const CATALOG_MEDIA = [
     seconds: 14,
     x: 80,
     y: 20,
-    captions: [
-      "Tu primera propiedad de inversión",
-      "Aprende a analizar una propiedad",
-      "Conoce opciones de financiamiento",
-      "Descubre el programa completo",
-    ],
   },
 ] as const;
 const byId = new Map<string, (typeof CATALOG_MEDIA)[number]>(

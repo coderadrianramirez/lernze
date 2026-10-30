@@ -1078,8 +1078,12 @@ button.lz-top-tile,
 
 /* Las capas de marca no bloquean los controles nativos del video. */
 .lz-stage > .lz-shade, .lz-stage > .lz-lockup, .lz-stage > .lz-badges, .lz-stage > .lz-bar { pointer-events: none; }
-/* Al pausar una muestra se conserva el fotograma y su frase, sin duplicar el título. */
-.lz-paused-trailer .lz-video { opacity: 1; }
-.lz-paused-trailer .lz-lockup { opacity: 0; }
-
-.lz-catalog-player .lz-caps { padding-bottom: max(64px, 11%); }
+/* El archivo de video conserva su imagen y sus controles, sin capas de marca. */
+.lz-video-stage .lz-video { opacity: 1; }
+.lz-video-stage::after,
+.lz-video-stage > .lz-art,
+.lz-video-stage > .lz-cover-image,
+.lz-video-stage > .lz-sweep,
+.lz-video-stage > .lz-shade,
+.lz-video-stage > .lz-lockup,
+.lz-video-stage > .lz-badges { display: none; }

@@ -98,5 +98,5 @@ No se agregaron notificaciones, pagos ni eliminación de cuenta en Configuració
 
 - [x] Imagen propia para cada uno de los 17 programas publicados, con el instructor mirando a cámara.
 - [x] Inicio, categorías, búsqueda, tarjetas y páginas de programa comparten las portadas nativas.
-- [x] 17 clips MP4 de 14 segundos con movimiento suave y frases sincronizadas en la web. Sin voz ni animación facial.
+- [x] 17 clips MP4 de 14 segundos con movimiento suave. Reproducción limpia, sin frases ni efectos superpuestos. Sin voz ni animación facial.
 - [x] Las portadas y trailers nuevos del creador tienen prioridad; no se modificaron registros de Supabase.

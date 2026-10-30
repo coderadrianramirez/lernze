@@ -76,23 +76,15 @@ export function StageLive({
   onScene,
 }: Props) {
   const generated = catalogTrailer(course);
-  const playbackCourse: Course = generated
-    ? {
-        ...course,
-        trailerUrl: generated.video,
-        trailerSeconds: generated.seconds,
-        scenes: [...generated.captions],
-      }
-    : course;
+  const trailerUrl = generated?.video ?? course.trailerUrl;
   const videoRef = useRef<HTMLVideoElement>(null);
-  const barRef = useRef<HTMLElement>(null);
   const [videoError, setVideoError] = useState(false);
-  const hasVideo = Boolean(playbackCourse.trailerUrl) && !videoError;
+  const hasVideo = Boolean(trailerUrl) && !videoError;
   const [videoPlaying, setVideoPlaying] = useState(false);
   const [scene, setScene] = useState<number | null>(null);
   const playing = hasVideo ? videoPlaying : active;
-  const shownScene = active && (!hasVideo || generated) ? scene : null;
-  const n = playbackCourse.scenes.length || 1;
+  const shownScene = active && !hasVideo ? scene : null;
+  const n = course.scenes.length || 1;
 
   // Trailer en video.
   useEffect(() => {
@@ -143,17 +135,13 @@ export function StageLive({
       lockup={lockup}
       badges={badges}
       playing={playing}
-      className={
-        generated && controls
-          ? `lz-catalog-player${!playing && scene !== null ? " lz-paused-trailer" : ""}`
-          : ""
-      }
+      cleanVideo={hasVideo && (videoPlaying || controls)}
       under={
         hasVideo ? (
           <video
             ref={videoRef}
             className={`lz-video ${controls ? "ctl" : ""}`}
-            src={playbackCourse.trailerUrl ?? undefined}
+            src={trailerUrl ?? undefined}
             poster={generated?.image}
             style={
               generated
@@ -166,39 +154,24 @@ export function StageLive({
             preload={controls && active ? "auto" : "none"}
             controls={controls}
             aria-label={`Trailer de ${course.title}`}
-            onPlaying={() => {
-              setVideoPlaying(true);
-              if (generated) setScene(0);
-            }}
+            onPlaying={() => setVideoPlaying(true)}
             onPause={() => setVideoPlaying(false)}
             onEnded={() => setVideoPlaying(false)}
             onError={() => {
               setVideoError(true);
               setVideoPlaying(false);
             }}
-            onTimeUpdate={(e) => {
-              const v = e.currentTarget;
-              if (generated)
-                setScene(
-                  Math.min(
-                    n - 1,
-                    Math.floor(v.currentTime / (generated.seconds / n)),
-                  ),
-                );
-              if (barRef.current && v.duration)
-                barRef.current.style.width = `${(v.currentTime / v.duration) * 100}%`;
-            }}
           />
         ) : null
       }
       over={
-        <>
-          {(!hasVideo || generated) && !onScene && (
+        !hasVideo && <>
+          {!onScene && (
             <div className="lz-caps" aria-hidden="true">
               {shownScene !== null && (
                 <Scene
                   key={shownScene}
-                  course={playbackCourse}
+                  course={course}
                   i={shownScene}
                 />
               )}
@@ -206,9 +179,8 @@ export function StageLive({
           )}
           <div className="lz-bar" aria-hidden="true">
             <i
-              ref={barRef}
               style={
-                !hasVideo && active
+                active
                   ? { animation: `lzProg ${total}s linear infinite` }
                   : undefined
               }
