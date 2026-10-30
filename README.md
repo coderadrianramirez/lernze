@@ -13,7 +13,7 @@ npm run dev
 
 ## Conectar Supabase
 
-El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0007 aplicadas, y `.env.local` apunta a él. Para otro entorno, estos son los pasos:
+El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0008 aplicadas, y `.env.local` apunta a él. Para otro entorno, estos son los pasos:
 
 1. En supabase.com crea un proyecto (el plan gratuito basta) y espera a que termine de crearse.
 2. **SQL Editor**: ejecuta en orden los archivos de `supabase/migrations/`.
@@ -44,7 +44,7 @@ El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0007 aplic
 - Puede editar título, descripción, nombre público, categoría, precio y trailer. Cambiar el título conserva el enlace y la ilustración.
 - Para publicar: descripción de al menos 20 caracteres, una clase como mínimo y videos subidos para todas las clases. El trailer propio es opcional: puede usar la animación.
 - Retirar del catálogo impide nuevas inscripciones y oculta las vistas previas públicas; los alumnos existentes conservan sus clases y progreso. Se puede volver a publicar. Las clases de un programa publicado deben tener video y no se puede borrar la última.
-- **Activación pendiente:** ejecutar manualmente `supabase/migrations/0008_program_publication.sql` en Supabase. El agente no la ejecuta en producción. La migración no retira ni cambia los programas existentes. Hasta aplicarla, la interfaz permite preparar y editar borradores, pero bloquea publicar o retirar para proteger el acceso de alumnos.
+- **Activada el 2026-10-30:** `supabase/migrations/0008_program_publication.sql` aplicada en el proyecto Lernze con autorización del usuario. Publicar y retirar ya están disponibles. Se verificaron las funciones, políticas y triggers; los 17 programas conservaron su estado y sus precios. La migración admite el nombre histórico sin tilde de la política de catálogo.
 - Las inscripciones y los ingresos siguen siendo simulados. No se implementaron cobros ni funciones de comunidad en este bloque.
 
 ### Pruebas

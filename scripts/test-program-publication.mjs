@@ -4,7 +4,7 @@ import { readFile, readdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 // PostgreSQL local y efímero. Nunca lee .env ni se conecta a Supabase.
-export async function createTestDb() {
+export async function createTestDb({ legacyPolicyNames = false } = {}) {
   const db = new PGlite();
   await db.exec(`
     create role anon nologin;
@@ -26,6 +26,9 @@ export async function createTestDb() {
   for (const name of (await readdir(migrations))
     .filter((s) => s.endsWith(".sql"))
     .sort()) {
+    if (legacyPolicyNames && name.startsWith("0008_")) {
+      await db.exec('alter policy "cursos publicados son públicos" on public.courses rename to "cursos publicados son publicos"');
+    }
     await db.exec(await readFile(new URL(name, migrations), "utf8"));
   }
   await db.exec(`
@@ -49,8 +52,8 @@ export async function asUser(db, userId, sql, params = []) {
   });
 }
 
-async function run() {
-  const db = await createTestDb();
+async function run(legacyPolicyNames = false) {
+  const db = await createTestDb({ legacyPolicyNames });
   const owner = "11111111-1111-4111-8111-111111111111",
     student = "22222222-2222-4222-8222-222222222222",
     other = "33333333-3333-4333-8333-333333333333";
@@ -360,4 +363,9 @@ async function run() {
     await db.close();
   }
 }
-if (process.argv[1] === fileURLToPath(import.meta.url)) await run();
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  console.log("Políticas del repositorio:");
+  await run();
+  console.log("Políticas históricas de producción (nombre sin tilde):");
+  await run(true);
+}

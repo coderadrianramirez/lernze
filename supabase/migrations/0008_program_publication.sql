@@ -16,7 +16,9 @@ $$;
 revoke all on function public.has_course_access(uuid) from public;
 grant execute on function public.has_course_access(uuid) to anon, authenticated;
 
-drop policy "cursos publicados son públicos" on public.courses;
+-- La instalación inicial de producción usó el nombre sin tilde.
+drop policy if exists "cursos publicados son públicos" on public.courses;
+drop policy if exists "cursos publicados son publicos" on public.courses;
 create policy "catálogo y acceso adquirido" on public.courses
   for select using (published or creator_id = (select auth.uid()) or public.has_course_access(id));
 

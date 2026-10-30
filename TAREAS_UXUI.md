@@ -67,4 +67,4 @@
 - [x] Validar publicación y proteger contenido publicado desde la base.
 - [x] Retirar y volver a publicar conservando acceso de alumnos.
 - [x] Pruebas locales de migraciones y permisos sin modificar producción.
-- [ ] Aplicar manualmente la migración 0008 en Supabase para activar publicación y retirada.
+- [x] Migración 0008 aplicada en Supabase el 2026-10-30 con autorización del usuario: publicación y retirada activadas.
