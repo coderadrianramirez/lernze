@@ -2,6 +2,7 @@ import { isSupabaseConfigured } from "./supabase/config";
 import { createSessionClient } from "./supabase/server";
 import { sanitizeCover } from "./covers";
 import { cleanupUnusedMedia, type MediaAsset } from "./media-management";
+import type { PlaybackPosition } from "./playback";
 import type { CoverConfig, Lesson, LessonInput } from "./types";
 
 /**
@@ -194,3 +195,11 @@ export const formatDuration = (s: number) => {
 };
 
 export const clock = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+
+/** Posiciones privadas; compatible mientras se activa la migración 0012. */
+export async function lessonPlayback(userId: string, lessonId: string): Promise<PlaybackPosition | null> {
+  const db = await createSessionClient();
+  const { data, error } = await db.from("lesson_playback").select("position_seconds, updated_at, video_path").eq("user_id", userId).eq("lesson_id", lessonId).maybeSingle();
+  if (error || !data) return null;
+  return { seconds: data.position_seconds, updatedAt: data.updated_at, videoPath: data.video_path };
+}

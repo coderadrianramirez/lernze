@@ -15,6 +15,7 @@ import {
   getOwnCourseId,
   isEnrolled,
   lessonVideoUrl,
+  lessonPlayback,
   listLessons,
 } from "@/lib/lessons";
 import { LessonCover } from "@/components/LessonCover";
@@ -76,7 +77,10 @@ async function Classroom({
   const prev = navigable(idx - 1);
   const next = navigable(idx + 1);
   const href = (id: string) => `/aprender/${slug}?clase=${id}`;
-  const src = current?.videoPath ? await lessonVideoUrl(current.videoPath) : null;
+  const [src, playback] = await Promise.all([
+    current?.videoPath ? lessonVideoUrl(current.videoPath) : null,
+    current && hasAccess && user ? lessonPlayback(user.id, current.id) : null,
+  ]);
 
   const doneCount = lessons.filter((l) => completed.has(l.id)).length;
   const pct = lessons.length ? Math.round((doneCount / lessons.length) * 100) : 0;
@@ -123,6 +127,9 @@ async function Classroom({
                   slug={slug}
                   lessonId={current.id}
                   src={src}
+                  videoPath={current.videoPath}
+                  playback={playback}
+                  userId={hasAccess ? user?.id : undefined}
                   done={completed.has(current.id)}
                   canTrack={hasAccess}
                   nextHref={next ? href(next.id) : null}
