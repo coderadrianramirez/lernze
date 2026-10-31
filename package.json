@@ -12,7 +12,7 @@
     "test:account": "node scripts/test-account-actions.mjs",
     "test:recovery": "node scripts/test-password-recovery.mjs && node scripts/test-password-status.mjs",
     "test:catalog": "node scripts/test-catalog-media.mjs",
-    "test:playback": "node scripts/test-lesson-playback.mjs"
+    "test:playback": "node scripts/test-lesson-playback.mjs && node scripts/test-classroom-actions.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

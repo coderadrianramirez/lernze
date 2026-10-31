@@ -1,4 +1,6 @@
 -- Posición de reproducción privada. No cambia clases, vídeos ni clases completadas.
+begin;
+
 create table public.lesson_playback (
   user_id uuid not null references public.profiles(id) on delete cascade,
   lesson_id uuid not null references public.lessons(id) on delete cascade,
@@ -43,3 +45,5 @@ create trigger timestamp_lesson_playback before insert or update on public.lesso
   for each row execute function public.timestamp_lesson_playback();
 revoke all on public.lesson_playback from public, anon;
 grant select, insert, update, delete on public.lesson_playback to authenticated;
+
+commit;

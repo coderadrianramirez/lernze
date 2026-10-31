@@ -122,3 +122,11 @@ Suscripción de agentes: $49 al mes, hasta 20 clips.
 - Para regenerar los clips: `FFMPEG=/ruta/al/ejecutable node scripts/render-catalog-trailers.mjs`. El codificador es externo al proyecto; no se añadió dependencia de FFmpeg a la aplicación. `npm run test:catalog` comprueba los 34 archivos, reproducción progresiva y prioridad del contenido del creador.
 
 - Audio de trailers: botón accesible para activar/silenciar y deslizador de volumen en Inicio, tarjetas ampliadas, detalle y página del programa. Se sincroniza con los controles nativos y comienza silenciado. Los 17 clips actuales no tienen pista de audio.
+
+### Aula y subidas reanudables — 2026-10-31
+
+- El aula retoma el punto de reproducción de cada usuario. Mantiene una copia local separada por cuenta y sincroniza con la tabla privada lesson_playback cuando la migración 0012 está activada. Retomar no marca una clase como completada. Reemplazar el archivo invalida la posición anterior.
+- Si falla el vídeo, permite renovar el enlace temporal y reintentar conservando el punto. El servidor comprueba la inscripción, propiedad o vista previa pública antes de entregar otro enlace. Ver de nuevo reinicia el vídeo sin quitar la clase completada.
+- Las subidas usan TUS firmado con fragmentos de 6 MiB, reintentos, pausa, continuación y cancelación. La reanudación funciona mientras esta pestaña permanezca abierta. Se conserva el límite de 50 MiB por archivo y de 60 minutos por clase; no se cambió el plan de Storage.
+- Migración 0012 preparada y validada en PostgreSQL efímero, pendiente de autorización para producción. No modifica los vídeos ni el progreso de clases completadas.
+- Pruebas: npm run test:playback. La prueba real con archivos desde Chrome está pendiente de habilitar «Permitir acceso a URLs de archivo» para la extensión ChatGPT. El programa temporal «Prueba técnica del aula — 31 octubre» quedó como borrador, sin publicar.

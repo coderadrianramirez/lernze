@@ -1,3 +1,17 @@
+# Prioridades actuales — 2026-10-31
+
+1. **Completar la experiencia de ver y subir clases — en verificación.** Retomar, recuperar errores y subidas TUS implementados. Pendientes: autorizar 0012, habilitar acceso a archivos en la extensión y completar la prueba con otra cuenta.
+2. Perfiles públicos de creadores y seguimiento.
+3. Intereses y recomendaciones que evolucionen con el usuario.
+4. Comunidad básica y notificaciones.
+5. Confianza y gestión: reseñas, moderación y métricas.
+6. Preparación del lanzamiento: correos, soporte y documentos legales.
+7. Stripe, al final.
+
+Banco de ideas separado, todavía sin compromiso de implementación: módulos, recursos descargables, ficha ampliada, guardar programas, notas por minuto, proyectos, cuestionarios, certificados, liberación programada, calendario, gamificación y tutor con IA.
+
+---
+
 # Tareas UX/UI — Lernze
 
 > **Estado (2026-10-29):** las 12 tareas están completas. El detalle de lo construido está en la sección "Estado" del README.
