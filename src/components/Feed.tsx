@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { courseCreatorId, creatorPath } from "@/lib/creator-path";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { NOUN, memberCount, programPath } from "@/lib/copy";
 import { formatDuration, formatPrice } from "@/lib/pricing";
@@ -586,7 +587,7 @@ function ModalBody({
         </div>
         <div className="grid content-start gap-1.5 text-[13px] text-muted">
           <div>
-            Creador: <b className="text-fg">{course.creatorName}</b>
+            Creador: {courseCreatorId(course) ? <Link href={creatorPath(courseCreatorId(course)!)} className="font-bold text-fg underline decoration-line underline-offset-4 hover:text-accent">{course.creatorName} ↗</Link> : <b className="text-fg">{course.creatorName}</b>}
           </div>
           <div>
             Miembros: <b className="text-fg">{course.members.toLocaleString("es-US")}</b>

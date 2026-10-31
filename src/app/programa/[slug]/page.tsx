@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Avatar } from "@/components/Avatar";
+import { publicCreator } from "@/lib/creators";
+import { courseCreatorId, creatorPath } from "@/lib/creator-path";
 import { LessonCover } from "@/components/LessonCover";
 import { Suspense } from "react";
 import { getAccessibleProgram } from "@/lib/program-management";
@@ -62,11 +65,13 @@ async function CourseDetail({
   const [course, all, user] = await Promise.all([getAccessibleProgram(slug), listCourses(), getCurrentUser()]);
   if (!course) notFound();
 
+  const identity = courseCreatorId(course);
   const signedIn = Boolean(user && !user.demo);
-  const [lessons, enrolled, ownId] = await Promise.all([
+  const [lessons, enrolled, ownId, creatorResult] = await Promise.all([
     listLessons(course.id),
     signedIn ? isEnrolled(user!.id, course.id) : false,
     signedIn ? getOwnCourseId(slug, user!.id) : null,
+    identity ? publicCreator(identity) : null,
   ]);
   const isOwner = ownId === course.id;
   const hasAccess = enrolled || isOwner;
@@ -76,12 +81,8 @@ async function CourseDetail({
   const origin = parseOrigin(sp.src);
 
   const price = formatPrice(course.priceCents, course.currency);
-  const initials = course.creatorName
-    .replace(/^(Prof\.|Dr\.|Dra\.|Lic\.)\s*/i, "")
-    .split(" ")
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("");
+  const creator = creatorResult?.creator;
+  const creatorHref = identity && (creator || isOwner) ? creatorPath(identity) : null;
 
   const others = all.filter((c) => c.id !== course.id);
   const recommended = [
@@ -167,7 +168,7 @@ async function CourseDetail({
                   </span>
                 )}
                 <span>{memberCount(course.members)}</span>
-                <span>por <b className="text-fg">{course.creatorName}</b></span>
+                <span>por {creatorHref ? <Link href={creatorHref} className="font-bold text-fg hover:text-accent">{creator?.name ?? course.creatorName}</Link> : <b className="text-fg">{course.creatorName}</b>}</span>
               </div>
             </div>
           </div>
@@ -237,20 +238,15 @@ async function CourseDetail({
           <section className="mt-8">
             <h2 className="font-display text-xl font-bold">Tu creador</h2>
             <div className="mt-4 flex items-center gap-4 rounded-2xl border border-line bg-surface p-5">
-              <div
-                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full font-display text-xl font-extrabold text-ink"
-                style={{ background: course.art.glow }}
-                aria-hidden
-              >
-                {initials}
-              </div>
+              <Avatar name={creator?.name ?? course.creatorName} src={creator?.avatarUrl} className="h-16 w-16 text-xl" />
               <div className="min-w-0">
-                <p className="font-bold">{course.creatorName}</p>
+                <p className="font-bold">{creator?.name ?? course.creatorName}</p>
                 <p className="text-sm text-muted">
                   Creador de {course.title} · {course.category}
                 </p>
               </div>
             </div>
+            {creatorHref && <Link href={creatorHref} className="mt-3 inline-flex min-h-11 items-center text-sm font-bold text-accent hover:underline">Ver perfil y programas →</Link>}
           </section>
         </div>
 

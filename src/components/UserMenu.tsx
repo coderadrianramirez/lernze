@@ -73,6 +73,10 @@ export function UserMenu({ name, avatarUrl }: Props) {
             Mi cuenta
           </Link>
 
+          <Link href="/siguiendo" onClick={() => setOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-fg transition-colors hover:bg-surface hover:text-accent">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden><circle cx="9" cy="8" r="3" /><path d="M3 21v-3a6 6 0 0 1 12 0v3M17 7a3 3 0 0 1 0 6M19 21v-3a6 6 0 0 0-2-4" /></svg>
+            Creadores que sigues
+          </Link>
           <Link
             href="/configuracion"
             onClick={() => setOpen(false)}

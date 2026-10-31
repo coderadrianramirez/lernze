@@ -34,6 +34,7 @@ export type Course = {
   slug: string;
   title: string;
   description: string;
+  creatorId?: string;
   creatorName: string;
   category: Category;
   priceCents: number;

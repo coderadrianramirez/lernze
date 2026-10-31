@@ -130,3 +130,11 @@ Suscripción de agentes: $49 al mes, hasta 20 clips.
 - Las subidas usan TUS firmado con fragmentos de 6 MiB, reintentos, pausa, continuación y cancelación. La reanudación funciona mientras esta pestaña permanezca abierta. Se conserva el límite de 50 MiB por archivo y de 60 minutos por clase; no se cambió el plan de Storage.
 - Migración 0012 preparada y validada en PostgreSQL efímero, pendiente de autorización para producción. No modifica los vídeos ni el progreso de clases completadas.
 - Pruebas: npm run test:playback. La prueba real con archivos desde Chrome está pendiente de habilitar «Permitir acceso a URLs de archivo» para la extensión ChatGPT. El programa temporal «Prueba técnica del aula — 31 octubre» quedó como borrador, sin publicar.
+
+### Perfiles de creadores y seguimiento — 2026-10-31
+
+- Perfiles públicos en /creador/[id], con nombre y foto de Configuración, temas y programas publicados. Los borradores no aparecen; el propietario puede revisar su perfil antes de publicar. No se añadieron biografía ni redes.
+- Accesos desde programas, tarjetas ampliadas, buscador y Mi cuenta. /siguiendo reúne los creadores seguidos, con paginación y estado vacío. Seguir/dejar de seguir requiere sesión; no se permite seguirse a uno mismo.
+- Migración 0013 preparada y validada localmente, pendiente de autorización para producción. La lista de seguimiento es privada; el directorio solo devuelve nombre, foto y contadores públicos. No cambia registros del catálogo existente.
+- Los 17 programas históricos tienen creator_id vacío y no están marcados demo. Se muestran perfiles de ejemplo identificados, sin cuentas ni seguidores inventados. Las cuentas reales se vinculan por UUID; su perfil se registra al publicar su primer programa y permanece si retiran sus programas.
+- Pruebas: npm run test:creators (migración con programas sin propietario, RLS, búsqueda con tildes, conteos, acciones y errores). Recorrido de búsqueda → perfil → programa revisado en Chrome a 375 px y escritorio. El seguimiento real en producción queda pendiente de activar 0013 y publicar un programa real.

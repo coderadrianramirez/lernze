@@ -81,6 +81,10 @@ async function Account({ searchParams }: { searchParams: PageProps<"/dashboard">
         </nav>
       </header>
 
+      <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-semibold text-accent">
+        {created.length > 0 && <Link href={`/creador/${user.id}`} className="inline-flex min-h-11 items-center hover:underline">Ver mi perfil de creador ↗</Link>}
+        <Link href="/siguiendo" className="inline-flex min-h-11 items-center hover:underline">Creadores que sigues →</Link>
+      </div>
       {sp.eliminado === "1" && <p role="status" className="mt-5 rounded-xl border border-good/30 bg-good/10 p-4 text-sm text-good">Programa eliminado.</p>}
       {tab === "aprender" ? (
         <LearnView items={learn} recent={recent} />

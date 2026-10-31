@@ -8,6 +8,8 @@ import { NOUN } from "@/lib/copy";
 import { listCourses } from "@/lib/data";
 import { searchCourses } from "@/lib/search";
 import { CATEGORIES } from "@/lib/types";
+import { CreatorCard } from "@/components/CreatorCard";
+import { listPublicCreators } from "@/lib/creators";
 import { SearchField } from "./SearchField";
 
 export const metadata: Metadata = { title: "Buscar" };
@@ -25,7 +27,7 @@ export default function BuscarPage({ searchParams }: PageProps<"/buscar">) {
 async function Results({ searchParams }: { searchParams: PageProps<"/buscar">["searchParams"] }) {
   const sp = await searchParams;
   const q = typeof sp.q === "string" ? sp.q.trim().slice(0, 80) : "";
-  const all = await listCourses();
+  const [all, { creators }] = await Promise.all([listCourses(), listPublicCreators(q)]);
   const results = q ? searchCourses(all, q) : [];
   const counts = Object.fromEntries(CATEGORIES.map((c) => [c, all.filter((x) => x.category === c).length]));
   const popular = [...all].sort((a, b) => b.members - a.members).slice(0, 5);
@@ -60,6 +62,10 @@ async function Results({ searchParams }: { searchParams: PageProps<"/buscar">["s
       <h1 className="sr-only">Buscar</h1>
       <SearchField initial={q} />
 
+      {creators.length > 0 && <section className="mt-7" aria-labelledby="search-creators">
+        <h2 id="search-creators" className="font-display text-lg font-bold tracking-tight">{q ? "Creadores" : "Descubre creadores"}</h2>
+        <ul className="mt-3 grid gap-3 sm:grid-cols-2">{(q ? creators : creators.slice(0, 4)).map((creator) => <li key={creator.id} className="min-w-0"><CreatorCard creator={creator} /></li>)}</ul>
+      </section>}
       {!q && (
         <>
           {categories}
@@ -79,7 +85,7 @@ async function Results({ searchParams }: { searchParams: PageProps<"/buscar">["s
       {q && results.length > 0 && (
         <section className="mt-6" aria-live="polite">
           <p className="text-sm text-muted">
-            {results.length} {results.length === 1 ? "resultado" : "resultados"} para “{q}”
+            {results.length} {results.length === 1 ? "programa" : "programas"} para “{q}”
           </p>
           <ul className="mt-3 -mx-2 flex flex-col">
             {results.map((c) => (
@@ -91,7 +97,7 @@ async function Results({ searchParams }: { searchParams: PageProps<"/buscar">["s
         </section>
       )}
 
-      {q && results.length === 0 && (
+      {q && results.length === 0 && creators.length === 0 && (
         <div aria-live="polite">
           <div className="mt-8 rounded-2xl border border-line bg-surface p-6 text-center">
             <p className="font-semibold">Sin resultados para “{q}”</p>

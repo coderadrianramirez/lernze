@@ -116,3 +116,11 @@ No se agregaron notificaciones, pagos ni eliminación de cuenta en Configuració
 - [x] Las portadas y trailers nuevos del creador tienen prioridad; no se modificaron registros de Supabase.
 
 - [x] Control de audio de trailers: activar/silenciar, ajustar volumen y sincronizar con el reproductor nativo, también en móvil.
+
+### Perfiles de creadores y seguimiento — 2026-10-31
+
+- Perfiles públicos en /creador/[id], con nombre y foto de Configuración, temas y programas publicados. Los borradores no aparecen; el propietario puede revisar su perfil antes de publicar. No se añadieron biografía ni redes.
+- Accesos desde programas, tarjetas ampliadas, buscador y Mi cuenta. /siguiendo reúne los creadores seguidos, con paginación y estado vacío. Seguir/dejar de seguir requiere sesión; no se permite seguirse a uno mismo.
+- Migración 0013 preparada y validada localmente, pendiente de autorización para producción. La lista de seguimiento es privada; el directorio solo devuelve nombre, foto y contadores públicos. No cambia registros del catálogo existente.
+- Los 17 programas históricos tienen creator_id vacío y no están marcados demo. Se muestran perfiles de ejemplo identificados, sin cuentas ni seguidores inventados. Las cuentas reales se vinculan por UUID; su perfil se registra al publicar su primer programa y permanece si retiran sus programas.
+- Pruebas: npm run test:creators (migración con programas sin propietario, RLS, búsqueda con tildes, conteos, acciones y errores). Recorrido de búsqueda → perfil → programa revisado en Chrome a 375 px y escritorio. El seguimiento real en producción queda pendiente de activar 0013 y publicar un programa real.

@@ -60,7 +60,7 @@ export function SearchField({ initial }: { initial: string }) {
         enterKeyHint="search"
         autoComplete="off"
         placeholder="Programas, creadores o temas"
-        aria-label="Buscar programas"
+        aria-label="Buscar programas y creadores"
         className="h-13 w-full rounded-2xl border border-line bg-surface pr-12 pl-12 text-base text-fg placeholder:text-muted/60 focus:border-accent focus:outline-none [&::-webkit-search-cancel-button]:hidden"
       />
       {value && (
