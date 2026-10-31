@@ -1,12 +1,12 @@
 "use server";
 
 import { getCurrentUser } from "@/lib/auth";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { supabaseUrl, isSupabaseConfigured } from "@/lib/supabase/config";
 import { createSessionClient } from "@/lib/supabase/server";
 
 export type UploadKind = "trailer" | "lesson";
 export type UploadTicket =
-  | { ok: true; signedUrl: string; path: string; publicUrl: string | null }
+  | { ok: true; signedUrl: string; token: string; bucket: string; endpoint: string; path: string; publicUrl: string | null }
   | { ok: false; error: string };
 
 const TYPES: Record<string, string> = { "video/mp4": "mp4", "video/webm": "webm" };
@@ -42,5 +42,8 @@ export async function createUploadAction(kind: UploadKind, contentType: string, 
     return { ok: false, error: "No pudimos preparar la subida. Inténtalo de nuevo." };
   }
   const publicUrl = bucket === "trailers" ? supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl : null;
-  return { ok: true, signedUrl: data.signedUrl, path, publicUrl };
+  const endpoint = new URL(supabaseUrl);
+  if (endpoint.hostname.endsWith(".supabase.co")) endpoint.hostname = endpoint.hostname.replace(".supabase.co", ".storage.supabase.co");
+  endpoint.pathname = "/storage/v1/upload/resumable/sign";
+  return { ok: true, signedUrl: data.signedUrl, token: data.token, bucket, endpoint: endpoint.toString(), path, publicUrl };
 }

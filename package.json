@@ -11,14 +11,16 @@
     "test:content": "node scripts/test-content-control.mjs",
     "test:account": "node scripts/test-account-actions.mjs",
     "test:recovery": "node scripts/test-password-recovery.mjs && node scripts/test-password-status.mjs",
-    "test:catalog": "node scripts/test-catalog-media.mjs"
+    "test:catalog": "node scripts/test-catalog-media.mjs",
+    "test:playback": "node scripts/test-lesson-playback.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.118.0",
     "next": "16.4.3",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "tus-js-client": "^4.3.1"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.13",
