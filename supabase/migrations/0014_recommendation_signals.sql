@@ -34,7 +34,7 @@ begin
   );
   return true;
 end; $$;
-revoke all on function public.record_recommendation_signal(uuid,text) from public;
+revoke all on function public.record_recommendation_signal(uuid,text) from public, anon, authenticated;
 grant execute on function public.record_recommendation_signal(uuid,text) to authenticated;
 
 create function public.restore_recommendation(target_course uuid) returns boolean
@@ -44,6 +44,6 @@ begin
   delete from public.recommendation_signals where user_id=auth.uid() and course_id=target_course and kind='dismiss';
   return true;
 end; $$;
-revoke all on function public.restore_recommendation(uuid) from public;
+revoke all on function public.restore_recommendation(uuid) from public, anon, authenticated;
 grant execute on function public.restore_recommendation(uuid) to authenticated;
 commit;

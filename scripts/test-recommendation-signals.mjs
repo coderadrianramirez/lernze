@@ -6,6 +6,8 @@ const owner = "11111111-1111-4111-8111-111111111111",
   viewer = "22222222-2222-4222-8222-222222222222",
   other = "33333333-3333-4333-8333-333333333333";
 try {
+  // Supabase concede EXECUTE explícito por defecto a anon y authenticated.
+  await db.exec("alter default privileges in schema public grant execute on functions to anon, authenticated");
   await db.exec(
     await readFile(
       new URL(
@@ -49,6 +51,7 @@ try {
     [course.id],
   );
   await assert.rejects(record(null));
+  await assert.rejects(asUser(db, null, "select public.restore_recommendation($1)", [course.id]));
   assert.equal((await record(owner)).rows[0].saved, false);
   assert.equal((await record(viewer, "made-up")).rows[0].saved, false);
   assert.equal((await record(viewer)).rows[0].saved, true);

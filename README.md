@@ -13,7 +13,7 @@ npm run dev
 
 ## Conectar Supabase
 
-El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0011 aplicadas, y `.env.local` apunta a él. Para otro entorno, estos son los pasos:
+El proyecto `lernze` ya existe (us-east-1) con las migraciones 0001 a 0011 y 0014 aplicadas (0012 y 0013 pendientes), y `.env.local` apunta a él. Para otro entorno, estos son los pasos:
 
 1. En supabase.com crea un proyecto (el plan gratuito basta) y espera a que termine de crearse.
 2. **SQL Editor**: ejecuta en orden los archivos de `supabase/migrations/`.
@@ -147,8 +147,8 @@ Suscripción de agentes: $49 al mes, hasta 20 clips.
 - Programas propios, ya adquiridos, no publicados y ocultados no entran en recomendaciones. Búsqueda y filtros manuales siguen mostrando el catálogo público; Vistos recientemente conserva el historial. La categoría elegida por URL no modifica intereses persistidos.
 - /intereses explica temas iniciales, intereses inferidos y sus fuentes. Configuración y el inicio enlazan con «Ver tus intereses». El detalle del feed muestra el motivo individual. «No me interesa este programa» oculta la recomendación hasta 180 días y puede revertirse desde Intereses.
 - Los trailers cuentan tras ocho segundos de reproducción real, visible y sin salto de tiempo. No se cuenta el hero automático. Una búsqueda debe permanecer estable 1,5 segundos: solo se conservan coincidencias públicas, una por categoría y como máximo tres, nunca su texto. Una visita al perfil necesita seis segundos visibles. No se registra actividad durante render/precarga. Al volver a Inicio se actualizan los datos sin reordenar un vídeo durante su reproducción.
-- Migración 0014 preparada, independiente de 0012/0013, pendiente de autorización para Supabase. Señales privadas con RLS y escritura por RPC que valida sesión, programa público, propiedad y fecha del servidor. Repeticiones en seis horas no renuevan fecha; máximo 400 señales por cuenta y limpieza de registros de más de 180 días al registrar actividad. Sin activación se usan temas iniciales, visitas e inscripciones; seguir requiere también 0013. El botón de ocultar solo se ofrece con el esquema activado.
-- Pruebas: npm run test:recommendations verifica ranking, temas dentro de una categoría, recencia, deduplicación, exploración, catálogo grande, exclusiones, aislamiento entre cuentas, restauración y acciones sin texto de búsqueda. Comprobaciones de publicación, contenido, cuenta, recuperación, reproducción, creadores y medios conservadas. Las comprobaciones de escritorio y móvil se registran en la entrega; la activación y pruebas reales de las señales nuevas siguen pendientes del permiso de base.
+- Migración 0014 aplicada en Supabase el 2026-11-01 con autorización expresa, independiente de 0012/0013. Señales privadas con RLS y escritura por RPC que valida sesión, programa público, propiedad y fecha del servidor. Repeticiones en seis horas no renuevan fecha; máximo 400 señales por cuenta y limpieza de registros de más de 180 días al registrar actividad. Sin activación se usan temas iniciales, visitas e inscripciones; seguir requiere también 0013. El botón de ocultar solo se ofrece con el esquema activado.
+- Pruebas: npm run test:recommendations verifica ranking, temas dentro de una categoría, recencia, deduplicación, exploración, catálogo grande, exclusiones, aislamiento entre cuentas, restauración y acciones sin texto de búsqueda. Comprobaciones de publicación, contenido, cuenta, recuperación, reproducción, creadores y medios conservadas. Las comprobaciones de escritorio y móvil se registran en la entrega; la activación y pruebas reales de trailer, búsqueda, perfil y ocultar/restaurar se completaron con autorización.
 - Primera versión basada en reglas: los pesos son hipótesis de producto, no un modelo validado con usuarios reales. Los datos de ejemplo no permiten medir la relevancia real ni la calidad de aprendizaje. Con actividad real habrá que evaluar diversidad, programas descubiertos y avance, sin optimizar solo clics o tiempo de pantalla.
 
 - Corrección de navegación detectada en la prueba real: el detalle emergente cierra su diálogo al navegar y al ocultarse con Activity, para que no bloquee los clics de otras páginas. La vista de trailer dentro de ese detalle también aporta la señal cualificada.
@@ -157,4 +157,12 @@ Suscripción de agentes: $49 al mes, hasta 20 clips.
 
 ### Próximo paso de producto — 2026-11-01
 
-Feed vertical «Descubrir» propuesto para móvil y escritorio, antes de Comunidad. Primero se revisarán el diseño, la navegación y el formato del contenido; no se implementó todavía. Inicio conserva el catálogo. Los trailers actuales son horizontales y no se recortarán automáticamente para simular material vertical. El alcance y las fases están en TAREAS_UXUI.md. Las migraciones 0012, 0013 y 0014 conservan su estado pendiente.
+Feed vertical «Descubrir» propuesto para móvil y escritorio, antes de Comunidad. Primero se revisarán el diseño, la navegación y el formato del contenido; no se implementó todavía. Inicio conserva el catálogo. Los trailers actuales son horizontales y no se recortarán automáticamente para simular material vertical. El alcance y las fases están en TAREAS_UXUI.md. Las migraciones 0012 y 0013 siguen pendientes; 0014 fue activada posteriormente con autorización.
+
+### Activación de recomendaciones — 2026-11-01
+
+- 0014 ejecutada desde Chrome en Supabase de Lernze con autorización expresa. Tabla y ambas funciones verificadas. 0012 y 0013 no se aplicaron.
+- Se ajustó la revocación explícita de EXECUTE a los roles anon y authenticated antes de concederlo solo a authenticated: Supabase concede permisos explícitos por defecto a funciones nuevas. La función ya rechazaba operaciones sin auth.uid(); ahora tampoco admite la invocación anónima. El archivo 0014 incorpora esa corrección para instalaciones nuevas y su prueba reproduce los privilegios por defecto de Supabase. No se requiere volver a ejecutar 0014 en este proyecto.
+- Auditoría real: 12 comprobaciones de tabla privada, RLS, lectura propia, prohibición de escritura directa y ejecución anónima, funciones protegidas y migraciones pendientes. Todas aprobadas.
+- Chrome con sesión: trailer de Uñas de salón, búsqueda Google Ads, visita sostenida al perfil de ejemplo de Marisol Vega y ocultar/restaurar programa. Se verificó su persistencia y que el programa quedara restaurado. No se enviaron mensajes, no se hicieron compras ni se publicó contenido.
+- Las huellas de programas y perfiles coinciden antes y después; siguen existiendo 18 programas y 0 clases. Las señales son actividad de prueba del catálogo existente, no métricas de usuarios reales para calibrar el modelo.
