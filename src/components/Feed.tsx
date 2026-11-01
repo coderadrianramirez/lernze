@@ -143,7 +143,7 @@ export function Feed({ heroes, rows, controls, demo, personalize = false, reason
           <ModalBody
             key={modal.id}
             course={modal}
-            others={otherPrograms(rows, modal)}
+            others={otherPrograms(rows, modal, reasons)}
             personalize={personalize}
             reason={reasons?.[modal.id]}
             onSwitch={(c) => setModal(c)}
@@ -155,11 +155,11 @@ export function Feed({ heroes, rows, controls, demo, personalize = false, reason
   );
 }
 
-function otherPrograms(rows: FeedRow[], current: Course): Course[] {
+function otherPrograms(rows: FeedRow[], current: Course, allowed?: Record<string,string>): Course[] {
   const seen = new Map<string, Course>();
-  rows.forEach((r) => r.items.forEach((c) => c.id !== current.id && seen.set(c.id, c)));
+  rows.forEach((r) => r.items.forEach((c) => c.id !== current.id && (!allowed || allowed[c.id]) && seen.set(c.id, c)));
   return [...seen.values()]
-    .sort((a, b) => Number(b.category === current.category) - Number(a.category === current.category) || b.rating - a.rating)
+    .sort((a, b) => Number(b.category === current.category) - Number(a.category === current.category))
     .slice(0, 3);
 }
 

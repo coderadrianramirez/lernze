@@ -10,8 +10,10 @@ import { getAccessibleProgram } from "@/lib/program-management";
 import { Stage } from "@/components/Stage";
 import { StageLive } from "@/components/StageLive";
 import { NOUN, cap, memberCount, programPath } from "@/lib/copy";
+import { recommendationActivity } from "@/lib/recommendation-data";
+import { recommendPrograms } from "@/lib/recommendations";
 import { getCurrentUser } from "@/lib/auth";
-import { getCourseBySlug, listCourses } from "@/lib/data";
+import { getCourseBySlug, getUserInterests, listCourses } from "@/lib/data";
 import { clock, formatDuration, getOwnCourseId, isEnrolled, listLessons } from "@/lib/lessons";
 import { COMMISSION_BPS, formatPrice, parseOrigin } from "@/lib/pricing";
 import { enrollAction } from "./actions";
@@ -67,11 +69,12 @@ async function CourseDetail({
 
   const identity = courseCreatorId(course);
   const signedIn = Boolean(user && !user.demo);
-  const [lessons, enrolled, ownId, creatorResult] = await Promise.all([
+  const [lessons, enrolled, ownId, creatorResult, recommendationContext] = await Promise.all([
     listLessons(course.id),
     signedIn ? isEnrolled(user!.id, course.id) : false,
     signedIn ? getOwnCourseId(slug, user!.id) : null,
     identity ? publicCreator(identity) : null,
+    signedIn ? Promise.all([getUserInterests(user!.id), recommendationActivity(user!.id)]) : null,
   ]);
   const isOwner = ownId === course.id;
   const hasAccess = enrolled || isOwner;
@@ -84,11 +87,13 @@ async function CourseDetail({
   const creator = creatorResult?.creator;
   const creatorHref = identity && (creator || isOwner) ? creatorPath(identity) : null;
 
-  const others = all.filter((c) => c.id !== course.id);
-  const recommended = [
-    ...others.filter((c) => c.category === course.category),
-    ...others.filter((c) => c.category !== course.category).sort((a, b) => b.members - a.members),
-  ].slice(0, 6);
+  const contextActivity = recommendationContext?.[1] ?? {signals:[],following:[],enrolled:[]};
+  const recommended = recommendPrograms(all, {
+    ...contextActivity,
+    chosen: recommendationContext?.[0] ?? [],
+    userId: signedIn ? user!.id : undefined,
+    signals: [...contextActivity.signals, {courseId:course.id, kind:"view", at:new Date().toISOString()}],
+  }).ranked.filter(r => r.course.id !== course.id).slice(0,6).map(r => r.course);
 
   const ctaCls = `flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent font-bold text-accent-ink shadow-[0_10px_34px_-10px_var(--color-accent)] transition hover:brightness-110 active:scale-[0.98]`;
   const cta = (className: string) =>

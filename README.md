@@ -152,3 +152,5 @@ Suscripción de agentes: $49 al mes, hasta 20 clips.
 - Primera versión basada en reglas: los pesos son hipótesis de producto, no un modelo validado con usuarios reales. Los datos de ejemplo no permiten medir la relevancia real ni la calidad de aprendizaje. Con actividad real habrá que evaluar diversidad, programas descubiertos y avance, sin optimizar solo clics o tiempo de pantalla.
 
 - Corrección de navegación detectada en la prueba real: el detalle emergente cierra su diálogo al navegar y al ocultarse con Activity, para que no bloquee los clics de otras páginas. La vista de trailer dentro de ese detalle también aporta la señal cualificada.
+
+- Inicio y recomendaciones al pie del programa comparten el motor y las exclusiones; el detalle utiliza además el programa abierto como contexto. Los sugeridos del modal del inicio respetan el conjunto permitido.
