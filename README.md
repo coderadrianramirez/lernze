@@ -154,3 +154,7 @@ Suscripción de agentes: $49 al mes, hasta 20 clips.
 - Corrección de navegación detectada en la prueba real: el detalle emergente cierra su diálogo al navegar y al ocultarse con Activity, para que no bloquee los clics de otras páginas. La vista de trailer dentro de ese detalle también aporta la señal cualificada.
 
 - Inicio y recomendaciones al pie del programa comparten el motor y las exclusiones; el detalle utiliza además el programa abierto como contexto. Los sugeridos del modal del inicio respetan el conjunto permitido.
+
+### Próximo paso de producto — 2026-11-01
+
+Feed vertical «Descubrir» propuesto para móvil y escritorio, antes de Comunidad. Primero se revisarán el diseño, la navegación y el formato del contenido; no se implementó todavía. Inicio conserva el catálogo. Los trailers actuales son horizontales y no se recortarán automáticamente para simular material vertical. El alcance y las fases están en TAREAS_UXUI.md. Las migraciones 0012, 0013 y 0014 conservan su estado pendiente.

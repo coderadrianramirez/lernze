@@ -3,10 +3,11 @@
 1. **Completar la experiencia de ver y subir clases — en verificación.** Retomar, recuperar errores y subidas TUS implementados. Pendientes: autorizar 0012, habilitar acceso a archivos en la extensión y completar la prueba con otra cuenta.
 2. Perfiles públicos de creadores y seguimiento.
 3. **Intereses y recomendaciones adaptativas — implementados, en verificación.** Activar 0014 con autorización y comprobar señales reales; el seguimiento depende de 0013.
-4. Comunidad básica y notificaciones.
-5. Confianza y gestión: reseñas, moderación y métricas.
-6. Preparación del lanzamiento: correos, soporte y documentos legales.
-7. Stripe, al final.
+4. **Feed vertical «Descubrir» en móvil y escritorio — siguiente paso.** Definir y revisar la experiencia en ambos formatos antes de implementar.
+5. Comunidad básica y notificaciones.
+6. Confianza y gestión: reseñas, moderación y métricas.
+7. Preparación del lanzamiento: correos, soporte y documentos legales.
+8. Stripe, al final.
 
 Banco de ideas separado, todavía sin compromiso de implementación: módulos, recursos descargables, ficha ampliada, guardar programas, notas por minuto, proyectos, cuestionarios, certificados, liberación programada, calendario, gamificación y tutor con IA.
 
@@ -140,3 +141,18 @@ No se agregaron notificaciones, pagos ni eliminación de cuenta en Configuració
 - Corrección de navegación detectada en la prueba real: el detalle emergente cierra su diálogo al navegar y al ocultarse con Activity, para que no bloquee los clics de otras páginas. La vista de trailer dentro de ese detalle también aporta la señal cualificada.
 
 - Inicio y recomendaciones al pie del programa comparten el motor y las exclusiones; el detalle utiliza además el programa abierto como contexto. Los sugeridos del modal del inicio respetan el conjunto permitido.
+
+## Siguiente paso propuesto: feed vertical «Descubrir» — 2026-11-01
+
+Solicitud del usuario: añadir un feed vertical de contenido como diferencial móvil y definir primero cómo funciona también en escritorio. Esta sección registra la propuesta; todavía no hay implementación ni aprobación del diseño detallado.
+
+- Mantener Inicio como catálogo y sumar una sección compartida /descubrir. En móvil, proponer acceso desde la barra inferior manteniendo cuatro destinos: Inicio, Descubrir, Buscar y Cuenta. Ofertas conserva acceso desde Inicio. Revisar esta navegación con el usuario antes de cambiarla.
+- Móvil: un contenido por pantalla, deslizamiento vertical y ajuste al terminar el gesto. Respetar áreas seguras y controles táctiles. Separar la interfaz del creador y «Ver programa» de la imagen del vídeo; los subtítulos deben venir del contenido, según la preferencia actual del usuario. Mantener audio y pausa accesibles.
+- Escritorio: reproductor vertical centrado, ajustado a la altura disponible; panel lateral con creador, título, información del programa y CTA. Avance por rueda/trackpad, botones y teclado, evitando capturar teclas mientras se usan controles o campos. Conservar el catálogo para explorar y comparar programas.
+- Un solo vídeo activo; pausar el anterior al avanzar o dejar la pestaña, iniciar sin audio hasta que la persona lo active y cargar los siguientes con moderación. Conservar posición al visitar un perfil o programa y volver.
+- Primera validación con los trailers públicos existentes, el reproductor y el algoritmo actuales. Las muestras existentes son 16:9 y clips animados de fotografías: conservar su encuadre, sin estirar ni recortar rostros para simular 9:16. La versión final necesita material vertical real; prever una muestra de subida y encuadre vertical antes de extender la gestión de medios.
+- Diferencial a desarrollar después de validar el recorrido: microcontenidos educativos públicos del creador, vinculados a sus programas. Distinguir cada clip del programa que promociona; no convertir clases privadas en contenido público. El alta, edición, eliminación y cualquier migración necesaria deberán diseñarse y revisarse en ese bloque.
+- Reutilizar recomendaciones e intereses: reproducción visible e intencional, relevancia de tema/creador, diversidad y «No me interesa». El autoplay del feed requiere tratamiento explícito distinto del hero automático. Evaluar después señales de finalización, repetición y salto rápido; un salto aislado no debe borrar un interés. No optimizar únicamente por tiempo de pantalla.
+- Acciones iniciales propuestas: pausar/audio, abrir perfil, seguir cuando 0013 esté activa, compartir por decisión del usuario y abrir el programa. No presentar comentarios ni cifras de interacción ficticias como funciones reales.
+- Pendientes existentes: 0014 para señales persistidas nuevas, 0013 para seguimiento; no se consideran aplicadas por añadir esta prioridad. No ejecutar cambios de base sin autorización.
+- Orden: revisar diseño móvil + escritorio y navegación → validar formato del material → implementar recorrido con trailers públicos → probar con sesión y sin ella, regreso al feed, audio, teclado, 375 px y escritorio → diseñar microcontenidos si se confirma esa ampliación.
