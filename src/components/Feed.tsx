@@ -66,6 +66,12 @@ export function Feed({ heroes, rows, controls, demo, personalize = false, reason
     if (!modal && d.open) d.close();
   }, [modal]);
 
+  // Next conserva páginas ocultas con Activity: cerrar el diálogo libera la capa modal.
+  useEffect(() => {
+    const dialog = dlgRef.current;
+    return () => { if (dialog?.open) dialog.close(); };
+  }, []);
+
   function enter(el: HTMLElement, c: Course) {
     if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
     window.clearTimeout(timers.current.leave);
@@ -574,7 +580,7 @@ function ModalBody({
         <button className="lz-x" aria-label="Cerrar" onClick={onClose}>
           ✕
         </button>
-        <StageLive course={course} active={live} />
+        <StageLive course={course} active={live} trackInterest />
       </div>
       <div className="grid gap-[22px] px-5 pt-5 pb-6 sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] sm:px-6">
         <div>
@@ -589,6 +595,7 @@ function ModalBody({
           <div className="mt-4 flex flex-wrap gap-2.5">
             <Link
               href={`${programPath(course.slug)}?src=discover`}
+              onNavigate={onClose}
               className="w-full rounded-[10px] bg-accent px-[22px] py-3.5 text-center font-bold text-accent-ink active:scale-[0.98] sm:w-auto sm:py-3"
             >
               Ver {NOUN.one} · {formatPrice(course.priceCents, course.currency)}
@@ -597,7 +604,7 @@ function ModalBody({
         </div>
         <div className="grid content-start gap-1.5 text-[13px] text-muted">
           <div>
-            Creador: {courseCreatorId(course) ? <Link href={creatorPath(courseCreatorId(course)!)} className="font-bold text-fg underline decoration-line underline-offset-4 hover:text-accent">{course.creatorName} ↗</Link> : <b className="text-fg">{course.creatorName}</b>}
+            Creador: {courseCreatorId(course) ? <Link href={creatorPath(courseCreatorId(course)!)} onNavigate={onClose} className="font-bold text-fg underline decoration-line underline-offset-4 hover:text-accent">{course.creatorName} ↗</Link> : <b className="text-fg">{course.creatorName}</b>}
           </div>
           <div>
             Miembros: <b className="text-fg">{course.members.toLocaleString("es-US")}</b>
