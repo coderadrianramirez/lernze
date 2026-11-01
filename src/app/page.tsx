@@ -1,214 +1,215 @@
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { Suspense } from "react";
+import { RecommendationRefresh } from "@/components/RecommendationRefresh";
 import { EmptyFeed } from "@/components/EmptyFeed";
 import { Feed, type FeedRow } from "@/components/Feed";
-import { NOUN, cap } from "@/lib/copy";
-import { getUserInterests, listCourses, listRecentViews, rankForInterests } from "@/lib/data";
+import { getUserInterests, listCourses, listRecentViews } from "@/lib/data";
 import { getCurrentUser } from "@/lib/auth";
-import { CATEGORIES, type Category, type Course } from "@/lib/types";
+import { CATEGORIES, type Category } from "@/lib/types";
 import { ShowFooterOnMobile } from "@/components/Footer";
-
-function parseInterests(raw: string | string[] | undefined): Category[] {
-  const v = Array.isArray(raw) ? raw[0] : raw;
-  if (!v) return [];
-  return v.split(",").filter((x): x is Category => (CATEGORIES as string[]).includes(x));
-}
-
-/** Las `n` categorías que más aparecen en una lista de programas. */
-function topCategories(courses: Course[], n: number): Category[] {
-  const counts = new Map<Category, number>();
-  courses.forEach((c) => counts.set(c.category, (counts.get(c.category) ?? 0) + 1));
-  return [...counts.entries()]
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, n)
-    .map(([c]) => c);
-}
-
-function joinEs(items: string[]) {
-  return items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} y ${items[items.length - 1]}`;
-}
+import { recommendationActivity } from "@/lib/recommendation-data";
+import { recommendPrograms } from "@/lib/recommendations";
 
 export default function Discover({ searchParams }: PageProps<"/">) {
   return (
     <main>
       <ShowFooterOnMobile />
-      <Suspense fallback={<div className="h-[420px] animate-pulse bg-surface" aria-label="Cargando" />}>
+      <Suspense
+        fallback={
+          <div
+            className="h-[420px] animate-pulse bg-surface"
+            aria-label="Cargando"
+          />
+        }
+      >
         <Page searchParams={searchParams} />
       </Suspense>
     </main>
   );
 }
-
-async function Page({ searchParams }: { searchParams: PageProps<"/">["searchParams"] }) {
+async function Page({
+  searchParams,
+}: {
+  searchParams: PageProps<"/">["searchParams"];
+}) {
   const sp = await searchParams;
   const query = typeof sp.q === "string" ? sp.q.trim() : "";
   if (query) redirect(`/buscar?q=${encodeURIComponent(query)}`);
-
-  // Intereses: URL param tiene prioridad (filtro manual); si no, cargamos desde DB
-  const urlInterests = parseInterests(sp.i);
-  const [allCourses, user] = await Promise.all([listCourses(), getCurrentUser()]);
-
-  // Intereses persistidos (null = onboarding pendiente, [] = no eligió) y programas que abrió hace poco.
-  const signedIn = Boolean(user && !user.demo);
-  const [dbInterests, recentViews] = signedIn
-    ? await Promise.all([getUserInterests(user!.id), listRecentViews(user!.id, 12)])
-    : [null, []];
-
-  // Si no eligió temas, los deducimos de lo que vio: las dos categorías que más abrió.
-  const chosenInterests = (dbInterests ?? []).filter((x): x is Category => (CATEGORIES as string[]).includes(x));
-  const inferredInterests: Category[] = chosenInterests.length ? [] : topCategories(recentViews, 2);
-
-  // Intereses activos: URL > elegidos > deducidos de lo visto
-  const activeInterests: Category[] = urlInterests.length
-    ? urlInterests
-    : chosenInterests.length
-      ? chosenInterests
-      : inferredInterests;
-  const inferred = !urlInterests.length && !chosenInterests.length && inferredInterests.length > 0;
-
-  if (allCourses.length === 0) return <EmptyFeed />;
-
-  // Algoritmo: cursos rankeados por intereses del usuario
-  const hasInterests = activeInterests.length > 0;
-  const forYou = hasInterests ? rankForInterests(allCourses, activeInterests) : [];
-  // Sin intereses: toda la plataforma. Con intereses: solo sus temas.
-  const pool = hasInterests ? forYou : allCourses;
-  const trending = [...pool].sort((a, b) => b.members - a.members).slice(0, 8);
-  const cheap = pool.filter((c) => c.priceCents < 10_000).sort((a, b) => a.priceCents - b.priceCents);
-
-  // Hero: si tiene intereses, prioriza los cursos "Para ti"; sino top trending
-  const heroPool = hasInterests ? forYou.slice(0, 5) : trending.slice(0, 5);
-  const heroes = heroPool.length ? heroPool : allCourses.slice(0, 5);
-
-  // Filas que cambian según intereses del algoritmo
-  const personal = signedIn && chosenInterests.length > 0;
-  const label = joinEs(activeInterests);
-  const forYouRow: FeedRow[] = hasInterests
-    ? [
-        {
-          key: "para-ti",
-          title: personal || inferred ? "Para ti" : "Destacados",
-          items: forYou,
-          reason: personal
-            ? `Según los temas que elegiste (${label}). Primero van los mejor calificados por sus alumnos.`
-            : inferred
-              ? `Según lo que viste últimamente (${label}). Elige tus temas en Mi cuenta para afinarlo.`
-              : `Los ${NOUN.other} de ${label} con mejor calificación de sus alumnos.`,
-        },
-      ]
-    : [];
-
-  // "Vistos recientemente" y "Porque viste X", como en cualquier plataforma de video.
-  const viewedIds = new Set(recentViews.map((c) => c.id));
-  const recentRow: FeedRow[] =
-    recentViews.length >= 2
-      ? [{ key: "recientes", title: "Vistos recientemente", items: recentViews, reason: `Los últimos ${NOUN.other} que abriste, para retomarlos.` }]
-      : [];
-  const last = recentViews[0];
-  const becauseItems = last
-    ? allCourses
-        .filter((c) => c.category === last.category && !viewedIds.has(c.id))
-        .sort((a, b) => b.rating - a.rating || b.members - a.members)
-    : [];
-  const becauseRow: FeedRow[] =
-    last && becauseItems.length >= 2
+  const raw = Array.isArray(sp.i) ? sp.i[0] : sp.i;
+  const categories = [
+    ...new Set(
+      (raw ?? "")
+        .split(",")
+        .filter((c): c is Category => CATEGORIES.includes(c as Category)),
+    ),
+  ];
+  const [catalogue, user] = await Promise.all([
+    listCourses(),
+    getCurrentUser(),
+  ]);
+  if (!catalogue.length) return <EmptyFeed />;
+  const signed = Boolean(user && !user.demo);
+  const [chosen, recent, activity] = signed
+    ? await Promise.all([
+        getUserInterests(user!.id),
+        listRecentViews(user!.id, 12),
+        recommendationActivity(user!.id),
+      ])
+    : [[], [], { signals: [], following: [], enrolled: [], ready: false }];
+  const model = recommendPrograms(catalogue, {
+    ...activity,
+    chosen: chosen ?? [],
+    userId: signed ? user!.id : undefined,
+  });
+  const ranked = model.ranked.map((r) => r.course);
+  const recommended = new Set(ranked.map((c) => c.id));
+  const popular = [...ranked].sort((a, b) => b.members - a.members).slice(0, 8);
+  const cheap = ranked
+    .filter((c) => c.priceCents < 10000)
+    .sort((a, b) => a.priceCents - b.priceCents);
+  const following = ranked.filter(
+    (c) => c.creatorId && activity.following.includes(c.creatorId),
+  );
+  const exploration = model.ranked
+    .filter(
+      (r) =>
+        r.exploration ||
+        !model.interests.some((t) => t.category === r.course.category),
+    )
+    .map((r) => r.course);
+  const first = ranked.slice(0, 12);
+  const rows: FeedRow[] = [
+    ...(first.length
       ? [
           {
-            key: "porque-viste",
-            title: `Porque viste ${last.title}`,
-            items: becauseItems,
-            reason: `Más ${NOUN.other} de ${last.category} que todavía no abriste, el tema de lo último que viste.`,
+            key: "para-ti",
+            title: signed ? "Para ti" : "Descubre tu próximo programa",
+            items: first,
+            reason: model.hasPersonalization
+              ? "Combinamos tus temas iniciales, actividad reciente y creadores que sigues. También incluimos otros temas para que descubras algo nuevo."
+              : "Una selección del catálogo para empezar a explorar. Tu inicio se adapta conforme conoces programas.",
           },
         ]
-      : [];
-
-  // Filas "Porque te interesa X" — una por categoría activa con suficientes cursos
-  const interestRows: FeedRow[] = activeInterests
-    .map((cat): FeedRow | null => {
-      const items = allCourses.filter((c) => c.category === cat).sort((a, b) => b.rating - a.rating || b.members - a.members);
+      : []),
+    ...(following.length
+      ? [
+          {
+            key: "siguiendo",
+            title: "De creadores que sigues",
+            items: following,
+            reason:
+              "Nuevos programas para ti de las cuentas que decidiste seguir. Los programas que ya tienes no se repiten aquí.",
+          },
+        ]
+      : []),
+    ...(recent.length
+      ? [
+          {
+            key: "recientes",
+            title: "Vistos recientemente",
+            items: recent,
+            reason:
+              "Programas que abriste, para que puedas retomarlos. Esta fila conserva también los que ya tienes.",
+          },
+        ]
+      : []),
+    ...(model.hasPersonalization && exploration.length
+      ? [
+          {
+            key: "explorar",
+            title: "Descubre otros temas",
+            items: exploration.slice(0, 6),
+            reason:
+              "Hay espacio para aprender algo diferente: estos programas amplían los temas que estás explorando.",
+          },
+        ]
+      : []),
+    ...model.interests.slice(0, 2).flatMap((topic) => {
+      const items = ranked.filter((c) => c.category === topic.category);
       return items.length >= 2
-        ? {
-            key: `cat-${cat}`,
-            title: `Porque te interesa ${cat}`,
-            items,
-            reason: inferred
-              ? `Viste varios ${NOUN.other} de ${cat} últimamente.`
-              : `Todo lo que hay de ${cat}, uno de los temas que elegiste al crear tu cuenta.`,
-          }
-        : null;
-    })
-    .filter((r): r is FeedRow => r !== null);
-
-  const allRows: FeedRow[] = [
-    ...forYouRow,
-    ...recentRow,
-    ...becauseRow,
-    {
-      key: "tendencia",
-      title: "Los más elegidos",
-      items: trending,
-      reason: hasInterests
-        ? `Los ${NOUN.other} de ${label} que más alumnos eligieron.`
-        : `Los ${NOUN.other} que más alumnos eligieron en Lernze.`,
-    },
-    ...interestRows,
+        ? [
+            {
+              key: `interes-${topic.category}`,
+              title: `Para explorar ${topic.category}`,
+              items,
+              reason: topic.sources.length
+                ? `Relacionado con tu actividad: ${topic.sources.join(", ").toLowerCase()}.`
+                : `Elegiste ${topic.category} al comenzar. Tus nuevos intereses también cuentan.`,
+            },
+          ]
+        : [];
+    }),
+    ...(popular.length
+      ? [
+          {
+            key: "tendencia",
+            title: "Los más elegidos",
+            items: popular,
+            reason:
+              "Los programas con más alumnos dentro de las opciones disponibles para ti.",
+          },
+        ]
+      : []),
     ...(cheap.length
       ? [
           {
             key: "ofertas",
             title: "Por menos de $100",
             items: cheap,
-            reason: hasInterests
-              ? `${cap(NOUN.other)} de ${label} con pago único menor a $100.`
-              : `${cap(NOUN.other)} completos con pago único menor a $100, para empezar sin gastar mucho.`,
+            reason:
+              "Programas con un pago único menor a $100, según tus recomendaciones.",
             layout: "grid" as const,
             more: { href: "/ofertas", label: "Ver todas" },
           },
         ]
       : []),
   ];
-  let rows = allRows;
-  let heroList = heroes;
-  if (urlInterests.length) {
-    const inCat = allCourses.filter((c) => urlInterests.includes(c.category));
-    const byRating = [...inCat].sort((a, b) => b.rating - a.rating || b.members - a.members);
-    const byMembers = [...inCat].sort((a, b) => b.members - a.members);
-    const catLabel = joinEs(urlInterests);
-    const chosen = personal && urlInterests.every((c) => dbInterests?.includes(c));
-    rows = [
-      {
-        key: "destacados",
-        title: forYouRow[0]?.title ?? "Destacados",
-        items: byRating.slice(0, 8),
-        reason: `Los ${NOUN.other} de ${catLabel} con mejor calificación de sus alumnos.`,
-      },
-      {
-        key: "tendencia",
-        title: "Los más elegidos",
-        items: byMembers.slice(0, 8),
-        reason: `Los ${NOUN.other} de ${catLabel} que más alumnos eligieron.`,
-      },
-      {
-        key: "todos",
-        title: `Porque te interesa ${catLabel}`,
-        items: byRating,
-        reason: chosen
-          ? `Todo lo que hay de ${catLabel}, uno de los temas que elegiste al crear tu cuenta.`
-          : `Todos los ${NOUN.other} de ${catLabel}, empezando por los mejor calificados.`,
-      },
-    ];
-    if (byRating.length) heroList = byRating.slice(0, 5);
-  }
-
-  const controls: React.ReactNode = null;
-
+  const inCategory = catalogue.filter((c) => categories.includes(c.category));
+  const manual = categories.length > 0;
+  const manualRows: FeedRow[] = [
+    {
+      key: "categoria",
+      title: categories.join(" y "),
+      items: inCategory,
+      reason:
+        "Estás explorando esta categoría. Este filtro no reemplaza los intereses de tu cuenta.",
+    },
+  ];
+  const controls =
+    signed && !manual ? (
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line py-5">
+        <p className="max-w-[65ch] text-sm text-muted">
+          {recommended.size
+            ? "Tu inicio evoluciona con lo que descubres."
+            : "Ya exploraste estas opciones. Puedes buscar más programas o revisar tus intereses."}
+        </p>
+        <Link
+          href="/intereses"
+          className="inline-flex min-h-11 items-center text-sm font-semibold text-accent hover:underline"
+        >
+          Ver tus intereses →
+        </Link>
+      </div>
+    ) : null;
   return (
-    <Feed
-      key={`feed|${activeInterests.join(",")}`}
-      heroes={heroList}
-      rows={rows}
-      controls={controls}
-      demo={allCourses.some((c) => c.demo)}
-    />
+    <>
+      <RecommendationRefresh />
+      <Feed
+        key={`feed|${categories.join(",")}`}
+        heroes={(manual ? inCategory : ranked).slice(0, 5)}
+        rows={manual ? manualRows : rows}
+        controls={controls}
+        demo={catalogue.some((c) => c.demo)}
+        personalize={signed && !manual && activity.ready}
+        reasons={
+          signed && !manual
+            ? Object.fromEntries(
+                model.ranked.map((r) => [r.course.id, r.reason]),
+              )
+            : undefined
+        }
+      />
+    </>
   );
 }

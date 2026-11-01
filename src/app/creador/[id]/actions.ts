@@ -23,6 +23,7 @@ export async function followCreatorAction(creatorId: string, following: boolean)
   const updated = await publicCreator(creatorId);
   revalidatePath(creatorPath(creatorId));
   revalidatePath("/siguiendo");
+  revalidatePath("/");
   revalidatePath("/dashboard");
   return { following, followers: updated.creator?.followers ?? creator.followers };
 }

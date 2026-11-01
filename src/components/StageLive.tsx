@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { formatPrice } from "@/lib/pricing";
 import type { Course } from "@/lib/types";
 import { catalogTrailer } from "@/lib/catalog-media";
+import { markRecommendationsDirty } from "@/lib/recommendation-refresh";
+import { interestSignalAction } from "@/app/actions/recommendations";
 import { Stage } from "./Stage";
 
 /** Duración en milisegundos de cada frase del trailer animado. */
@@ -59,6 +61,7 @@ type Props = {
   badges?: boolean;
   /** Muestra los controles nativos del video (página del programa). */
   controls?: boolean;
+  trackInterest?: boolean;
   onPlayingChange?: (playing: boolean) => void;
   /** Si se pasa, las frases las dibuja quien llama y no este componente. */
   onScene?: (scene: number | null) => void;
@@ -72,6 +75,7 @@ export function StageLive({
   lockup = true,
   badges = true,
   controls = false,
+  trackInterest = controls,
   onPlayingChange,
   onScene,
 }: Props) {
@@ -127,6 +131,23 @@ export function StageLive({
   useEffect(() => {
     onScene?.(shownScene);
   }, [shownScene, onScene]);
+
+  // Solo reproducción real visible, sin contabilizar el hero automático ni saltos de tiempo.
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!trackInterest || !hasVideo || !v) return;
+    let visible = false, elapsed = 0, sent = false, last = performance.now();
+    const observer = new IntersectionObserver(([entry]) => { visible = entry.intersectionRatio >= .5; }, { threshold: [.5] });
+    observer.observe(v);
+    const timer = window.setInterval(() => {
+      const now = performance.now(), delta = Math.min(1000, now - last); last = now;
+      if (!sent && visible && !v.paused && !v.seeking && v.readyState >= 3 && document.visibilityState === "visible") {
+        elapsed += delta;
+        if (elapsed >= 8000) { sent = true; void interestSignalAction(course.id, "trailer").then(r => { if(r.saved) markRecommendationsDirty(); }).catch(() => {}); }
+      }
+    }, 500);
+    return () => { observer.disconnect(); window.clearInterval(timer); };
+  }, [course.id, hasVideo, trackInterest]);
 
   const total = sceneTotalSeconds(n);
 

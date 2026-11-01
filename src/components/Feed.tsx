@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { NOUN, memberCount, programPath } from "@/lib/copy";
 import { formatDuration, formatPrice } from "@/lib/pricing";
 import type { Course } from "@/lib/types";
+import { DismissProgram } from "./DismissProgram";
 import { Stage } from "./Stage";
 import { StageLive } from "./StageLive";
 
@@ -24,11 +25,13 @@ type Props = {
   /** Controles entre el billboard y las filas (intereses). */
   controls: ReactNode;
   demo: boolean;
+  personalize?: boolean;
+  reasons?: Record<string,string>;
 };
 
 const stars = (c: Course) => (c.rating > 0 ? `★ ${c.rating.toFixed(1)}` : "Nuevo");
 
-export function Feed({ heroes, rows, controls, demo }: Props) {
+export function Feed({ heroes, rows, controls, demo, personalize = false, reasons }: Props) {
   const [modal, setModal] = useState<Course | null>(null);
   const [pop, setPop] = useState<{ course: Course; left: number; top: number; width: number } | null>(null);
   const timers = useRef<{ hover?: number; leave?: number }>({});
@@ -88,7 +91,7 @@ export function Feed({ heroes, rows, controls, demo }: Props) {
 
   return (
     <>
-      <Hero courses={heroes} onInfo={openModal} />
+      {heroes.length > 0 && <Hero courses={heroes} onInfo={openModal} />}
 
       <div className="mx-auto max-w-[1400px] px-4 pb-12">
         {controls}
@@ -135,6 +138,8 @@ export function Feed({ heroes, rows, controls, demo }: Props) {
             key={modal.id}
             course={modal}
             others={otherPrograms(rows, modal)}
+            personalize={personalize}
+            reason={reasons?.[modal.id]}
             onSwitch={(c) => setModal(c)}
             onClose={() => setModal(null)}
           />
@@ -525,7 +530,7 @@ function PopBody({ course }: { course: Course }) {
   }, []);
   return (
     <>
-      <StageLive course={course} active={live} />
+      <StageLive course={course} active={live} trackInterest />
       <div className="lz-pinfo">
         <div className="lz-pmeta">
           <span className="m">{stars(course)}</span>
@@ -547,7 +552,11 @@ function ModalBody({
   others,
   onSwitch,
   onClose,
+  personalize,
+  reason,
 }: {
+  reason?: string;
+  personalize?: boolean;
   course: Course;
   others: Course[];
   onSwitch: (c: Course) => void;
@@ -570,6 +579,7 @@ function ModalBody({
       <div className="grid gap-[22px] px-5 pt-5 pb-6 sm:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] sm:px-6">
         <div>
           <h2 className="font-display text-[22px] leading-tight font-bold tracking-tight sm:text-[26px]">{course.title}</h2>
+          {reason && <p className="mt-2 text-xs font-semibold text-accent">{reason}</p>}
           <div className="lz-pmeta mt-1.5">
             <span className="m">{stars(course)}</span>
             <span>{course.category}</span>
@@ -596,6 +606,7 @@ function ModalBody({
             Trailer: <b className="text-fg">{course.trailerSource === "ai" ? "generado con IA" : "del creador"}</b>
           </div>
           <div>Pago único, sin suscripción</div>
+          {personalize && <DismissProgram courseId={course.id} onHidden={onClose} />}
         </div>
       </div>
       {others.length > 0 && (

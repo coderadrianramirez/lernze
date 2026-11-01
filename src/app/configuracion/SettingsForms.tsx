@@ -1,4 +1,6 @@
 "use client";
+
+import Link from "next/link";
 import { PasswordSettings } from "./PasswordSettings";
 import { EmailSettings } from "./EmailSettings";
 import { startTransition, useActionState, useRef, useState } from "react";
@@ -211,27 +213,7 @@ export function SettingsForms({
             ? interests.join(" · ")
             : "Explora programas para descubrir lo que te interesa."}
         </p>
-        <details className="mt-4">
-          <summary className="w-fit cursor-pointer rounded-xl border border-line px-4 py-3 text-sm font-semibold">
-            Ver tus intereses
-          </summary>
-          <div className="mt-4 border-t border-line pt-4">
-            <p className="text-sm text-muted">
-              Estos son los temas que elegiste al comenzar. Tu actividad también
-              ayuda a descubrir programas relacionados con lo que has visto.
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {interests.map((interest) => (
-                <span
-                  key={interest}
-                  className="rounded-full border border-line px-3 py-1.5 text-xs"
-                >
-                  {interest}
-                </span>
-              ))}
-            </div>
-          </div>
-        </details>
+        <Link href="/intereses" className="mt-4 inline-flex min-h-11 items-center rounded-xl border border-line px-4 py-3 text-sm font-semibold hover:border-accent">Ver tus intereses</Link>
       </section>
       <EmailSettings email={user.email} pendingEmail={pendingEmail} />
       <PasswordSettings hasPassword={hasPassword} email={user.email} />

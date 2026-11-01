@@ -15,6 +15,7 @@ export async function trackViewAction(courseId: string) {
   const user = await getCurrentUser();
   if (!user || user.demo) return;
   await recordView(user.id, courseId);
+  return true;
 }
 
 /** Compra simulada: registra la inscripción y su origen, sin cobrar. Requiere sesión. */

@@ -10,6 +10,7 @@ import { searchCourses } from "@/lib/search";
 import { CATEGORIES } from "@/lib/types";
 import { CreatorCard } from "@/components/CreatorCard";
 import { listPublicCreators } from "@/lib/creators";
+import { SearchInterest } from "@/components/InterestTracking";
 import { SearchField } from "./SearchField";
 
 export const metadata: Metadata = { title: "Buscar" };
@@ -61,6 +62,7 @@ async function Results({ searchParams }: { searchParams: PageProps<"/buscar">["s
     <>
       <h1 className="sr-only">Buscar</h1>
       <SearchField initial={q} />
+      {q && <SearchInterest key={q} query={q} />}
 
       {creators.length > 0 && <section className="mt-7" aria-labelledby="search-creators">
         <h2 id="search-creators" className="font-display text-lg font-bold tracking-tight">{q ? "Creadores" : "Descubre creadores"}</h2>

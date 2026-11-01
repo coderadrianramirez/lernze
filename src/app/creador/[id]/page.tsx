@@ -10,6 +10,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { followsCreator, publicCreator } from "@/lib/creators";
 import { courseCreatorId } from "@/lib/creator-path";
 import { listCourses } from "@/lib/data";
+import { CreatorInterest } from "@/components/InterestTracking";
 import { FollowButton } from "./FollowButton";
 
 export async function generateMetadata({ params }: PageProps<"/creador/[id]">): Promise<Metadata> {
@@ -43,6 +44,7 @@ async function Profile({ params }: { params: PageProps<"/creador/[id]">["params"
       {own && !publicProfile && <p role="status" className="mt-3 rounded-xl border border-accent/30 bg-accent/10 p-4 text-sm">Vista previa de tu perfil. Será público cuando publiques tu primer programa.</p>}
       {publicProfile?.demo && <p role="status" className="mt-3 rounded-xl border border-line bg-surface p-4 text-sm text-muted">Perfil de ejemplo con contenido de prueba. No corresponde a una cuenta real.</p>}
       {!ready && publicProfile && !publicProfile.demo && <p role="status" className="mt-3 rounded-xl border border-line bg-surface p-4 text-sm text-muted">Vista previa del perfil. El seguimiento estará disponible en breve.</p>}
+      {!own && <CreatorInterest courseIds={[...new Map(programs.map(c => [c.category, c.id])).values()]} />}
       <header className="mt-3 overflow-hidden rounded-3xl border border-line bg-surface">
         <div className="h-24 border-b border-accent/15 bg-[radial-gradient(ellipse_at_top_right,rgba(255,181,71,.22),transparent_65%)] sm:h-32" aria-hidden />
         <div className="px-5 pb-6 sm:px-8 sm:pb-8">
