@@ -166,3 +166,10 @@ Feed vertical «Descubrir» propuesto para móvil y escritorio, antes de Comunid
 - Auditoría real: 12 comprobaciones de tabla privada, RLS, lectura propia, prohibición de escritura directa y ejecución anónima, funciones protegidas y migraciones pendientes. Todas aprobadas.
 - Chrome con sesión: trailer de Uñas de salón, búsqueda Google Ads, visita sostenida al perfil de ejemplo de Marisol Vega y ocultar/restaurar programa. Se verificó su persistencia y que el programa quedara restaurado. No se enviaron mensajes, no se hicieron compras ni se publicó contenido.
 - Las huellas de programas y perfiles coinciden antes y después; siguen existiendo 18 programas y 0 clases. Las señales son actividad de prueba del catálogo existente, no métricas de usuarios reales para calibrar el modelo.
+
+### Estabilidad y audio del hero — 2026-11-01
+
+- Clips del catálogo de prueba regenerados a 30 fps con sobremuestreo antes del zoom para reducir los saltos de encuadre por redondeo. Primer/último fotograma alineados con la portada y bucle suave; siguen sin voz ni audio.
+- El video saliente continúa durante el fundido del hero; ya no vuelve al fotograma inicial antes de desaparecer.
+- Audio del hero alineado con el margen derecho del contenido, por encima de los indicadores; en móvil, esquina superior derecha. Volumen desplegable hacia dentro, con área táctil de 44 px.
+- Revisión en Chrome de escritorio y 375 px: reproducción, rotación, activar/silenciar y deslizador, sin desbordamiento horizontal. No requiere migraciones ni cambios de datos.

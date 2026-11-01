@@ -30,9 +30,10 @@ await mkdir(path.join(root, "public/videos/catalog-trailers"), {
 });
 async function render(entry) {
   const output = path.join(root, "public", entry.video),
-    frames = entry.seconds * 24;
-  // Gentle zoom returns to its starting point so the preview loops without a cut.
-  const filter = `scale=1920:1080,zoompan=z='1.015+0.035*(1-cos(2*PI*on/${frames - 1}))/2':x='(iw-iw/zoom)*0.68':y='(ih-ih/zoom)*0.32':d=${frames}:s=1280x720:fps=24,format=yuv420p`;
+    frames = entry.seconds * 30;
+  // Oversample before zoompan: integer crop coordinates otherwise produce visible jitter.
+  // The first frame matches the cover; the cosine loop has no jump at either end.
+  const filter = `scale=7680:4320:flags=lanczos,zoompan=z='1+0.035*(1-cos(2*PI*on/${frames - 1}))/2':x='(iw-iw/zoom)*0.68':y='(ih-ih/zoom)*0.32':d=${frames}:s=1280x720:fps=30,format=yuv420p`;
   const args = [
     "-y",
     "-hide_banner",
@@ -77,5 +78,5 @@ await Promise.all(
   }),
 );
 console.log(
-  `${entries.length} trailers MP4 H.264 de 14 segundos, 1280 × 720, sin audio. Las frases se dibujan con StageLive.`,
+  `${entries.length} trailers MP4 H.264 de 14 segundos, 1280 × 720, 30 fps, sin audio ni textos superpuestos.`,
 );

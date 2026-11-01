@@ -1128,3 +1128,19 @@ button.lz-top-tile,
 .lz-audio:focus-within .lz-audio-volume,
 .lz-audio.is-audible .lz-audio-volume { width: 104px; padding-right: 14px; visibility: visible; }
 .lz-audio input { width: 90px; height: 44px; margin: 0; accent-color: var(--lz-accent); cursor: pointer; }
+
+/* El audio del hero sigue el margen del contenido, separado de los indicadores. */
+.lz-hero .lz-audio {
+  top: auto;
+  left: auto;
+  right: max(24px, calc((100% - 1400px) / 2 + 24px));
+  bottom: calc(clamp(52px, 7vw, 96px) + 64px);
+  flex-direction: row-reverse;
+}
+.lz-hero .lz-audio-volume { padding-right: 0; }
+.lz-hero .lz-audio:hover .lz-audio-volume,
+.lz-hero .lz-audio:focus-within .lz-audio-volume,
+.lz-hero .lz-audio.is-audible .lz-audio-volume { padding-left: 14px; }
+@media (max-width: 767px) {
+  .lz-hero .lz-audio { top: 16px; right: 16px; bottom: auto; }
+}

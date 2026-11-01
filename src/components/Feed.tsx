@@ -200,7 +200,7 @@ function Hero({ courses, onInfo }: { courses: Course[]; onInfo: (c: Course) => v
         <StageLive
           key={course.id}
           course={course}
-          active={visible}
+          active
           lockup={false}
           badges={false}
           onPlayingChange={setVideoPlaying}
