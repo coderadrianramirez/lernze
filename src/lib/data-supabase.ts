@@ -11,6 +11,7 @@ type CourseRow = {
   title: string;
   description: string;
   creator_id: string | null;
+  created_at?: string;
   creator_name: string;
   category: Category;
   price_cents: number;
@@ -33,6 +34,7 @@ export function toCourse(row: CourseRow): Course {
     title: row.title,
     description: row.description,
     creatorId: row.creator_id ?? undefined,
+    createdAt: row.created_at,
     creatorName: row.creator_name,
     category: row.category,
     priceCents: row.price_cents,

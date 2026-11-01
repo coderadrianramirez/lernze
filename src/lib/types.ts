@@ -35,6 +35,7 @@ export type Course = {
   title: string;
   description: string;
   creatorId?: string;
+  createdAt?: string;
   creatorName: string;
   category: Category;
   priceCents: number;

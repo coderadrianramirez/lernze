@@ -13,7 +13,8 @@
     "test:recovery": "node scripts/test-password-recovery.mjs && node scripts/test-password-status.mjs",
     "test:catalog": "node scripts/test-catalog-media.mjs",
     "test:playback": "node scripts/test-lesson-playback.mjs && node scripts/test-classroom-actions.mjs",
-    "test:creators": "node scripts/test-creator-profiles.mjs && node scripts/test-creator-actions.mjs"
+    "test:creators": "node scripts/test-creator-profiles.mjs && node scripts/test-creator-actions.mjs",
+    "test:recommendations": "node scripts/test-recommendations.mjs && node scripts/test-recommendation-signals.mjs && node scripts/test-recommendation-actions.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
