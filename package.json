@@ -16,7 +16,8 @@
     "test:creators": "node scripts/test-creator-profiles.mjs && node scripts/test-creator-actions.mjs",
     "test:recommendations": "node scripts/test-recommendations.mjs && node scripts/test-recommendation-signals.mjs && node scripts/test-recommendation-actions.mjs",
     "test:discovery": "node scripts/test-discovery.mjs",
-    "test:comments": "node scripts/test-lesson-comments.mjs && node scripts/test-comment-actions.mjs"
+    "test:comments": "node scripts/test-lesson-comments.mjs && node scripts/test-comment-actions.mjs",
+    "test:profile": "node scripts/test-profile-privacy.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",

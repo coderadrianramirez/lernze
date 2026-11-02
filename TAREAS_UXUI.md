@@ -201,3 +201,11 @@ Solicitud del usuario: añadir un feed vertical de contenido como diferencial m�
 - 0015 ejecutada desde Chrome en el proyecto Lernze main/PRODUCTION con autorización expresa. Se verificaron catorce condiciones: RLS en ambas tablas, permisos privados de lectura, escritura exclusiva por RPC, seis funciones limitadas a autenticados con search_path vacío, trigger no invocable, bucket privado de WebP de 5 MiB y tres políticas de fotos. Todas aprobadas.
 - Las huellas de los programas, clases y perfiles coinciden antes y después: siguen existiendo 18 programas y 0 clases. No se crearon comentarios ni imágenes de prueba en producción. Las migraciones 0012 y 0013 no se ejecutaron.
 - Código publicado y ruta local de pruebas comprobada como 404 en producción. La interfaz y los permisos se probaron de forma aislada; la conversación y subida real entre dos cuentas requieren cargar una clase y completar ese recorrido, sin presentar datos ficticios como actividad real.
+
+### Mi perfil y navegación de cuenta — 2026-11-02
+
+- Menú: Mi perfil, Mi cuenta, Configuración y Crear programa, además de cerrar sesión. Mi cuenta mantiene inscripciones y gestión de programas.
+- /perfil conduce al perfil propio: foto y nombre con edición rápida, programas publicados y pestaña Siguiendo privada. /siguiendo redirige a esa pestaña. Configuración conserva correo, contraseña e intereses y enlaza al editor del perfil.
+- La sesión decide quién puede consultar Siguiendo; otra cuenta o un visitante no recibe la lista, su contador ni los controles de edición aunque manipule la URL. Los borradores no aparecen entre los programas públicos.
+- 0013 aplicada desde Chrome en Lernze main/PRODUCTION con la autorización expresa anterior. Trece comprobaciones de permisos, RLS y conservación de datos aprobadas: siguen 18 programas y 0 clases; las huellas de programas y perfiles no cambiaron. 0012 continúa pendiente; 0015 permanece activa.
+- Pruebas aisladas de privacidad del perfil, permisos de seguimiento y acciones de cuenta aprobadas. El seguimiento real entre dos cuentas requiere un creador real con programa publicado; el catálogo de ejemplo no permite seguir identidades ficticias.

@@ -44,39 +44,8 @@ export function UserMenu({ name, avatarUrl }: Props) {
             <p className="truncate text-sm font-semibold text-fg">{name}</p>
           </div>
 
-          <Link
-            href="/dashboard"
-            onClick={() => setOpen(false)}
-            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-fg transition-colors hover:bg-surface hover:text-accent"
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 16 16"
-              fill="none"
-              aria-hidden
-            >
-              <circle
-                cx="8"
-                cy="5.5"
-                r="3"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
-              <path
-                d="M2.5 14.5a5.5 5.5 0 0 1 11 0"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
-            Mi cuenta
-          </Link>
-
-          <Link href="/siguiendo" onClick={() => setOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-fg transition-colors hover:bg-surface hover:text-accent">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden><circle cx="9" cy="8" r="3" /><path d="M3 21v-3a6 6 0 0 1 12 0v3M17 7a3 3 0 0 1 0 6M19 21v-3a6 6 0 0 0-2-4" /></svg>
-            Creadores que sigues
-          </Link>
+          <Link href="/perfil" onClick={()=>setOpen(false)} className="flex min-h-11 items-center gap-2.5 px-4 py-2.5 text-sm text-fg transition-colors hover:bg-surface hover:text-accent"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Mi perfil</Link>
+          <Link href="/dashboard" onClick={()=>setOpen(false)} className="flex min-h-11 items-center gap-2.5 px-4 py-2.5 text-sm text-fg transition-colors hover:bg-surface hover:text-accent"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Mi cuenta</Link>
           <Link
             href="/configuracion"
             onClick={() => setOpen(false)}

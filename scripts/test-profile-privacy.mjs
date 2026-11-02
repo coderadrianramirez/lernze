@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';import {readFile}from'node:fs/promises';import vm from'node:vm';import ts from'typescript';import React from'react';import {renderToStaticMarkup}from'react-dom/server';import * as jsx from'react/jsx-runtime';
+const target='11111111-1111-4111-8111-111111111111',viewer='22222222-2222-4222-8222-222222222222';let user=null,privateReads=0,followReads=0;
+const C=({children,...props})=>React.createElement('span',{},children??props.name??'');
+const mocks={
+ 'react/jsx-runtime':jsx,'next/link':{__esModule:true,default:({children,...props})=>React.createElement('a',{href:props.href},children)},'next/navigation':{notFound:()=>{throw Error('not-found');}},
+ './Avatar':{Avatar:C},'./CreatorCard':{CreatorCard:({creator})=>React.createElement('p',{},creator.name)},'./CourseListItem':{CourseListItem:({course})=>React.createElement('p',{},course.title)},'./InterestTracking':{CreatorInterest:()=>null},'./ProfileQuickEdit':{ProfileQuickEdit:()=>React.createElement('button',{},'Editar perfil')},'@/app/creador/[id]/FollowButton':{FollowButton:()=>React.createElement('button',{},'Seguir')},
+ '@/lib/auth':{getCurrentUser:async()=>user},'@/lib/creators':{publicCreator:async()=>({creator:{id:target,name:'Nombre público',avatarUrl:null,followers:3},ready:true}),followsCreator:async()=>false,followingCreators:async(id)=>{assert.equal(id,target);followReads++;return{creators:[{id:viewer,name:'Cuenta privada seguida'}],ready:true,hasNext:false};}},
+ '@/lib/creator-path':{creatorPath:id=>`/creador/${id}`,courseCreatorId:c=>c.creatorId},
+ '@/lib/data':{listCourses:async()=>[{id:'public',title:'Programa público',creatorId:target,published:true,category:'Oficios'},{id:'draft',title:'Borrador secreto',creatorId:target,published:false,category:'Oficios'}]},
+ '@/lib/supabase/server':{createSessionClient:async()=>{privateReads++;return{from:()=>({select(){return this;},eq(){return this;},maybeSingle:async()=>({data:{avatar_path:null}}),then(resolve){resolve({count:1,error:null});}}),rpc:async()=>({data:true,error:null})};}},
+};
+const mod={exports:{}};vm.runInNewContext(ts.transpileModule(await readFile(new URL('../src/components/CreatorProfile.tsx',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}}).outputText,{module:mod,exports:mod.exports,require:n=>{assert.ok(mocks[n],n);return mocks[n];},Map,Set});
+const run=async view=>renderToStaticMarkup(await mod.exports.CreatorProfile({id:target,view,page:1}));
+for(const u of [null,{id:viewer,demo:false},{id:target,demo:true}]){user=u;const html=await run('siguiendo');assert.ok(html.includes('Programa público'));assert.ok(!html.includes('Borrador secreto'));assert.ok(!html.includes('Cuenta privada seguida'));assert.ok(!html.includes('Solo tú'));assert.ok(!html.includes('Editar perfil'));}
+assert.equal(privateReads,0);assert.equal(followReads,0,'La URL no permite leer la lista ajena');
+user={id:target,name:'Mi nombre',demo:false};const own=await run('siguiendo');assert.ok(own.includes('Cuenta privada seguida'));assert.ok(own.includes('Solo tú'));assert.ok(own.includes('Editar perfil'));assert.equal(followReads,1);
+const programs=await run();assert.ok(programs.includes('Programa público'));assert.ok(!programs.includes('Borrador secreto'));assert.ok(!programs.includes('Cuenta privada seguida'));assert.equal(followReads,1,'La lista privada solo se carga al abrir Siguiendo');
+console.log('Perfil: visitantes y otras cuentas no reciben seguimiento privado ni controles de edición, la URL no concede acceso y los borradores no aparecen.');
