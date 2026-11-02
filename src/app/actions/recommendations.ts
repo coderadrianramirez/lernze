@@ -34,6 +34,7 @@ export async function interestSignalAction(
   if (kind === "dismiss") {
     revalidatePath("/");
     revalidatePath("/intereses");
+    revalidatePath("/descubrir");
   }
   return { saved: true };
 }
@@ -85,4 +86,5 @@ export async function restoreInterestAction(form: FormData) {
     );
   revalidatePath("/");
   revalidatePath("/intereses");
+  revalidatePath("/descubrir");
 }

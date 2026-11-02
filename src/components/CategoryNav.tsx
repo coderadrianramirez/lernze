@@ -43,16 +43,17 @@ export function CategoryNav({ variant = "bar" }: { variant?: "bar" | "chips" }) 
     `text-base font-medium whitespace-nowrap transition-colors ${on ? "text-fg" : "text-muted hover:text-fg/80"}`;
 
   return (
-    <nav aria-label="Categorías" className="flex items-center gap-5">
+    <nav aria-label="Categorías" className="flex items-center gap-4">
       <Link href="/" className={linkClass(isHome)} aria-current={isHome ? "page" : undefined}>
         Inicio
       </Link>
+      <Link href="/descubrir" className={linkClass(pathname === "/descubrir")} aria-current={pathname === "/descubrir" ? "page" : undefined}>Descubrir</Link>
       {CATEGORIES.map((cat) => (
         <Link
           key={cat}
           href={catHref(cat)}
           scroll={false}
-          className={linkClass(active === cat)}
+          className={`${linkClass(active === cat)} hidden xl:inline`}
           aria-current={active === cat ? "page" : undefined}
         >
           {cat}

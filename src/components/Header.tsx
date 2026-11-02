@@ -10,7 +10,7 @@ async function AccountNav() {
 
   if (!user || user.demo) {
     return (
-      <div className="flex items-center gap-1 md:gap-2">
+      <div className="flex shrink-0 items-center gap-1 md:gap-2">
         <Link
           href="/entrar"
           className="rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:text-fg md:px-4 md:py-2.5"
@@ -19,7 +19,7 @@ async function AccountNav() {
         </Link>
         <Link
           href="/registro"
-          className="hidden rounded-lg bg-accent px-4 py-2.5 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90 md:block"
+          className="hidden shrink-0 whitespace-nowrap rounded-lg bg-accent px-4 py-2.5 text-sm font-bold text-accent-ink transition-opacity hover:opacity-90 md:block"
         >
           Crear cuenta
         </Link>
@@ -50,7 +50,7 @@ export function Header() {
 
         <div className="flex-1" />
 
-        <div className="hidden w-full max-w-[470px] md:block">
+        <div className="hidden min-w-0 w-full max-w-[470px] md:block">
           <Suspense fallback={<div className="h-9 w-full animate-pulse rounded-xl bg-surface" />}>
             <SearchBar />
           </Suspense>

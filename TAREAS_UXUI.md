@@ -171,3 +171,16 @@ Solicitud del usuario: añadir un feed vertical de contenido como diferencial m�
 - El video saliente continúa durante el fundido del hero; ya no vuelve al fotograma inicial antes de desaparecer.
 - Audio del hero alineado con el margen derecho del contenido, por encima de los indicadores; en móvil, esquina superior derecha. Volumen desplegable hacia dentro, con área táctil de 44 px.
 - Revisión en Chrome de escritorio y 375 px: reproducción, rotación, activar/silenciar y deslizador, sin desbordamiento horizontal. No requiere migraciones ni cambios de datos.
+
+### Feed vertical «Descubrir» — 2026-11-02
+
+- /descubrir implementado con trailers públicos y el motor compartido de recomendaciones, sin una migración nueva. Inicio conserva su catálogo.
+- Navegación móvil solicitada: Inicio | Ofertas | Descubrir | Buscar | Cuenta, con Descubrir en el centro. Acceso también en el header de escritorio y footer.
+- Un contenido por pantalla, desplazamiento con ajuste vertical, botones anterior/siguiente y teclado. Escritorio con reproductor y panel lateral; móvil con información y CTA fuera de la imagen. Los videos horizontales se muestran completos, sin recortar ni estirar rostros; el reproductor admite también material vertical.
+- Solo el video activo se reproduce; como máximo tres reproductores montados. Audio silenciado al comenzar, volumen compartido entre trailers, pausa al salir de la página/pestaña y respeto de movimiento reducido. Sin textos promocionales superpuestos al video.
+- Al visitar un perfil/programa y volver se conserva el contenido y la posición. La copia de sesión dura dos horas, está separada por cuenta y descarta IDs retirados/ocultos/no elegibles. No se recupera contenido privado desde esa copia.
+- Recomendaciones: ocho segundos reales y visibles tras una interacción en el feed; la reproducción automática inicial no suma interés. Saltos de tiempo y reinicios de bucle no se contabilizan. Ocultar/restaurar comparte las acciones y permisos existentes de 0014. Seguir solo se ofrece para cuentas reales cuando 0013 esté disponible; los ejemplos no admiten seguimiento.
+- Compartir por acción del usuario mediante el sistema o copia del enlace. Sin me gusta, comentarios ni contadores de actividad inventados. Los clips actuales siguen siendo fotografías animadas sin voz.
+- Pruebas: npm run test:discovery, test:recommendations, lint, TypeScript y build; recorrido de visitante en navegador a 375 px y escritorio, avance/pausa/volumen, perfil/programa y regreso. La activación de 0012/0013 y la prueba de seguimiento entre cuentas reales siguen siendo tareas separadas; no se aplicaron migraciones en este bloque.
+
+- Corrección de navegación móvil: los marcadores NoTabBar/ShowFooterOnMobile de páginas ocultas por Activity ya no afectan la página visible. Comprobado programa → regresar a Descubrir.

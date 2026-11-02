@@ -61,9 +61,9 @@ html:has(dialog[open]) {
 }
 
 @media (max-width: 767px) {
-  /* Cada página decide con <NoTabBar /> y <ShowFooterOnMobile />. */
-  body:has([data-no-tabbar]) .lz-tabbar,
-  body:not(:has([data-mobile-footer])) .lz-footer {
+  /* Solo las páginas visibles deciden: Activity conserva las anteriores con display: none. */
+  body:has([data-no-tabbar]:not([style*="display: none"] *, [hidden] *)) .lz-tabbar,
+  body:not(:has([data-mobile-footer]:not([style*="display: none"] *, [hidden] *))) .lz-footer {
     display: none;
   }
   /* 16px evita que iOS haga zoom al enfocar un campo. */

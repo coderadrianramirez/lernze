@@ -31,6 +31,7 @@ const COLUMNS = [
     title: "Descubrir",
     links: [
       { label: "Inicio", href: "/" },
+      { label: "Feed de trailers", href: "/descubrir" },
       { label: "Por menos de $100", href: "/ofertas" },
     ],
   },
