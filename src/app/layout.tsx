@@ -7,6 +7,7 @@ import { NOUN } from "@/lib/copy";
 import "./globals.css";
 import "./stage.css";
 import "./discover.css";
+import "./comments.css";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",

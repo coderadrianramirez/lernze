@@ -18,6 +18,8 @@ import {
   lessonPlayback,
   listLessons,
 } from "@/lib/lessons";
+import { LessonComments } from "@/components/LessonComments";
+import { readLessonComments } from "@/lib/comments";
 import { LessonCover } from "@/components/LessonCover";
 import { LessonPlayer } from "./LessonPlayer";
 
@@ -85,6 +87,7 @@ async function Classroom({
   const doneCount = lessons.filter((l) => completed.has(l.id)).length;
   const pct = lessons.length ? Math.round((doneCount / lessons.length) * 100) : 0;
   const total = lessons.reduce((s, l) => s + l.durationSeconds, 0);
+  const discussion = current && hasAccess && signedIn ? await readLessonComments(current.id) : null;
 
   return (
     <>
@@ -140,6 +143,8 @@ async function Classroom({
                 {current.description && <p className="mt-3 max-w-[70ch] leading-relaxed whitespace-pre-line text-[#cfd0da]">{current.description}</p>}
               </>
             )}
+
+            {current && discussion && signedIn && hasAccess && <LessonComments key={`comments:${current.id}:${user!.id}`} lessonId={current.id} user={{id:user!.id,name:user!.name,avatar:user!.avatarUrl}} moderator={ownId===course.id} initial={discussion} />}
 
             {!hasAccess && (
               <div className="mt-6 flex flex-wrap items-center gap-4 rounded-2xl border border-accent/40 bg-accent/5 p-5">
