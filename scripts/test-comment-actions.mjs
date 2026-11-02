@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';import {readFile} from 'node:fs/promises';import vm from 'node:vm';import ts from 'typescript';
+const userId='22222222-2222-4222-8222-222222222222',lesson='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',id='bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
+let user=null,access=true,failure=null;const calls=[],removed=[];
+const valid=v=>typeof v==='string'&&/^[a-f0-9-]{36}$/.test(v);
+const photo=v=>typeof v==='string'&&/^[a-f0-9-]{36}\/[a-f0-9-]{36}\/[a-f0-9-]{36}\.webp$/.test(v);
+const db={rpc:async(name,input)=>{calls.push({name,input});return{data:name==='can_access_lesson_comments'?access:name==='remove_lesson_comment'?[]:id,error:failure};},storage:{from:bucket=>{assert.equal(bucket,'comment-images');return{createSignedUploadUrl:async path=>({data:{signedUrl:'https://storage.test/upload',path},error:null}),createSignedUrl:async()=>({data:{signedUrl:'https://storage.test/private'},error:failure}),remove:async paths=>{removed.push(...paths);return{error:null};}};}}};
+const mocks={'@/lib/auth':{getCurrentUser:async()=>user},'@/lib/supabase/server':{createSessionClient:async()=>db},'@/lib/comments':{commentUuid:valid,commentPhotoPath:photo,readLessonComments:async()=>({comments:[],ready:true,hasMore:false})}};
+const mod={exports:{}};vm.runInNewContext(ts.transpileModule(await readFile(new URL('../src/app/actions/comments.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{module:mod,exports:mod.exports,require:n=>{assert.ok(mocks[n],n);return mocks[n];},crypto:{randomUUID:()=>id},console});
+const api=mod.exports, input={lessonId:lesson,parentId:null,body:'Una pregunta',photos:[]};
+for(const u of [null,{id:userId,demo:true}]){user=u;assert.ok((await api.saveCommentAction(input)).error);assert.ok((await api.commentUploadAction(lesson)).error);assert.ok((await api.deleteCommentAction(id)).error);assert.ok((await api.renewCommentPhotoAction(`${userId}/${lesson}/${id}.webp`)).error);assert.equal((await api.loadCommentsAction(lesson,null)).ready,false);}
+assert.equal(calls.length,0);
+user={id:userId,demo:false};
+for(const bad of [{...input,body:''},{...input,body:'x'.repeat(2001)},{...input,parentId:'bad'},{...input,photos:['https://external.test/a.webp']},{...input,photos:Array(5).fill(`${userId}/${lesson}/${id}.webp`)}])assert.ok((await api.saveCommentAction(bad)).error);
+assert.equal(calls.length,0);
+access=false;assert.ok((await api.commentUploadAction(lesson)).error);access=true;
+const ticket=await api.commentUploadAction(lesson);assert.equal(ticket.path,`${userId}/${lesson}/${id}.webp`);
+assert.equal((await api.saveCommentAction(input)).saved,true);const write=calls.find(c=>c.name==='save_lesson_comment');assert.equal(write.input.target_lesson,lesson);assert.ok(!('author_id' in write.input));
+await api.cleanupCommentPhotosAction([ticket.path,`11111111-1111-4111-8111-111111111111/${lesson}/${id}.webp`]);assert.deepEqual(removed,[ticket.path]);
+failure={code:'P0001',message:'Espera un minuto'};assert.equal((await api.saveCommentAction(input)).error,'Espera un minuto');assert.ok((await api.deleteCommentAction(id)).error);assert.ok((await api.renewCommentPhotoAction(ticket.path)).error);
+console.log('Acciones de comentarios: sesión obligatoria, datos válidos, identidad del servidor, acceso de subida, limpieza propia y errores aprobados.');
