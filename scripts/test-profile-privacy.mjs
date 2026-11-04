@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';import {readFile}from'node:fs/promises';
 const target='11111111-1111-4111-8111-111111111111',viewer='22222222-2222-4222-8222-222222222222';let user=null,privateReads=0,followReads=0;
 const C=({children,...props})=>React.createElement('span',{},children??props.name??'');
 const mocks={
+ '@/lib/profile-branding':{getProfileBranding:async()=>({bannerPath:null,links:[],ready:true})},'@/lib/profile':{bannerUrl:()=>null},'./ProfileLinks':{ProfileLinks:()=>null},'./ProfileBrandingEditor':{ProfileBrandingEditor:()=>null},
  'react/jsx-runtime':jsx,'next/link':{__esModule:true,default:({children,...props})=>React.createElement('a',{href:props.href},children)},'next/navigation':{notFound:()=>{throw Error('not-found');}},
  './Avatar':{Avatar:C},'./CreatorCard':{CreatorCard:({creator})=>React.createElement('p',{},creator.name)},'./CourseListItem':{CourseListItem:({course})=>React.createElement('p',{},course.title)},'./InterestTracking':{CreatorInterest:()=>null},'./ProfileQuickEdit':{ProfileQuickEdit:()=>React.createElement('button',{},'Editar perfil')},'@/app/creador/[id]/FollowButton':{FollowButton:()=>React.createElement('button',{},'Seguir')},
  '@/lib/auth':{getCurrentUser:async()=>user},'@/lib/creators':{publicCreator:async()=>({creator:{id:target,name:'Nombre público',avatarUrl:null,followers:3},ready:true}),followsCreator:async()=>false,followingCreators:async(id)=>{assert.equal(id,target);followReads++;return{creators:[{id:viewer,name:'Cuenta privada seguida'}],ready:true,hasNext:false};}},

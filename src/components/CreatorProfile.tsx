@@ -1,3 +1,7 @@
+import {getProfileBranding} from "@/lib/profile-branding";
+import {bannerUrl} from "@/lib/profile";
+import {ProfileLinks} from "./ProfileLinks";
+import {ProfileBrandingEditor} from "./ProfileBrandingEditor";
 import Link from "next/link";
 import {notFound} from "next/navigation";
 import {Avatar} from "./Avatar";
@@ -22,6 +26,7 @@ export async function CreatorProfile({id,view,page=1}:{id:string;view?:string;pa
  const followed=ready&&user&&!user.demo&&!own?await followsCreator(user.id,id):false;
  // La identidad de la sesión decide el acceso; la URL nunca concede acceso a otra lista.
  const personal=own?await ownProfileData(user!.id,privateView,page):null;
+ const branding=await getProfileBranding(id,own);
  const categories=[...new Set(programs.map(c=>c.category))];
  const base=creatorPath(id);
  return <>
@@ -30,11 +35,11 @@ export async function CreatorProfile({id,view,page=1}:{id:string;view?:string;pa
   {publicProfile?.demo&&<p role="status" className="mt-3 rounded-xl border border-line bg-surface p-4 text-sm text-muted">Perfil de ejemplo con contenido de prueba. No corresponde a una cuenta real.</p>}
   {!own&&<CreatorInterest courseIds={[...new Map(programs.map(c=>[c.category,c.id])).values()]}/>}
   <header className="mt-4 overflow-hidden rounded-3xl border border-line bg-surface">
-   <div className="h-24 border-b border-accent/15 bg-[radial-gradient(ellipse_at_top_right,rgba(255,181,71,.18),transparent_65%)] sm:h-32" aria-hidden="true"/>
+   <div className="aspect-[4/1] max-h-64 border-b border-accent/15 bg-[radial-gradient(ellipse_at_top_right,rgba(255,181,71,.18),transparent_65%)] bg-cover bg-center" style={bannerUrl(branding.bannerPath)?{backgroundImage:`url("${bannerUrl(branding.bannerPath)}")`}:undefined} aria-hidden="true"/>
    <div className="px-5 pb-6 sm:px-8 sm:pb-7"><div className="-mt-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
     <div className="min-w-0 flex-1"><div className="inline-flex rounded-full bg-surface p-1.5"><Avatar name={creator.name} src={creator.avatarUrl} className="h-20 w-20 font-display text-3xl sm:h-24 sm:w-24"/></div><p className="mt-3 text-[10px] font-bold uppercase tracking-[.18em] text-accent">{own?"Tu perfil en Lernze":"Creador en Lernze"}</p><h1 className="mt-2 break-words font-display text-[clamp(28px,5vw,44px)] font-extrabold leading-tight tracking-tight">{creator.name}</h1><div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted"><span><b className="text-fg">{programs.length}</b> {programs.length===1?"programa publicado":"programas publicados"}</span>{ready&&!publicProfile?.demo&&<span><b className="text-fg">{creator.followers}</b> {creator.followers===1?"seguidor":"seguidores"}</span>}</div></div>
     {own&&personal?<ProfileQuickEdit user={user!} avatarPath={personal.avatarPath} ready={personal.editReady}/>:<FollowButton key={`${id}:${followed}`} creatorId={id} creatorName={creator.name} followers={creator.followers} following={followed} signedIn={Boolean(user&&!user.demo)} own={false} ready={ready&&!publicProfile?.demo} demo={Boolean(publicProfile?.demo)}/>}
-   </div>{!!categories.length&&<ul aria-label="Temas de sus programas" className="mt-5 flex flex-wrap gap-2">{categories.map(c=><li key={c} className="rounded-full border border-line px-3 py-1 text-xs text-muted">{c}</li>)}</ul>}</div>
+   </div><ProfileLinks links={branding.links}/>{own&&<ProfileBrandingEditor bannerPath={branding.bannerPath} links={branding.links} ready={branding.ready}/>} {!!categories.length&&<ul aria-label="Temas de sus programas" className="mt-5 flex flex-wrap gap-2">{categories.map(c=><li key={c} className="rounded-full border border-line px-3 py-1 text-xs text-muted">{c}</li>)}</ul>}</div>
   </header>
   <nav aria-label="Contenido del perfil" className="mt-7 flex items-center gap-6 border-b border-line">
    <Link href={base} aria-current={!privateView?"page":undefined} scroll={false} className={`min-h-12 border-b-2 px-1 py-3 text-sm font-semibold ${!privateView?"border-accent text-fg":"border-transparent text-muted"}`}>Programas</Link>
