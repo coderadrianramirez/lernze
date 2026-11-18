@@ -46,6 +46,7 @@ export function UserMenu({ name, avatarUrl }: Props) {
 
           <Link href="/perfil" onClick={()=>setOpen(false)} className="flex min-h-11 items-center gap-2.5 px-4 py-2.5 text-sm text-fg transition-colors hover:bg-surface hover:text-accent"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Mi perfil</Link>
           <Link href="/dashboard" onClick={()=>setOpen(false)} className="flex min-h-11 items-center gap-2.5 px-4 py-2.5 text-sm text-fg transition-colors hover:bg-surface hover:text-accent"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Mi cuenta</Link>
+          <Link href="/monedas" onClick={() => setOpen(false)} className="flex min-h-11 items-center gap-2.5 px-4 py-2.5 text-sm hover:text-accent">Monedas <span className="text-xs text-muted">Demo</span></Link>
           <Link
             href="/configuracion"
             onClick={() => setOpen(false)}

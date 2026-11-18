@@ -1,7 +1,8 @@
 import Link from "next/link";
+import { ProgramPrice } from "./ProgramPrice";
+
 import type { ReactNode } from "react";
 import { programPath } from "@/lib/copy";
-import { formatPrice } from "@/lib/pricing";
 import type { Course } from "@/lib/types";
 import { Stage } from "./Stage";
 
@@ -37,7 +38,7 @@ export function CourseListItem({
         {footer}
       </div>
       <div className="shrink-0 self-center pr-1 text-right">
-        {aside ?? <span className="font-display text-base font-extrabold">{formatPrice(course.priceCents, course.currency)}</span>}
+        {aside ?? <span className="font-display text-base font-extrabold"><ProgramPrice course={course}/></span>}
       </div>
     </Link>
   );

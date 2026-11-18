@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { formatPrice } from "@/lib/pricing";
+import { ProgramPrice } from "./ProgramPrice";
 import type { Course } from "@/lib/types";
 import { catalogTrailer } from "@/lib/catalog-media";
 import { markRecommendationsDirty } from "@/lib/recommendation-refresh";
@@ -43,7 +43,7 @@ export function Scene({
         {!noCta && (
           <>
             <br />
-            <em>Entrar · {formatPrice(course.priceCents, course.currency)}</em>
+            <em>Entrar · <ProgramPrice course={course}/></em>
           </>
         )}
       </div>

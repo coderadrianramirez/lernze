@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { ProgramPrice, programPriceText } from "./ProgramPrice";
+
 import { courseCreatorId, creatorPath } from "@/lib/creator-path";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { NOUN, memberCount, programPath } from "@/lib/copy";
-import { formatDuration, formatPrice } from "@/lib/pricing";
+import { formatDuration } from "@/lib/pricing";
 import type { Course } from "@/lib/types";
 import { DismissProgram } from "./DismissProgram";
 import { Stage } from "./Stage";
@@ -237,7 +239,7 @@ function Hero({ courses, onInfo }: { courses: Course[]; onInfo: (c: Course) => v
                   <path d="M3 2l9 5-9 5V2z" />
                 </svg>
                 <span>
-                  Ver<span className="hidden md:inline"> {NOUN.one}</span> · {formatPrice(course.priceCents, course.currency)}
+                  Ver<span className="hidden md:inline"> {NOUN.one}</span> · <ProgramPrice course={course}/>
                 </span>
               </Link>
               <button
@@ -319,11 +321,11 @@ function GridRow({ row, onOpen }: { row: FeedRow; onOpen: (c: Course) => void })
           <button
             key={c.id}
             className={`lz-bento-cell${i === 0 ? " big" : ""}`}
-            aria-label={`${c.title}, de ${c.creatorName}, ${formatPrice(c.priceCents, c.currency)}`}
+            aria-label={`${c.title}, de ${c.creatorName}, ${programPriceText(c)}`}
             onClick={() => onOpen(c)}
           >
             <Stage course={c} badges={false} />
-            <span className="lz-bento-price">{formatPrice(c.priceCents, c.currency)}</span>
+            <span className="lz-bento-price"><ProgramPrice course={c}/></span>
             {i === 0 && (
               <span className="lz-bento-meta">
                 <span className="lz-bento-play" aria-hidden>
@@ -391,7 +393,7 @@ function TopRow({ row, onOpen }: { row: FeedRow; onOpen: (c: Course) => void }) 
                 href={`${programPath(current.slug)}?src=discover`}
                 className="flex items-center justify-center gap-2 rounded-[10px] bg-accent px-4 py-2.5 text-sm font-bold text-accent-ink"
               >
-                Ver {NOUN.one} · {formatPrice(current.priceCents, current.currency)}
+                Ver {NOUN.one} · <ProgramPrice course={current}/>
               </Link>
               <button
                 onClick={() => onOpen(current)}
@@ -442,7 +444,7 @@ function TopRow({ row, onOpen }: { row: FeedRow; onOpen: (c: Course) => void }) 
                   </span>
                   {on && (
                     <span className="shrink-0 rounded-full bg-accent px-3 py-1 text-sm font-extrabold text-accent-ink">
-                      {formatPrice(c.priceCents, c.currency)}
+                      <ProgramPrice course={c}/>
                     </span>
                   )}
                 </button>
@@ -514,7 +516,7 @@ function Row({
           >
             <Stage course={c} />
             <span className="lz-under">
-              {c.creatorName} · {formatPrice(c.priceCents, c.currency)}
+              {c.creatorName} · <ProgramPrice course={c}/>
             </span>
           </button>
         ))}
@@ -542,7 +544,7 @@ function PopBody({ course }: { course: Course }) {
           <span className="m">{stars(course)}</span>
           <span>{memberCount(course.members)}</span>
           {course.trailerSeconds > 0 && <span className="rounded border border-white/40 px-1.5 text-[11px]">{formatDuration(course.trailerSeconds)}</span>}
-          <span>{formatPrice(course.priceCents, course.currency)}</span>
+          <span><ProgramPrice course={course}/></span>
         </div>
         <div className="lz-ptags">
           {course.category} · {course.creatorName}
@@ -598,7 +600,7 @@ function ModalBody({
               onNavigate={onClose}
               className="w-full rounded-[10px] bg-accent px-[22px] py-3.5 text-center font-bold text-accent-ink active:scale-[0.98] sm:w-auto sm:py-3"
             >
-              Ver {NOUN.one} · {formatPrice(course.priceCents, course.currency)}
+              Ver {NOUN.one} · <ProgramPrice course={course}/>
             </Link>
           </div>
         </div>

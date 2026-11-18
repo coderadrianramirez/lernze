@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { hasDemoCoins } from "@/lib/coins-demo";
+import { ProgramPrice } from "./ProgramPrice";
+
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { FollowButton } from "@/app/creador/[id]/FollowButton";
 import { interestSignalAction } from "@/app/actions/recommendations";
@@ -10,7 +13,6 @@ import { Stage } from "./Stage";
 import { catalogTrailer } from "@/lib/catalog-media";
 import { courseCreatorId, creatorPath } from "@/lib/creator-path";
 import { programPath } from "@/lib/copy";
-import { formatPrice } from "@/lib/pricing";
 import { coverImageUrl } from "@/lib/covers";
 import { markRecommendationsDirty } from "@/lib/recommendation-refresh";
 import type { Course } from "@/lib/types";
@@ -124,7 +126,7 @@ export function DiscoverFeed({ items, userId, following, canDismiss, followReady
                 </div>
                 <div className="discover-program"><span className="discover-category">{course.category} <span>· Trailer</span></span><h2>{course.title}</h2><p className="discover-description">{course.description}</p></div>
                 <p className="discover-reason">{item.reason}</p>
-                <div className="discover-purchase"><span className="discover-price">{formatPrice(course.priceCents, course.currency)}<small>Pago único</small></span><Link href={`${programPath(course.slug)}?src=discover`} className="discover-cta">Ver programa <span aria-hidden="true">↗</span></Link></div>
+                <div className="discover-purchase"><span className="discover-price"><ProgramPrice course={course}/><small>{hasDemoCoins(course) ? "Monedas de prueba" : "Pago único"}</small></span><Link href={`${programPath(course.slug)}?src=discover`} className="discover-cta">Ver programa <span aria-hidden="true">↗</span></Link></div>
                 <div className="discover-secondary"><button type="button" onClick={() => void share(course)}><Icon name="share" /> Compartir</button><Link href="/intereses">Tus intereses</Link></div>
                 {canDismiss && <DismissProgram courseId={course.id} onHidden={() => { position.current = { id: feed[current + 1]?.course.id ?? feed[current - 1]?.course.id ?? "", time: 0 }; setHidden(old => [...old, course.id]); setMessage("Programa ocultado. Puedes recuperarlo desde Intereses."); }} />}
                 <p className="discover-hint"><span aria-hidden="true">↓</span> Desliza para descubrir otra idea</p>

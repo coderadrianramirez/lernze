@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { getCurrentUser } from "@/lib/auth";
 import { CategoryNav, DiscoverNavLink } from "./CategoryNav";
 import { SearchBar } from "./SearchBar";
+import { CoinBalanceLink } from "./CoinExperience";
 import { UserMenu } from "./UserMenu";
 
 async function AccountNav() {
@@ -33,7 +34,7 @@ async function AccountNav() {
 export function Header() {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-ink/90 backdrop-blur-md pt-[env(safe-area-inset-top)]">
-      <div className="mx-auto flex h-[60px] max-w-[1400px] items-center gap-3 px-4 md:h-[80px] md:gap-6 md:px-5">
+      <div className="mx-auto flex h-[60px] max-w-[1400px] items-center gap-3 px-4 md:h-[80px] md:gap-3 xl:gap-4 md:px-5">
         <Link
           href="/"
           className="shrink-0 font-display text-[23px] font-extrabold tracking-tight md:text-[26px]"
@@ -72,6 +73,8 @@ export function Header() {
             <path d="m20 20-3.5-3.5" />
           </svg>
         </Link>
+
+        <CoinBalanceLink />
 
         <Suspense fallback={<div className="h-9 w-20 animate-pulse rounded-lg bg-surface md:w-28" />}>
           <AccountNav />

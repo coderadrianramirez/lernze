@@ -1,3 +1,6 @@
+import { ProgramPrice } from "@/components/ProgramPrice";
+import { CoinCheckout } from "@/components/CoinExperience";
+import { hasDemoCoins } from "@/lib/coins-demo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -15,7 +18,7 @@ import { recommendPrograms } from "@/lib/recommendations";
 import { getCurrentUser } from "@/lib/auth";
 import { getCourseBySlug, getUserInterests, listCourses } from "@/lib/data";
 import { clock, formatDuration, getOwnCourseId, isEnrolled, listLessons } from "@/lib/lessons";
-import { COMMISSION_BPS, formatPrice, parseOrigin } from "@/lib/pricing";
+import { COMMISSION_BPS, parseOrigin } from "@/lib/pricing";
 import { enrollAction } from "./actions";
 import { ShareButtons } from "./ShareButtons";
 import { TrackView } from "./TrackView";
@@ -83,7 +86,8 @@ async function CourseDetail({
 
   const origin = parseOrigin(sp.src);
 
-  const price = formatPrice(course.priceCents, course.currency);
+  const coinExample = hasDemoCoins(course);
+  const price = <ProgramPrice course={course}/>;
   const creator = creatorResult?.creator;
   const creatorHref = identity && (creator || isOwner) ? creatorPath(identity) : null;
 
@@ -104,7 +108,7 @@ async function CourseDetail({
         </svg>
         {isOwner ? "Ver como alumno" : "Ir a las clases"}
       </Link>
-    ) : (
+    ) : coinExample ? <CoinCheckout course={course} className={className}/> : (
       <form action={enrollAction}>
         <input type="hidden" name="slug" value={course.slug} />
         <input type="hidden" name="origin" value={origin} />
@@ -279,7 +283,7 @@ async function CourseDetail({
             </div>
             <div className="mt-5">{cta("px-4 py-4 text-lg")}</div>
             <p className="mt-3 text-center text-xs text-muted">
-              {hasAccess ? `Ya eres parte de este ${NOUN.one}.` : "Pago único. Compra simulada: todavía no se cobra."}
+              {hasAccess ? `Ya eres parte de este ${NOUN.one}.` : coinExample ? "Demo visual. Precio ilustrativo en monedas de prueba." : "Pago único. Compra simulada: todavía no se cobra."}
             </p>
           </div>
 
@@ -328,7 +332,7 @@ async function CourseDetail({
                 </div>
                 <p className="mt-2 truncate text-sm font-semibold group-hover:text-accent">{c.title}</p>
                 <p className="text-xs text-muted">
-                  {c.category} · {formatPrice(c.priceCents, c.currency)}
+                  {c.category} · <ProgramPrice course={c}/>
                 </p>
               </Link>
             ))}
@@ -342,7 +346,7 @@ async function CourseDetail({
           {!hasAccess && (
             <div className="shrink-0">
               <div className="font-display text-2xl leading-none font-extrabold">{price}</div>
-              <p className="mt-1 text-[11px] text-muted">Pago único</p>
+              <p className="mt-1 text-[11px] text-muted">{coinExample ? "Monedas de prueba" : "Pago único"}</p>
             </div>
           )}
           <div className="flex-1">{cta("px-4 py-3.5")}</div>
