@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Suspense } from "react";
 
 const TABS = [
-  { href: "/", label: "Inicio", icon: "M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" },
+  { href: "/", target: "/?vista=catalogo", label: "Inicio", icon: "M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" },
   { href: "/ofertas", label: "Ofertas", icon: "M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8zM7.5 7.5h.01" },
   { href: "/descubrir", label: "Descubrir", icon: "m9 6 10 6-10 6V6ZM4 5v14" },
   { href: "/buscar", label: "Buscar", icon: "M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM20 20l-3.5-3.5" },
@@ -49,7 +49,7 @@ function Bar({ pathname }: { pathname: string | null }) {
             return (
               <li key={t.href}>
                 <Link
-                  href={t.href}
+                  href={t.target ?? t.href}
                   aria-current={on ? "page" : undefined}
                   className={`flex h-full flex-col items-center justify-center gap-1 text-[11px] font-semibold transition-colors ${
                     on ? "text-accent" : "text-muted active:text-fg"

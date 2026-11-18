@@ -4,6 +4,25 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { CATEGORIES } from "@/lib/types";
 
+export function DiscoverNavLink() {
+  const active = usePathname() === "/descubrir";
+
+  return (
+    <Link
+      href="/descubrir"
+      aria-current={active ? "page" : undefined}
+      className={`inline-flex min-h-10 shrink-0 items-center gap-2 rounded-xl border px-3 text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-accent ${
+        active ? "border-accent bg-accent text-accent-ink" : "border-accent/40 bg-accent/10 text-accent hover:border-accent hover:bg-accent/20"
+      }`}
+    >
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+        <path d="m9 6 10 6-10 6V6ZM4 5v14" />
+      </svg>
+      Descubrir
+    </Link>
+  );
+}
+
 const catHref = (cat: string) => `/?${new URLSearchParams({ i: cat }).toString()}`;
 
 /** `bar`: enlaces del header en escritorio. `chips`: tira deslizable bajo el header en móvil. */
@@ -21,7 +40,7 @@ export function CategoryNav({ variant = "bar" }: { variant?: "bar" | "chips" }) 
       }`;
     return (
       <nav aria-label="Categorías" className="no-scrollbar lz-fade-x flex gap-2 overflow-x-auto px-4 pb-3">
-        <Link href="/" className={chip(isHome)} aria-current={isHome ? "page" : undefined}>
+        <Link href="/?vista=catalogo" className={chip(isHome)} aria-current={isHome ? "page" : undefined}>
           Todo
         </Link>
         {CATEGORIES.map((cat) => (
@@ -47,7 +66,6 @@ export function CategoryNav({ variant = "bar" }: { variant?: "bar" | "chips" }) 
       <Link href="/" className={linkClass(isHome)} aria-current={isHome ? "page" : undefined}>
         Inicio
       </Link>
-      <Link href="/descubrir" className={linkClass(pathname === "/descubrir")} aria-current={pathname === "/descubrir" ? "page" : undefined}>Descubrir</Link>
       {CATEGORIES.map((cat) => (
         <Link
           key={cat}

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { getCurrentUser } from "@/lib/auth";
-import { CategoryNav } from "./CategoryNav";
+import { CategoryNav, DiscoverNavLink } from "./CategoryNav";
 import { SearchBar } from "./SearchBar";
 import { UserMenu } from "./UserMenu";
 
@@ -53,6 +53,12 @@ export function Header() {
         <div className="hidden min-w-0 w-full max-w-[470px] md:block">
           <Suspense fallback={<div className="h-9 w-full animate-pulse rounded-xl bg-surface" />}>
             <SearchBar />
+          </Suspense>
+        </div>
+
+        <div className="hidden shrink-0 md:block">
+          <Suspense fallback={<div className="h-10 w-28 rounded-xl bg-surface" />}>
+            <DiscoverNavLink />
           </Suspense>
         </div>
 

@@ -1,9 +1,18 @@
 import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, userAgent, type NextRequest } from "next/server";
 import { isSupabaseConfigured, supabaseKey, supabaseUrl } from "@/lib/supabase/config";
 
 /** Refresca la sesión de Supabase y manda a /entrar a quien no la tenga en rutas privadas. */
 export async function proxy(request: NextRequest) {
+  const { pathname, search } = request.nextUrl;
+  if (request.method === "GET" && pathname === "/" && !search && userAgent(request).device.type === "mobile") {
+    const destination = request.nextUrl.clone();
+    destination.pathname = "/descubrir";
+    const redirect = NextResponse.redirect(destination);
+    redirect.headers.set("Cache-Control", "private, no-store");
+    return redirect;
+  }
+
   if (!isSupabaseConfigured) return NextResponse.next();
 
   let response = NextResponse.next({ request });
@@ -19,7 +28,7 @@ export async function proxy(request: NextRequest) {
   });
 
   const { data } = await supabase.auth.getClaims();
-  const { pathname, search } = request.nextUrl;
+
 
   if (!data?.claims && pathname.startsWith("/crear")) {
     const url = request.nextUrl.clone();
