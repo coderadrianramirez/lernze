@@ -103,7 +103,7 @@ export function DiscoverFeed({ items, userId, following, canDismiss, followReady
   return <div className="discover-shell" onKeyDown={keyDown}>
     <div className="discover-topbar">
       <div className="discover-heading"><h1>Descubrir<span>.</span></h1><span className="discover-label">Para ti</span></div>
-      <div className="discover-top-actions"><span className="discover-counter" aria-live="polite">{feed.length ? current + 1 : 0} <span>/ {feed.length}</span></span><Link href="/" className="discover-catalogue">Ver catálogo ↗</Link></div>
+      <div className="discover-top-actions"><span className="discover-counter" aria-live="polite">{feed.length ? current + 1 : 0} <span>/ {feed.length}</span></span><Link href="/?vista=catalogo" className="discover-catalogue">Ver catálogo ↗</Link></div>
     </div>
     {!feed.length ? <div className="discover-empty"><span className="discover-label">Una pausa para descubrir</span><h2>Ya exploraste estas opciones</h2><p>Puedes buscar otros programas o recuperar recomendaciones desde tus intereses.</p><Link className="discover-cta" href={userId ? "/intereses" : "/buscar"}>{userId ? "Ver tus intereses" : "Buscar programas"} →</Link></div> : <>
       <div ref={track} className="discover-track" tabIndex={0} aria-label="Trailers de programas. Desliza o usa las flechas para avanzar" onScroll={event => {
